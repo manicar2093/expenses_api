@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from src.expenses import schemas
 from src.entities.expense import Expense
+from src.expenses import schemas
 
 
 class IExpensesService(ABC):
