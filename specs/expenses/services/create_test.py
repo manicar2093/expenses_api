@@ -4,7 +4,8 @@ from expects import be_an, expect
 from faker import Faker
 from mamba import before, describe, it
 
-from src.expenses import models, schemas
+from src.entities.expense import Expense
+from src.expenses import schemas
 from src.expenses.repositories.interfaces import IExpensesRepository
 from src.expenses.services.create import ExpensesServiceImpl
 
@@ -22,12 +23,12 @@ with describe(ExpensesServiceImpl) as self:
                 amount=expected_amount,
                 description=expected_description,
             )
-            expected_model_expense = models.Expense(
+            expected_model_expense = Expense(
                 amount=expected_amount, description=expected_description,
             )
 
             got = self.service.create_expense(expense=expected_schema_expense)
 
             expect(self.expenses_repo_mock.save.call_args[0][0]).to(
-                be_an(models.Expense),
+                be_an(Expense),
             )

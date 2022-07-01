@@ -2,7 +2,7 @@ files_tests = `find ./specs -name "*.py"`
 files = `find ./src ./specs -name "*.py"`
 
 run:
-	@ uvicorn src.cmd.api.expenses:app
+	@ poetry run uvicorn src.cmd.api.expenses:app
 
 test:
 	@poetry run mamba $(files_tests) --format documentation --enable-coverage

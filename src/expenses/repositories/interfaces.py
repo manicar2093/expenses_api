@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from src.expenses import models
+from src.entities.expense import Expense
 
 
 class IExpensesRepository(ABC):
     @abstractmethod
-    def save(self, expense: models.Expense):
+    def save(self, expense: Expense):
         raise NotImplementedError

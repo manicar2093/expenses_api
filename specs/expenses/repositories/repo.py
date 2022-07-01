@@ -5,7 +5,7 @@ from expects import be_true, equal, expect
 from faker import Faker
 from mamba import before, describe, it
 
-from src.expenses import models
+from src.entities.expense import Expense
 from src.expenses.repositories.repo import ExpensesRepositoryImpl
 
 with describe(ExpensesRepositoryImpl) as self:
@@ -17,7 +17,7 @@ with describe(ExpensesRepositoryImpl) as self:
 
     with describe(ExpensesRepositoryImpl.save):
         with it('should call session to save an expense'):
-            expected_expense = models.Expense(
+            expected_expense = Expense(
                 amount=self.fake.pydecimal(), description=self.fake.pystr(),
             )
 

@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 
-from src.expenses import models, schemas
+from src.expenses import schemas
+from src.entities.expense import Expense
 
 
 class IExpensesService(ABC):
 
     @abstractmethod
-    def create_expense(self, expense: schemas.CreateExpense) -> models.Expense:
+    def create_expense(self, expense: schemas.CreateExpense) -> Expense:
         raise NotImplementedError
