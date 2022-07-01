@@ -1,0 +1,4 @@
+*.db
+.env
+.coverage
+__pycache__
