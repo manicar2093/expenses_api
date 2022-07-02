@@ -11,6 +11,7 @@ class ExpensesServiceImpl(IExpensesService):
 
     def create_expense(self, expense: schemas.CreateExpense) -> Expense:
         new_expense = Expense(
+            name=expense.name,
             amount=expense.amount,
             description=expense.description,
         )
