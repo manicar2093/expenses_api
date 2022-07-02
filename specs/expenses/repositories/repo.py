@@ -5,7 +5,7 @@ from expects import be_true, equal, expect
 from faker import Faker
 from mamba import before, describe, it
 
-from src.entities.expense import Expense
+from src.entities import Expense
 from src.expenses.repositories.repo import ExpensesRepositoryImpl
 
 with describe(ExpensesRepositoryImpl) as self:

@@ -1,4 +1,4 @@
-from src.entities.expense import Expense
+from src.entities import Expense
 from src.expenses import schemas
 from src.expenses.repositories.interfaces import IExpensesRepository
 from src.expenses.services.interfaces import IExpensesService

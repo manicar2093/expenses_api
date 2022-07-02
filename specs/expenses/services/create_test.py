@@ -4,7 +4,7 @@ from expects import be_an, expect
 from faker import Faker
 from mamba import before, describe, it
 
-from src.entities.expense import Expense
+from src.entities import Expense
 from src.expenses import schemas
 from src.expenses.repositories.interfaces import IExpensesRepository
 from src.expenses.services.create import ExpensesServiceImpl

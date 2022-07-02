@@ -2,4 +2,6 @@
 *.db
 .env
 .coverage
-__pycache__node_modules
+__pycache__
+gen_entities
+node_modules
