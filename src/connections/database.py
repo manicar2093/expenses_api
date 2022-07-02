@@ -17,7 +17,7 @@ class Base(object):
 
 
 def bind_engine():
-    engine = create_engine(os.getenv('DB_CONN'))
+    engine = create_engine(os.getenv('DATABASE_URL'))
     Base.metadata.bind = engine
 
 

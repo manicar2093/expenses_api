@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.entities.expense import Expense
+from src.entities import Expense
 from src.expenses import schemas
 
 

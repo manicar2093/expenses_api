@@ -6,9 +6,6 @@ from pydantic import BaseModel
 
 
 class CreateExpense(BaseModel):
-    id: Optional[int]
     amount: Decimal
+    name: str
     description: Optional[str]
-
-    class Config:
-        orm_mode = True

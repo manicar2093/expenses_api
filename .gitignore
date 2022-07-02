@@ -3,3 +3,5 @@
 .env
 .coverage
 __pycache__
+gen_entities
+node_modules
