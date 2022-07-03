@@ -1,0 +1,40 @@
+package incomes
+
+import (
+	"context"
+
+	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/repos"
+)
+
+type (
+	CreateIncome interface {
+		Create(ctx context.Context, incomeInput *CreateIncomeInput) (*entities.Income, error)
+	}
+	CreateIncomeInput struct {
+		Name        string  `json:"name,omitempty"`
+		Amount      float64 `json:"amount,omitempty"`
+		Description string  `json:"description,omitempty"`
+	}
+	CreateIncomeImpl struct {
+		incomesRepo repos.IncomesRepository
+	}
+)
+
+func NewCreateIncomeImpl(repo repos.IncomesRepository) *CreateIncomeImpl {
+	return &CreateIncomeImpl{
+		incomesRepo: repo,
+	}
+}
+
+func (c *CreateIncomeImpl) Create(ctx context.Context, incomeInput *CreateIncomeInput) (*entities.Income, error) {
+	newIncome := entities.Income{
+		Name:        incomeInput.Name,
+		Amount:      incomeInput.Amount,
+		Description: incomeInput.Description,
+	}
+	if err := c.incomesRepo.Save(ctx, &newIncome); err != nil {
+		return nil, err
+	}
+	return &newIncome, nil
+}
