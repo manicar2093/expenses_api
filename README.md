@@ -7,14 +7,17 @@ An api to register expenses, incomings and take controll on how you move your mo
 It is need to install the next tools to start the project
 
 - [dotenv-cli](https://www.npmjs.com/package/dotenv-cli)
-- [sqlacodegen](https://pypi.org/project/sqlacodegen/)
 
 ## Development
 
-You can use this script to create entities.
+To start the docker container you can run:
 
 ```bash
-sqlacodegen postgresql://development:development@localhost:3456/expenses_app-dev > gen_entities
+docker run -p 8000:8000 -e DATABASE_URL="postgresql://development:development@<ip:port>/expenses_app-dev?sslmode=disable" --name expenses-api-containter expenses_api:latest
 ```
 
-Result is saved at `gen_entities`. You must copy this to `src/entities/__init__.py` ensuring you add needed imports
+For example:
+
+```bash
+docker run -p 8000:8000 -e DATABASE_URL="postgresql://development:development@192.168.100.48:3456/expenses_app-dev?sslmode=disable" --name expenses-api-containter expenses_api:latest
+```
