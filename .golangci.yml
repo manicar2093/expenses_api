@@ -1,0 +1,22 @@
+run:
+  skip-dirs:
+    - mocks
+  skip-files:
+    - internal/repos/incomes_test.go
+    - internal/repos/expenses_test.go
+  go: "1.17"
+
+linters:
+  enable:
+    - funlen
+    - ifshort
+    - dupl
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosec
+    - ireturn
+    - testpackage
+    - varnamelen
+    - wastedassign
+    - whitespace

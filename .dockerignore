@@ -9,3 +9,5 @@ README.md
 node_modules
 prisma
 Dockerfile
+.golangci.yml
+mocks

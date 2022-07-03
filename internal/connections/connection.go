@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func GetRelConnection() rel.Repository {
+func GetRelConnection() rel.Repository { //nolint:ireturn
 	adapter, err := postgres.Open(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		panic(err)

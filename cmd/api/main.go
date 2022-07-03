@@ -12,7 +12,7 @@ import (
 
 var (
 	conn = connections.GetRelConnection()
-	e    = echo.New()
+	e    = echo.New() //nolint:varnamelen
 )
 
 func main() {
