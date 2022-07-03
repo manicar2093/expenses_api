@@ -4,10 +4,8 @@ files = `find ./src ./specs -name "*.py"`
 run:
 	@ dotenv -- poetry run uvicorn src.cmd.api.expenses:app
 
-test:
-	@poetry run mamba $(files_tests) --format documentation --enable-coverage
+mocking:
+	@ mockery --all --with-expecter
 
-fmt: ## Format all project files
-	@add-trailing-comma $(files)
-	@pyformat -i $(files)
-	@isort src specs
+test:
+	@ ginkgo ./...
