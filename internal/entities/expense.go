@@ -10,3 +10,7 @@ type Expense struct {
 	CreatedAt   time.Time `json:"created_at,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 }
+
+func (c Expense) Table() string {
+	return "Expenses"
+}
