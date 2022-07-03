@@ -12,7 +12,7 @@ datasource db {
 
 model Expenses {
   id Int @id @default(autoincrement())
-  amount Decimal
+  amount Decimal @db.Decimal(9,2)
   name String
   description String?
   createdAt DateTime @default(now()) @map("created_at")
@@ -21,7 +21,7 @@ model Expenses {
 
 model Incomes {
   id Int @id @default(autoincrement())
-  amount Decimal
+  amount Decimal @db.Decimal(9,2)
   name String
   description String?
   createdAt DateTime @default(now()) @map("created_at")
