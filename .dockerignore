@@ -1,0 +1,11 @@
+.env
+.gitignore
+example.env
+Makefile
+package-lock.json
+package.json
+README.md
+.vscode
+node_modules
+prisma
+Dockerfile
