@@ -3,8 +3,10 @@ package repos
 import (
 	"context"
 
-	"github.com/go-rel/rel"
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/pkg/dates"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type (
@@ -12,18 +14,24 @@ type (
 		Save(context.Context, *entities.Income) error
 	}
 	IncomesRepositoryImpl struct {
-		conn rel.Repository
+		coll *mongo.Collection
 	}
 )
 
-func NewIncomesRepositoryImpl(conn rel.Repository) *IncomesRepositoryImpl {
+func NewIncomesRepositoryImpl(conn *mongo.Database) *IncomesRepositoryImpl {
 	return &IncomesRepositoryImpl{
-		conn: conn,
+		coll: conn.Collection("incomes"),
 	}
 }
 
 func (c *IncomesRepositoryImpl) Save(ctx context.Context, income *entities.Income) error {
-	return c.conn.Transaction(ctx, func(ctx context.Context) error {
-		return c.conn.Insert(ctx, income)
-	})
+	income.ID = primitive.NewObjectID()
+	createdAt := dates.GetNormalizedDate()
+	income.CreatedAt = &createdAt
+	if _, err := c.coll.InsertOne(ctx, income); err != nil {
+		return err
+	}
+
+	return nil
+
 }

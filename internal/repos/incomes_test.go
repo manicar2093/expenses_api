@@ -4,30 +4,32 @@ import (
 	"context"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/go-rel/reltest"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
+	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 )
 
 var _ = Describe("IncomesRepo", func() {
 	var (
-		ctx         context.Context
-		relRepoMock *reltest.Repository
-		repo        *repos.IncomesRepositoryImpl
+		ctx  context.Context
+		conn *mongo.Database
+		repo *repos.IncomesRepositoryImpl
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
-		relRepoMock = reltest.New()
-		repo = repos.NewIncomesRepositoryImpl(relRepoMock)
+		conn = connections.GetMongoConn()
+		repo = repos.NewIncomesRepositoryImpl(conn)
 
 	})
 	AfterEach(func() {
-		T := GinkgoT()
-		relRepoMock.AssertExpectations(T)
+		conn.Drop(ctx)
 	})
 
 	It("saves an entities.Income in database", func() {
@@ -42,13 +44,17 @@ var _ = Describe("IncomesRepo", func() {
 				Description: expectedDescription,
 			}
 		)
-		relRepoMock.ExpectTransaction(func(r *reltest.Repository) {
-			r.ExpectInsert().For(&expectedIncome).Success()
-		})
 
 		err := repo.Save(ctx, &expectedIncome)
 
+		var incomeRegistered entities.Income
+		conn.Collection("incomes").FindOne(ctx, bson.M{"_id": expectedIncome.ID}).Decode(&incomeRegistered)
+
 		Expect(err).ToNot(HaveOccurred())
+		Expect(expectedIncome.ID).To(BeAssignableToTypeOf(primitive.ObjectID{}))
+		Expect(expectedIncome.CreatedAt).ToNot(BeZero())
+		Expect(expectedIncome.CreatedAt).To(Equal(incomeRegistered.CreatedAt))
+		Expect(expectedIncome.UpdatedAt).To(BeNil())
 
 	})
 })
