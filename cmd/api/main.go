@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	conn = connections.GetRelConnection()
-	e    = echo.New() //nolint:varnamelen
+	mongoConn = connections.GetMongoConn()
+	e         = echo.New() //nolint:varnamelen
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 
 func incomesRouter() {
 	var (
-		incomesRepo  = repos.NewIncomesRepositoryImpl(conn)
+		incomesRepo  = repos.NewIncomesRepositoryImpl(mongoConn)
 		createIncome = incomes.NewCreateIncomeImpl(incomesRepo)
 		incomesGroup = e.Group("/incomes")
 	)
@@ -42,7 +42,7 @@ func incomesRouter() {
 
 func expensesRoutes() {
 	var (
-		expensesRepo  = repos.NewExpensesRepositoryImpl(conn)
+		expensesRepo  = repos.NewExpensesRepositoryImpl(mongoConn)
 		createExpense = expenses.NewCreateExpensesImpl(expensesRepo)
 		expensesGroup = e.Group("/expenses")
 	)
