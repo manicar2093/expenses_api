@@ -9,3 +9,9 @@ mocking:
 
 test:
 	@ dotenv -e test.env -- ginkgo ./...
+
+lint:
+	@ golangci-lint run
+
+build_image:
+	@ docker build -t expenses_api:latest .
