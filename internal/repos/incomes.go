@@ -33,5 +33,4 @@ func (c *IncomesRepositoryImpl) Save(ctx context.Context, income *entities.Incom
 	}
 
 	return nil
-
 }
