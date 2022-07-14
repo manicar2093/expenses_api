@@ -14,7 +14,7 @@ var _ = Describe("Mongo", func() {
 	var _ = Describe("MongoConnection", func() {
 		var (
 			ctx  context.Context
-			db   *mongo.Database
+			conn *mongo.Database
 			coll *mongo.Collection
 		)
 
@@ -23,12 +23,12 @@ var _ = Describe("Mongo", func() {
 		})
 
 		AfterEach(func() {
-			db.Drop(ctx)
+			conn.Drop(ctx) //nolint: errcheck
 		})
 
 		It("Should connect successfully", func() {
-			db = connections.GetMongoConn()
-			coll = db.Collection("testing_connection")
+			conn = connections.GetMongoConn()
+			coll = conn.Collection("testing_connection")
 			res, err := coll.InsertOne(ctx, primitive.M{"is_success": true})
 
 			Expect(err).ToNot(HaveOccurred())
