@@ -6,15 +6,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const IncomeCollectionName = "incomes"
+
 type Income struct {
 	ID          primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	Name        string             `json:"name,omitempty"`
 	Amount      float64            `json:"amount,omitempty"`
 	Description string             `json:"description,omitempty" bson:",omitempty"`
+	Day         uint               `json:"day,omitempty"`
+	Month       uint               `json:"month,omitempty"`
+	Year        uint               `json:"year,omitempty"`
 	CreatedAt   *time.Time         `json:"created_at,omitempty"`
 	UpdatedAt   *time.Time         `json:"updated_at,omitempty" bson:",omitempty"`
-}
-
-func (c Income) Table() string {
-	return "Incomes"
 }

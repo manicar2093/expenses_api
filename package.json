@@ -1,0 +1,21 @@
+{
+  "name": "my-prisma-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "seed": "ts-node ./prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "npm run seed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prisma": "^4.0.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.0.0"
+  }
+}

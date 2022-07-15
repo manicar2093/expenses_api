@@ -19,13 +19,18 @@ type (
 )
 
 func NewExpensesRepositoryImpl(coll *mongo.Database) *ExpensesRepositoryImpl {
-	return &ExpensesRepositoryImpl{coll: coll.Collection("expenses")}
+	return &ExpensesRepositoryImpl{coll: coll.Collection(entities.ExpenseCollectionName)}
 }
 
 func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Expense) error {
 	expense.ID = primitive.NewObjectID()
 	createdAt := dates.GetNormalizedDate()
 	expense.CreatedAt = &createdAt
+
+	expense.Day = uint(createdAt.Day())
+	expense.Month = uint(createdAt.Month())
+	expense.Year = uint(createdAt.Year())
+
 	if _, err := c.coll.InsertOne(ctx, expense); err != nil {
 		return err
 	}

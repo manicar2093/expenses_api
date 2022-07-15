@@ -52,6 +52,9 @@ var _ = Describe("IncomesRepo", func() {
 
 		Expect(err).ToNot(HaveOccurred())
 		Expect(expectedIncome.ID).To(BeAssignableToTypeOf(primitive.ObjectID{}))
+		Expect(expectedIncome.Day).ToNot(BeZero())
+		Expect(expectedIncome.Month).ToNot(BeZero())
+		Expect(expectedIncome.Year).ToNot(BeZero())
 		Expect(expectedIncome.CreatedAt).ToNot(BeZero())
 		Expect(expectedIncome.CreatedAt).To(Equal(incomeRegistered.CreatedAt))
 		Expect(expectedIncome.UpdatedAt).To(BeNil())

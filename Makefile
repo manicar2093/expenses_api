@@ -15,3 +15,6 @@ lint:
 
 build_image:
 	@ docker build -t expenses_api:latest .
+
+push_mongo:
+	@ dotenv -- npx prisma db push
