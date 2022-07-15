@@ -51,6 +51,9 @@ var _ = Describe("ExpensesImpl", func() {
 
 		Expect(err).ToNot(HaveOccurred())
 		Expect(expectedExpense.ID).To(BeAssignableToTypeOf(primitive.ObjectID{}))
+		Expect(expectedExpense.Day).ToNot(BeZero())
+		Expect(expectedExpense.Month).ToNot(BeZero())
+		Expect(expectedExpense.Year).ToNot(BeZero())
 		Expect(expectedExpense.CreatedAt).ToNot(BeZero())
 		Expect(expectedExpense.CreatedAt).To(Equal(expenseRegistered.CreatedAt))
 		Expect(expectedExpense.UpdatedAt).To(BeNil())
