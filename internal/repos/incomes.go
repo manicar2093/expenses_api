@@ -28,6 +28,11 @@ func (c *IncomesRepositoryImpl) Save(ctx context.Context, income *entities.Incom
 	income.ID = primitive.NewObjectID()
 	createdAt := dates.GetNormalizedDate()
 	income.CreatedAt = &createdAt
+
+	income.Day = uint(createdAt.Day())
+	income.Month = uint(createdAt.Month())
+	income.Year = uint(createdAt.Year())
+
 	if _, err := c.coll.InsertOne(ctx, income); err != nil {
 		return err
 	}
