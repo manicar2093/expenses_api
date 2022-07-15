@@ -20,7 +20,7 @@ type (
 
 func NewIncomesRepositoryImpl(conn *mongo.Database) *IncomesRepositoryImpl {
 	return &IncomesRepositoryImpl{
-		coll: conn.Collection("incomes"),
+		coll: conn.Collection(entities.IncomeCollectionName),
 	}
 }
 

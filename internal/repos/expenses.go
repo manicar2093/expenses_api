@@ -19,7 +19,7 @@ type (
 )
 
 func NewExpensesRepositoryImpl(coll *mongo.Database) *ExpensesRepositoryImpl {
-	return &ExpensesRepositoryImpl{coll: coll.Collection("expenses")}
+	return &ExpensesRepositoryImpl{coll: coll.Collection(entities.ExpenseCollectionName)}
 }
 
 func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Expense) error {
