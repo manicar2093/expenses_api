@@ -13,6 +13,8 @@ FROM alpine:latest
 
 WORKDIR /api
 
+RUN apk add tzdata
+
 COPY --from=builder /app/server /server
 
 EXPOSE 8000
