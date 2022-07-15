@@ -16,6 +16,6 @@ type Income struct {
 	Day         uint               `json:"day,omitempty"`
 	Month       uint               `json:"month,omitempty"`
 	Year        uint               `json:"year,omitempty"`
-	CreatedAt   *time.Time         `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time         `json:"updated_at,omitempty" bson:",omitempty"`
+	CreatedAt   *time.Time         `json:"created_at,omitempty" bson:"created_at,omitempty"`
+	UpdatedAt   *time.Time         `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 }
