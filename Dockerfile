@@ -1,4 +1,4 @@
-FROM golang:1.18.3-alpine3.16
+FROM golang:1.18.3-alpine3.16 as builder
 
 RUN mkdir /app
 
@@ -9,6 +9,12 @@ WORKDIR /app
 RUN go mod download
 RUN go build -o server cmd/api/*.go
 
+FROM alpine:latest
+
+WORKDIR /api
+
+COPY --from=builder /app/server /server
+
 EXPOSE 8000
 
-CMD [ "/app/server" ]
+CMD [ "/server" ]

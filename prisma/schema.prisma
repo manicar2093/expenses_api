@@ -18,7 +18,7 @@ model Expense {
   month Int
   year Int
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime? @updatedAt
 
   @@map("expenses")
 }
@@ -31,7 +31,7 @@ model Incomes {
   month Int
   year Int
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime? @updatedAt
 
   @@map("incomes")
 }
