@@ -2,14 +2,12 @@ package repos_test
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/bxcodec/faker/v3"
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
-	"github.com/manicar2093/expenses_api/mocks"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,17 +17,15 @@ import (
 
 var _ = Describe("ExpensesImpl", func() {
 	var (
-		ctx            context.Context
-		conn           *mongo.Database
-		timeGetterMock *mocks.TimeGetable
-		repo           *repos.ExpensesRepositoryImpl
+		ctx  context.Context
+		conn *mongo.Database
+		repo *repos.ExpensesRepositoryImpl
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		conn = connections.GetMongoConn()
-		timeGetterMock = &mocks.TimeGetable{}
-		repo = repos.NewExpensesRepositoryImpl(conn, timeGetterMock)
+		repo = repos.NewExpensesRepositoryImpl(conn)
 
 	})
 	AfterEach(func() {
@@ -67,11 +63,8 @@ var _ = Describe("ExpensesImpl", func() {
 		})
 	})
 
-	Describe("GetCurrentMonthExpenses", func() {
+	Describe("GetExpensesByMonth", func() {
 		It("returns all expenses by current month", func() {
-			expectedTimeReturn := time.Date(2022, time.July, 1, 0, 0, 0, 0, time.Local)
-			log.Println(expectedTimeReturn)
-			timeGetterMock.EXPECT().GetCurrentTime().Return(expectedTimeReturn)
 			expenses_created := []interface{}{
 				bson.D{{Key: "month", Value: uint(time.July)}},
 				bson.D{{Key: "month", Value: uint(time.July)}},
@@ -79,7 +72,7 @@ var _ = Describe("ExpensesImpl", func() {
 				bson.D{{Key: "month", Value: uint(time.March)}},
 			}
 			conn.Collection("expenses").InsertMany(ctx, expenses_created)
-			got, err := repo.GetCurrentMonthExpenses(ctx)
+			got, err := repo.GetExpensesByMonth(ctx, time.July)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(*got).To(HaveLen(3))
