@@ -7,6 +7,7 @@ import (
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/incomes"
+	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 )
@@ -64,7 +65,7 @@ func expensesRoutes() {
 
 func reportsRoutes() {
 	var (
-		getCurrentMonth = expenses.NewCurrentMonthDetailsImpl(expensesRepo, &timeGetter)
+		getCurrentMonth = reports.NewCurrentMonthDetailsImpl(expensesRepo, &timeGetter)
 		reportsGroup    = e.Group("/reports")
 	)
 

@@ -1,11 +1,11 @@
-package expenses_test
+package reports_test
 
 import (
 	"context"
 	"time"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
-	"github.com/manicar2093/expenses_api/internal/expenses"
+	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/mocks"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -18,7 +18,7 @@ var _ = Describe("GetCurrentMonth", func() {
 		timeGetterMock   *mocks.TimeGetable
 		timeGetterReturn time.Time
 		ctx              context.Context
-		service          *expenses.CurrentMonthDetails
+		service          *reports.CurrentMonthDetails
 	)
 
 	BeforeEach(func() {
@@ -27,7 +27,7 @@ var _ = Describe("GetCurrentMonth", func() {
 		timeGetterReturn = time.Date(2022, time.July, 1, 0, 0, 0, 0, time.Local)
 		timeGetterMock.EXPECT().GetCurrentTime().Return(timeGetterReturn)
 		ctx = context.Background()
-		service = expenses.NewCurrentMonthDetailsImpl(expensesRepoMock, timeGetterMock)
+		service = reports.NewCurrentMonthDetailsImpl(expensesRepoMock, timeGetterMock)
 	})
 
 	It("returns expenses data", func() {

@@ -1,4 +1,4 @@
-package expenses
+package reports
 
 import (
 	"context"
