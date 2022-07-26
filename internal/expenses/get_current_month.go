@@ -10,9 +10,9 @@ import (
 
 type (
 	CurrentMonthDetailsOutput struct {
-		TotalAmount   float64
-		TotalExpenses uint
-		Expenses      *[]entities.Expense
+		TotalAmount   float64             `json:"total_amount,omitempty"`
+		TotalExpenses uint                `json:"total_expenses,omitempty"`
+		Expenses      *[]entities.Expense `json:"expenses,omitempty"`
 	}
 	CurrentMonthDetailsGettable interface {
 		GetExpenses(ctx context.Context) (*CurrentMonthDetailsOutput, error)
