@@ -22,6 +22,52 @@ func (_m *ExpensesRepository) EXPECT() *ExpensesRepository_Expecter {
 	return &ExpensesRepository_Expecter{mock: &_m.Mock}
 }
 
+// GetCurrentMonthExpenses provides a mock function with given fields: ctx
+func (_m *ExpensesRepository) GetCurrentMonthExpenses(ctx context.Context) (*[]entities.Expense, error) {
+	ret := _m.Called(ctx)
+
+	var r0 *[]entities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context) *[]entities.Expense); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]entities.Expense)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExpensesRepository_GetCurrentMonthExpenses_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCurrentMonthExpenses'
+type ExpensesRepository_GetCurrentMonthExpenses_Call struct {
+	*mock.Call
+}
+
+// GetCurrentMonthExpenses is a helper method to define mock.On call
+//  - ctx context.Context
+func (_e *ExpensesRepository_Expecter) GetCurrentMonthExpenses(ctx interface{}) *ExpensesRepository_GetCurrentMonthExpenses_Call {
+	return &ExpensesRepository_GetCurrentMonthExpenses_Call{Call: _e.mock.On("GetCurrentMonthExpenses", ctx)}
+}
+
+func (_c *ExpensesRepository_GetCurrentMonthExpenses_Call) Run(run func(ctx context.Context)) *ExpensesRepository_GetCurrentMonthExpenses_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_GetCurrentMonthExpenses_Call) Return(_a0 *[]entities.Expense, _a1 error) *ExpensesRepository_GetCurrentMonthExpenses_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
 // Save provides a mock function with given fields: ctx, expense
 func (_m *ExpensesRepository) Save(ctx context.Context, expense *entities.Expense) error {
 	ret := _m.Called(ctx, expense)

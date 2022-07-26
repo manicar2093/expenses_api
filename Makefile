@@ -10,6 +10,9 @@ mocking:
 test:
 	@ dotenv -e test.env -- ginkgo ./...
 
+single_test:
+	@ dotenv -e test.env -- ginkgo $(FILE)
+
 lint:
 	@ golangci-lint run
 
