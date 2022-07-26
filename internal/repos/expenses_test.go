@@ -2,6 +2,7 @@ package repos_test
 
 import (
 	"context"
+	"time"
 
 	"github.com/bxcodec/faker/v3"
 	"github.com/manicar2093/expenses_api/internal/connections"
@@ -31,32 +32,50 @@ var _ = Describe("ExpensesImpl", func() {
 		conn.Drop(ctx)
 	})
 
-	It("saves an entities.Expense in database", func() {
+	Describe("Save", func() {
+		It("saves an entities.Expense in database", func() {
 
-		var (
-			expectedName        = faker.Name()
-			expectedAmount      = faker.Latitude()
-			expectedDescription = faker.Sentence()
-			expectedExpense     = entities.Expense{
-				Name:        expectedName,
-				Amount:      expectedAmount,
-				Description: expectedDescription,
+			var (
+				expectedName        = faker.Name()
+				expectedAmount      = faker.Latitude()
+				expectedDescription = faker.Sentence()
+				expectedExpense     = entities.Expense{
+					Name:        expectedName,
+					Amount:      expectedAmount,
+					Description: expectedDescription,
+				}
+			)
+
+			err := repo.Save(ctx, &expectedExpense)
+
+			var expenseRegistered entities.Expense
+			conn.Collection("expenses").FindOne(ctx, bson.M{"_id": expectedExpense.ID}).Decode(&expenseRegistered)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(expectedExpense.ID).To(BeAssignableToTypeOf(primitive.ObjectID{}))
+			Expect(expectedExpense.Day).ToNot(BeZero())
+			Expect(expectedExpense.Month).ToNot(BeZero())
+			Expect(expectedExpense.Year).ToNot(BeZero())
+			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
+			Expect(expectedExpense.CreatedAt).To(Equal(expenseRegistered.CreatedAt))
+			Expect(expectedExpense.UpdatedAt).To(BeNil())
+
+		})
+	})
+
+	Describe("GetExpensesByMonth", func() {
+		It("returns all expenses by current month", func() {
+			expenses_created := []interface{}{
+				bson.D{{Key: "month", Value: uint(time.July)}},
+				bson.D{{Key: "month", Value: uint(time.July)}},
+				bson.D{{Key: "month", Value: uint(time.July)}},
+				bson.D{{Key: "month", Value: uint(time.March)}},
 			}
-		)
+			conn.Collection("expenses").InsertMany(ctx, expenses_created)
+			got, err := repo.GetExpensesByMonth(ctx, time.July)
 
-		err := repo.Save(ctx, &expectedExpense)
-
-		var expenseRegistered entities.Expense
-		conn.Collection("expenses").FindOne(ctx, bson.M{"_id": expectedExpense.ID}).Decode(&expenseRegistered)
-
-		Expect(err).ToNot(HaveOccurred())
-		Expect(expectedExpense.ID).To(BeAssignableToTypeOf(primitive.ObjectID{}))
-		Expect(expectedExpense.Day).ToNot(BeZero())
-		Expect(expectedExpense.Month).ToNot(BeZero())
-		Expect(expectedExpense.Year).ToNot(BeZero())
-		Expect(expectedExpense.CreatedAt).ToNot(BeZero())
-		Expect(expectedExpense.CreatedAt).To(Equal(expenseRegistered.CreatedAt))
-		Expect(expectedExpense.UpdatedAt).To(BeNil())
-
+			Expect(err).ToNot(HaveOccurred())
+			Expect(*got).To(HaveLen(3))
+		})
 	})
 })

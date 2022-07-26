@@ -2,9 +2,11 @@ package repos
 
 import (
 	"context"
+	"time"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -12,6 +14,7 @@ import (
 type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
+		GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -36,4 +39,25 @@ func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Exp
 	}
 
 	return nil
+}
+
+func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error) {
+	cursor, err := c.coll.Find(ctx, bson.D{
+		{Key: "month", Value: month},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var response []entities.Expense
+
+	for cursor.Next(ctx) {
+		var entityTemp entities.Expense
+		if err := cursor.Decode(&entityTemp); err != nil {
+			return nil, err
+		}
+		response = append(response, entityTemp)
+	}
+
+	return &response, nil
 }

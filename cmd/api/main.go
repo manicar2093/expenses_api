@@ -7,17 +7,22 @@ import (
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/incomes"
+	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/dates"
 )
 
 var (
-	mongoConn = connections.GetMongoConn()
-	e         = echo.New() //nolint:varnamelen
+	mongoConn    = connections.GetMongoConn()
+	expensesRepo = repos.NewExpensesRepositoryImpl(mongoConn)
+	timeGetter   = dates.TimeGetter{}
+	e            = echo.New() //nolint:varnamelen
 )
 
 func main() {
 	expensesRoutes()
 	incomesRouter()
+	reportsRoutes()
 	e.Logger.Fatal(e.Start(":8000"))
 }
 
@@ -42,7 +47,6 @@ func incomesRouter() {
 
 func expensesRoutes() {
 	var (
-		expensesRepo  = repos.NewExpensesRepositoryImpl(mongoConn)
 		createExpense = expenses.NewCreateExpensesImpl(expensesRepo)
 		expensesGroup = e.Group("/expenses")
 	)
@@ -56,5 +60,20 @@ func expensesRoutes() {
 			return err
 		}
 		return ctx.JSON(http.StatusCreated, newExpense)
+	})
+}
+
+func reportsRoutes() {
+	var (
+		getCurrentMonth = reports.NewCurrentMonthDetailsImpl(expensesRepo, &timeGetter)
+		reportsGroup    = e.Group("/reports")
+	)
+
+	reportsGroup.GET("/current_month", func(ctx echo.Context) error {
+		currentMonthDetails, err := getCurrentMonth.GetExpenses(ctx.Request().Context())
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(http.StatusOK, currentMonthDetails)
 	})
 }
