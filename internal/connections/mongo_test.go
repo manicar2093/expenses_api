@@ -30,7 +30,7 @@ var _ = Describe("Mongo", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(res).ToNot(BeNil())
 
-			coll.Drop(ctx)
+			coll.Drop(ctx) //nolint: errcheck
 		})
 
 	})

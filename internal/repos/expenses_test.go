@@ -55,13 +55,13 @@ var _ = Describe("ExpensesImpl", func() {
 
 	Describe("GetExpensesByMonth", func() {
 		It("returns all expenses by current month", func() {
-			expenses_created := []interface{}{
+			expensesCreated := []interface{}{
 				bson.D{{Key: "month", Value: uint(time.July)}},
 				bson.D{{Key: "month", Value: uint(time.July)}},
 				bson.D{{Key: "month", Value: uint(time.July)}},
 				bson.D{{Key: "month", Value: uint(time.March)}},
 			}
-			inserted, _ := conn.Collection("expenses").InsertMany(ctx, expenses_created)
+			inserted, _ := conn.Collection("expenses").InsertMany(ctx, expensesCreated)
 			got, err := repo.GetExpensesByMonth(ctx, time.July)
 
 			Expect(err).ToNot(HaveOccurred())

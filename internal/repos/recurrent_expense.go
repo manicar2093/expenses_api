@@ -5,6 +5,7 @@ import (
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -12,6 +13,7 @@ import (
 type (
 	RecurrentExpenseRepo interface {
 		Save(ctx context.Context, recExpense *entities.RecurrentExpense) error
+		FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error)
 	}
 	RecurrentExpenseRepoImpl struct {
 		coll *mongo.Collection
@@ -29,7 +31,7 @@ func (c *RecurrentExpenseRepoImpl) Save(ctx context.Context, recExpense *entitie
 	createdAt := dates.GetNormalizedDate()
 	recExpense.CreatedAt = &createdAt
 	if _, err := c.coll.InsertOne(ctx, &recExpense); err != nil {
-		switch herr := err.(type) {
+		switch herr := err.(type) { //nolint: gocritic
 		case mongo.WriteException:
 			if herr.WriteErrors[0].Code == 11000 {
 				return &AlreadyExistsError{
@@ -41,4 +43,12 @@ func (c *RecurrentExpenseRepoImpl) Save(ctx context.Context, recExpense *entitie
 		return err
 	}
 	return nil
+}
+
+func (c *RecurrentExpenseRepoImpl) FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error) {
+	var result entities.RecurrentExpense
+	if err := c.coll.FindOne(ctx, bson.D{{Key: "name", Value: name}}).Decode(&result); err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
