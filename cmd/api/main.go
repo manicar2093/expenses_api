@@ -3,7 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/incomes"
@@ -20,6 +21,9 @@ var (
 )
 
 func main() {
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "method=${method}, uri=${uri}, status=${status}\n",
+	}))
 	expensesRoutes()
 	incomesRouter()
 	reportsRoutes()

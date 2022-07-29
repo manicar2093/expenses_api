@@ -5,6 +5,7 @@ import (
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/json"
 )
 
 type (
@@ -28,6 +29,7 @@ func NewCreateIncomeImpl(repo repos.IncomesRepository) *CreateIncomeImpl {
 }
 
 func (c *CreateIncomeImpl) Create(ctx context.Context, incomeInput *CreateIncomeInput) (*entities.Income, error) {
+	log.Println("Request: ", json.MustMarshall(incomeInput))
 	newIncome := entities.Income{
 		Name:        incomeInput.Name,
 		Amount:      incomeInput.Amount,
