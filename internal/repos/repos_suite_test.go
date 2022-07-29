@@ -1,6 +1,7 @@
 package repos_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/manicar2093/expenses_api/internal/connections"
@@ -15,4 +16,5 @@ var (
 func TestRepos(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Repos Suite")
+	conn.Drop(context.Background())
 }

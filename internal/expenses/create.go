@@ -34,6 +34,7 @@ func (c *CreateExpenseImpl) Create(ctx context.Context, expense *CreateExpenseIn
 		Name:        expense.Name,
 		Amount:      expense.Amount,
 		Description: expense.Description,
+		IsPaid:      true,
 	}
 	if err := c.expensesRepo.Save(ctx, &newExpense); err != nil {
 		return nil, err

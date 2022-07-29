@@ -46,6 +46,8 @@ var _ = Describe("ExpensesImpl", func() {
 			Expect(expectedExpense.Day).ToNot(BeZero())
 			Expect(expectedExpense.Month).ToNot(BeZero())
 			Expect(expectedExpense.Year).ToNot(BeZero())
+			Expect(expectedExpense.IsPaid).To(BeFalse())
+			Expect(expectedExpense.IsRecurrent).To(BeFalse())
 			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
 			Expect(expectedExpense.UpdatedAt).To(BeNil())
 
