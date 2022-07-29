@@ -6,6 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const RecurrentExpenseCollectonName = "recurrent_expenses"
+
 type RecurrentExpense struct {
 	ID          primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	Name        string             `json:"name,omitempty"`

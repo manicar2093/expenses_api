@@ -1,14 +1,16 @@
 run:
-	@ dotenv -- go run cmd/api/*.go
+	@ dotenv -e example.env -- go run cmd/api/*.go
 
 mocking:
 	@ mockery --all --with-expecter
 
 test:
-	@ dotenv -e test.env -- ginkgo ./...
-
-single_test:
-	@ dotenv -e test.env -- ginkgo $(FILE)
+	@ make push_mongo ENV=test
+ifdef FILE
+	@ dotenv -e test.env -- ginkgo $(FILE) -v
+else
+	@ dotenv -e test.env -- ginkgo ./... -v
+endif
 
 lint:
 	@ golangci-lint run
@@ -18,7 +20,7 @@ build_image:
 
 push_mongo:
 ifdef ENV
-	@ dotenv $($(ENV).env) -- npx prisma db push
+	@ dotenv -e $(ENV).env -- npx prisma db push
 else
-	@ dotenv -- npx prisma db push
+	@ dotenv -e example.env -- npx prisma db push
 endif
