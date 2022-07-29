@@ -1,6 +1,3 @@
-files_tests = `find ./specs -name "*.py"`
-files = `find ./src ./specs -name "*.py"`
-
 run:
 	@ dotenv -- go run cmd/api/*.go
 
@@ -20,4 +17,8 @@ build_image:
 	@ docker build -t expenses_api:latest .
 
 push_mongo:
+ifdef ENV
+	@ dotenv $($(ENV).env) -- npx prisma db push
+else
 	@ dotenv -- npx prisma db push
+endif
