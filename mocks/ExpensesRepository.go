@@ -8,6 +8,8 @@ import (
 	entities "github.com/manicar2093/expenses_api/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 
+	primitive "go.mongodb.org/mongo-driver/bson/primitive"
+
 	time "time"
 )
 
@@ -105,6 +107,45 @@ func (_c *ExpensesRepository_Save_Call) Run(run func(ctx context.Context, expens
 }
 
 func (_c *ExpensesRepository_Save_Call) Return(_a0 error) *ExpensesRepository_Save_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+// UpdateIsPaidByRecurrentExpenseID provides a mock function with given fields: ctx, id, status
+func (_m *ExpensesRepository) UpdateIsPaidByRecurrentExpenseID(ctx context.Context, id primitive.ObjectID, status bool) error {
+	ret := _m.Called(ctx, id, status)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, bool) error); ok {
+		r0 = rf(ctx, id, status)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateIsPaidByRecurrentExpenseID'
+type ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call struct {
+	*mock.Call
+}
+
+// UpdateIsPaidByRecurrentExpenseID is a helper method to define mock.On call
+//  - ctx context.Context
+//  - id primitive.ObjectID
+//  - status bool
+func (_e *ExpensesRepository_Expecter) UpdateIsPaidByRecurrentExpenseID(ctx interface{}, id interface{}, status interface{}) *ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call {
+	return &ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call{Call: _e.mock.On("UpdateIsPaidByRecurrentExpenseID", ctx, id, status)}
+}
+
+func (_c *ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call) Run(run func(ctx context.Context, id primitive.ObjectID, status bool)) *ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(primitive.ObjectID), args[2].(bool))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call) Return(_a0 error) *ExpensesRepository_UpdateIsPaidByRecurrentExpenseID_Call {
 	_c.Call.Return(_a0)
 	return _c
 }

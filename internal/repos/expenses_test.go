@@ -11,16 +11,20 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var _ = Describe("ExpensesImpl", func() {
 	var (
 		ctx  context.Context
+		coll *mongo.Collection
 		repo *repos.ExpensesRepositoryImpl
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
+		coll = conn.Collection("expenses")
 		repo = repos.NewExpensesRepositoryImpl(conn)
 
 	})
@@ -51,7 +55,7 @@ var _ = Describe("ExpensesImpl", func() {
 			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
 			Expect(expectedExpense.UpdatedAt).To(BeNil())
 
-			testfunc.DeleteOneByObjectID(ctx, conn.Collection("expenses"), expectedExpense.ID)
+			testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
 		})
 
 		When("createdAt is given set", func() {
@@ -81,7 +85,7 @@ var _ = Describe("ExpensesImpl", func() {
 				Expect(expectedExpense.CreatedAt).To(Equal(&expectedCreatedAt))
 				Expect(expectedExpense.UpdatedAt).To(BeNil())
 
-				testfunc.DeleteOneByObjectID(ctx, conn.Collection("expenses"), expectedExpense.ID)
+				testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
 			})
 		})
 	})
@@ -94,13 +98,38 @@ var _ = Describe("ExpensesImpl", func() {
 				bson.D{{Key: "month", Value: uint(time.July)}},
 				bson.D{{Key: "month", Value: uint(time.March)}},
 			}
-			inserted, _ := conn.Collection("expenses").InsertMany(ctx, expensesCreated)
+			inserted, _ := coll.InsertMany(ctx, expensesCreated)
 			got, err := repo.GetExpensesByMonth(ctx, time.July)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(*got).To(HaveLen(3))
 
-			testfunc.DeleteManyByObjectID(ctx, conn.Collection("expenses"), inserted)
+			testfunc.DeleteManyByObjectID(ctx, coll, inserted)
+		})
+	})
+
+	Describe("UpdateIsPaidByRecurrentExpenseID", func() {
+		It("change isPaid by given bool", func() {
+			var (
+				expectedName   = faker.Name()
+				expectedStatus = true
+				mockData       = entities.Expense{
+					Name:   expectedName,
+					IsPaid: expectedStatus,
+				}
+			)
+			inserted, _ := coll.InsertOne(ctx, mockData)
+			expectedID := inserted.InsertedID.(primitive.ObjectID)
+
+			err := repo.UpdateIsPaidByRecurrentExpenseID(ctx, expectedID, expectedStatus)
+
+			var changed entities.Expense
+			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedID}}).Decode(&changed)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(changed.Name).To(Equal(expectedName))
+			Expect(changed.IsPaid).To(Equal(expectedStatus))
+
+			testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
 		})
 	})
 })

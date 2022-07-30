@@ -15,6 +15,7 @@ type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error)
+		UpdateIsPaidByRecurrentExpenseID(ctx context.Context, id primitive.ObjectID, status bool) error
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -62,4 +63,19 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 	}
 
 	return &response, nil
+}
+
+func (c *ExpensesRepositoryImpl) UpdateIsPaidByRecurrentExpenseID(ctx context.Context, id primitive.ObjectID, status bool) error {
+	if _, err := c.coll.UpdateByID(ctx, id, bson.D{
+		{
+			Key: "$set",
+			Value: bson.D{
+				{Key: "is_paid", Value: status},
+			},
+		},
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }

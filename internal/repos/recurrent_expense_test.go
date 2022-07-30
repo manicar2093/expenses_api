@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
@@ -16,11 +17,13 @@ import (
 var _ = Describe("RecurrentExpense", func() {
 	var (
 		ctx  context.Context
+		coll *mongo.Collection
 		repo *repos.RecurrentExpenseRepoImpl
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
+		coll = conn.Collection("recurrent_expenses")
 		repo = repos.NewRecurrentExpenseRepoImpl(conn)
 
 	})
@@ -42,7 +45,7 @@ var _ = Describe("RecurrentExpense", func() {
 			Expect(toSave.CreatedAt).ToNot(BeZero())
 			Expect(toSave.UpdatedAt).To(BeNil())
 
-			testfunc.DeleteOneByObjectID(ctx, conn.Collection("recurrent_expenses"), toSave.ID)
+			testfunc.DeleteOneByObjectID(ctx, coll, toSave.ID)
 		})
 
 		When("recurrent expense exists", func() {
@@ -68,7 +71,6 @@ var _ = Describe("RecurrentExpense", func() {
 				Expect(err.(*repos.AlreadyExistsError).Entity).To(Equal("RecurrentExpense"))
 				Expect(err.(*repos.AlreadyExistsError).Identifier).To(Equal(Saved.Name))
 
-				coll := conn.Collection("recurrent_expenses")
 				testfunc.DeleteOneByObjectID(ctx, coll, Saved.ID)
 				testfunc.DeleteOneByObjectID(ctx, coll, toSave.ID)
 			})
@@ -78,7 +80,6 @@ var _ = Describe("RecurrentExpense", func() {
 	Describe("FindByName", func() {
 		It("returns a pointer of found data", func() {
 			var (
-				coll         = conn.Collection("recurrent_expenses")
 				expectedName = faker.Name()
 				dataSaved    = []interface{}{
 					bson.D{{Key: "name", Value: expectedName}},
@@ -96,4 +97,5 @@ var _ = Describe("RecurrentExpense", func() {
 			testfunc.DeleteManyByObjectID(ctx, coll, inserted)
 		})
 	})
+
 })
