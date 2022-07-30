@@ -53,6 +53,37 @@ var _ = Describe("ExpensesImpl", func() {
 
 			testfunc.DeleteOneByObjectID(ctx, conn.Collection("expenses"), expectedExpense.ID)
 		})
+
+		When("createdAt is given set", func() {
+			It("respects given time", func() {
+				var (
+					expectedName        = faker.Name()
+					expectedAmount      = faker.Latitude()
+					expectedDescription = faker.Sentence()
+					expectedCreatedAt   = time.Date(2022, time.August, 0, 0, 0, 0, 0, time.Local)
+					expectedExpense     = entities.Expense{
+						Name:        expectedName,
+						Amount:      expectedAmount,
+						Description: expectedDescription,
+						CreatedAt:   &expectedCreatedAt,
+					}
+				)
+
+				err := repo.Save(ctx, &expectedExpense)
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(expectedExpense.ID.String()).ToNot(BeEmpty())
+				Expect(expectedExpense.Day).ToNot(BeZero())
+				Expect(expectedExpense.Month).ToNot(BeZero())
+				Expect(expectedExpense.Year).ToNot(BeZero())
+				Expect(expectedExpense.IsPaid).To(BeFalse())
+				Expect(expectedExpense.IsRecurrent).To(BeFalse())
+				Expect(expectedExpense.CreatedAt).To(Equal(&expectedCreatedAt))
+				Expect(expectedExpense.UpdatedAt).To(BeNil())
+
+				testfunc.DeleteOneByObjectID(ctx, conn.Collection("expenses"), expectedExpense.ID)
+			})
+		})
 	})
 
 	Describe("GetExpensesByMonth", func() {

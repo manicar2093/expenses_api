@@ -56,3 +56,39 @@ func (_c *TimeGetable_GetCurrentTime_Call) Return(_a0 time.Time) *TimeGetable_Ge
 	_c.Call.Return(_a0)
 	return _c
 }
+
+// GetNextMonthAtFirtsDay provides a mock function with given fields:
+func (_m *TimeGetable) GetNextMonthAtFirtsDay() time.Time {
+	ret := _m.Called()
+
+	var r0 time.Time
+	if rf, ok := ret.Get(0).(func() time.Time); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(time.Time)
+	}
+
+	return r0
+}
+
+// TimeGetable_GetNextMonthAtFirtsDay_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetNextMonthAtFirtsDay'
+type TimeGetable_GetNextMonthAtFirtsDay_Call struct {
+	*mock.Call
+}
+
+// GetNextMonthAtFirtsDay is a helper method to define mock.On call
+func (_e *TimeGetable_Expecter) GetNextMonthAtFirtsDay() *TimeGetable_GetNextMonthAtFirtsDay_Call {
+	return &TimeGetable_GetNextMonthAtFirtsDay_Call{Call: _e.mock.On("GetNextMonthAtFirtsDay")}
+}
+
+func (_c *TimeGetable_GetNextMonthAtFirtsDay_Call) Run(run func()) *TimeGetable_GetNextMonthAtFirtsDay_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *TimeGetable_GetNextMonthAtFirtsDay_Call) Return(_a0 time.Time) *TimeGetable_GetNextMonthAtFirtsDay_Call {
+	_c.Call.Return(_a0)
+	return _c
+}

@@ -27,12 +27,14 @@ func NewExpensesRepositoryImpl(coll *mongo.Database) *ExpensesRepositoryImpl {
 
 func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Expense) error {
 	expense.ID = primitive.NewObjectID()
-	createdAt := dates.GetNormalizedDate()
-	expense.CreatedAt = &createdAt
+	if expense.CreatedAt == nil {
+		createdAt := dates.GetNormalizedDate()
+		expense.CreatedAt = &createdAt
+	}
 
-	expense.Day = uint(createdAt.Day())
-	expense.Month = uint(createdAt.Month())
-	expense.Year = uint(createdAt.Year())
+	expense.Day = uint(expense.CreatedAt.Day())
+	expense.Month = uint(expense.CreatedAt.Month())
+	expense.Year = uint(expense.CreatedAt.Year())
 
 	if _, err := c.coll.InsertOne(ctx, expense); err != nil {
 		return err
