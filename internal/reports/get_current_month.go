@@ -10,9 +10,14 @@ import (
 
 type (
 	CurrentMonthDetailsOutput struct {
-		TotalAmount   float64             `json:"total_amount,omitempty"`
-		TotalExpenses uint                `json:"total_expenses,omitempty"`
-		Expenses      *[]entities.Expense `json:"expenses,omitempty"`
+		TotalPaidAmount     float64            `json:"total_paid_amount,omitempty"`
+		TotalUnpaidAmount   float64            `json:"total_unpaid_amount,omitempty"`
+		ExpensesCount       uint               `json:"expenses_count,omitempty"`
+		PaidExpensesCount   uint               `json:"paid_expenses_count,omitempty"`
+		UnpaidExpensesCount uint               `json:"unpaid_expenses_count,omitempty"`
+		Expenses            []entities.Expense `json:"expenses,omitempty"`
+		PaidExpenses        []entities.Expense `json:"paid_expenses,omitempty"`
+		UnpaidExpenses      []entities.Expense `json:"unpaid_expenses,omitempty"`
 	}
 	CurrentMonthDetailsGettable interface {
 		GetExpenses(ctx context.Context) (*CurrentMonthDetailsOutput, error)
@@ -28,22 +33,36 @@ func NewCurrentMonthDetailsImpl(repo repos.ExpensesRepository, timeGetter dates.
 }
 
 func (c *CurrentMonthDetails) GetExpenses(ctx context.Context) (*CurrentMonthDetailsOutput, error) {
-	currentExpenses, err := c.repo.GetExpensesByMonth(ctx, c.timeGetter.GetCurrentTime().Month())
+	monthExpenses, err := c.repo.GetExpensesByMonth(ctx, c.timeGetter.GetCurrentTime().Month())
 	if err != nil {
 		return nil, err
 	}
 
-	return &CurrentMonthDetailsOutput{
-		TotalAmount:   c.calculateTotalAmount(currentExpenses),
-		TotalExpenses: uint(len(*currentExpenses)),
-		Expenses:      currentExpenses,
-	}, nil
-}
+	var (
+		paidExpenses   []entities.Expense
+		unpaidExpenses []entities.Expense
+		totalPaid      float64
+		totalUnpaid    float64
+	)
 
-func (c *CurrentMonthDetails) calculateTotalAmount(expenses *[]entities.Expense) float64 {
-	var total float64
-	for _, v := range *expenses {
-		total += v.Amount
+	for _, expense := range *monthExpenses {
+		if expense.IsPaid {
+			paidExpenses = append(paidExpenses, expense)
+			totalPaid += expense.Amount
+			continue
+		}
+		unpaidExpenses = append(unpaidExpenses, expense)
+		totalUnpaid += expense.Amount
 	}
-	return total
+
+	return &CurrentMonthDetailsOutput{
+		TotalPaidAmount:     totalPaid,
+		TotalUnpaidAmount:   totalUnpaid,
+		ExpensesCount:       uint(len(*monthExpenses)),
+		PaidExpensesCount:   uint(len(paidExpenses)),
+		UnpaidExpensesCount: uint(len(unpaidExpenses)),
+		Expenses:            *monthExpenses,
+		PaidExpenses:        paidExpenses,
+		UnpaidExpenses:      unpaidExpenses,
+	}, nil
 }
