@@ -26,7 +26,12 @@ func (c AlreadyExistsError) StatusCode() int {
 }
 
 func (c NotFoundError) Error() string {
-	return fmt.Sprintf("record for entity '%s' with identifier '%s' already exists", c.Entity, c.Identifier)
+	return fmt.Sprintf(
+		"record for entity '%s' with identifier '%s' not found: %s",
+		c.Entity,
+		c.Identifier,
+		c.Message,
+	)
 }
 
 func (c NotFoundError) StatusCode() int {

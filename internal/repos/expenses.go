@@ -15,7 +15,7 @@ type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error)
-		UpdateIsPaidByExpenseID(ctx context.Context, id primitive.ObjectID, status bool) error
+		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -65,9 +65,9 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 	return &response, nil
 }
 
-func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, id primitive.ObjectID, status bool) error {
+func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error {
 	var (
-		filter   = bson.D{{Key: "_id", Value: id}, {Key: "is_recurrent", Value: true}}
+		filter   = bson.D{{Key: "_id", Value: expenseID}, {Key: "is_recurrent", Value: true}}
 		updating = bson.D{
 			{
 				Key:   "$set",
@@ -81,7 +81,7 @@ func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, id
 	case err != nil:
 		return err
 	case res.MatchedCount == 0:
-		return &NotFoundError{Identifier: id, Entity: "Expense", Message: "it is not recurrent expense"}
+		return &NotFoundError{Identifier: expenseID.Hex(), Entity: "Expense", Message: "it is not recurrent expense"}
 	default:
 		return nil
 	}
