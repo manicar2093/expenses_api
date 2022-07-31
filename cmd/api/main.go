@@ -105,7 +105,8 @@ func recurrentExpensesRoutes() {
 			expensesRepo,
 			&timeGetter,
 		)
-		recurrentExpenseGroup = e.Group("/recurrent_expenses")
+		getAllRecurrentExpenses = recurrentexpenses.NewGetAllRecurrentExpensesImpl(recurrentExpensesRepo)
+		recurrentExpenseGroup   = e.Group("/recurrent_expenses")
 	)
 
 	recurrentExpenseGroup.POST("", func(ctx echo.Context) error {
@@ -118,5 +119,13 @@ func recurrentExpensesRoutes() {
 			return errors.CreateResponseFromError(ctx, err)
 		}
 		return ctx.JSON(http.StatusCreated, res)
+	})
+
+	recurrentExpenseGroup.GET("/all", func(ctx echo.Context) error {
+		res, err := getAllRecurrentExpenses.GetAll(ctx.Request().Context())
+		if err != nil {
+			return errors.CreateResponseFromError(ctx, err)
+		}
+		return ctx.JSON(http.StatusOK, res)
 	})
 }
