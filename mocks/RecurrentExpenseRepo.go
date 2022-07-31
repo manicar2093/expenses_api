@@ -22,6 +22,52 @@ func (_m *RecurrentExpenseRepo) EXPECT() *RecurrentExpenseRepo_Expecter {
 	return &RecurrentExpenseRepo_Expecter{mock: &_m.Mock}
 }
 
+// FindAll provides a mock function with given fields: ctx
+func (_m *RecurrentExpenseRepo) FindAll(ctx context.Context) (*[]entities.RecurrentExpense, error) {
+	ret := _m.Called(ctx)
+
+	var r0 *[]entities.RecurrentExpense
+	if rf, ok := ret.Get(0).(func(context.Context) *[]entities.RecurrentExpense); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]entities.RecurrentExpense)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// RecurrentExpenseRepo_FindAll_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindAll'
+type RecurrentExpenseRepo_FindAll_Call struct {
+	*mock.Call
+}
+
+// FindAll is a helper method to define mock.On call
+//  - ctx context.Context
+func (_e *RecurrentExpenseRepo_Expecter) FindAll(ctx interface{}) *RecurrentExpenseRepo_FindAll_Call {
+	return &RecurrentExpenseRepo_FindAll_Call{Call: _e.mock.On("FindAll", ctx)}
+}
+
+func (_c *RecurrentExpenseRepo_FindAll_Call) Run(run func(ctx context.Context)) *RecurrentExpenseRepo_FindAll_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *RecurrentExpenseRepo_FindAll_Call) Return(_a0 *[]entities.RecurrentExpense, _a1 error) *RecurrentExpenseRepo_FindAll_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
 // FindByName provides a mock function with given fields: ctx, name
 func (_m *RecurrentExpenseRepo) FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error) {
 	ret := _m.Called(ctx, name)

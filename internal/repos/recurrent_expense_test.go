@@ -98,4 +98,25 @@ var _ = Describe("RecurrentExpense", func() {
 		})
 	})
 
+	Describe("FindAll", func() {
+		It("gets all registered recurrent expenses", func() {
+			var (
+				dataSaved = []interface{}{
+					bson.D{{Key: "name", Value: faker.Name()}},
+					bson.D{{Key: "name", Value: faker.Name()}},
+					bson.D{{Key: "name", Value: faker.Name()}},
+					bson.D{{Key: "name", Value: faker.Name()}},
+					bson.D{{Key: "name", Value: faker.Name()}},
+				}
+			)
+			inserted, _ := coll.InsertMany(ctx, dataSaved)
+
+			got, err := repo.FindAll(ctx)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(*got).To(HaveLen(len(dataSaved)))
+
+			testfunc.DeleteManyByObjectID(ctx, coll, inserted)
+		})
+	})
 })
