@@ -32,12 +32,14 @@ var _ = Describe("GetAll", func() {
 			expectedRepoReturn = []entities.RecurrentExpense{
 				{}, {}, {},
 			}
+			expectedRecurrentExpensesCount = uint(len(expectedRepoReturn))
 		)
 		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(&expectedRepoReturn, nil)
 
 		got, err := api.GetAll(ctx)
 
 		Expect(err).ToNot(HaveOccurred())
-		Expect(*got).To(HaveLen(len(expectedRepoReturn)))
+		Expect(got.RecurrenteExpensesCount).To(Equal(expectedRecurrentExpensesCount))
+		Expect(got.RecurrentExpenses).To(Equal(expectedRepoReturn))
 	})
 })
