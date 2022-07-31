@@ -2,6 +2,7 @@ package repos_test
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/bxcodec/faker/v3"
@@ -108,20 +109,21 @@ var _ = Describe("ExpensesImpl", func() {
 		})
 	})
 
-	Describe("UpdateIsPaidByRecurrentExpenseID", func() {
+	Describe("UpdateIsPaidByExpenseID", func() {
 		It("change isPaid by given bool", func() {
 			var (
 				expectedName   = faker.Name()
 				expectedStatus = true
 				mockData       = entities.Expense{
-					Name:   expectedName,
-					IsPaid: expectedStatus,
+					Name:        expectedName,
+					IsRecurrent: true,
+					IsPaid:      expectedStatus,
 				}
 			)
 			inserted, _ := coll.InsertOne(ctx, mockData)
 			expectedID := inserted.InsertedID.(primitive.ObjectID)
 
-			err := repo.UpdateIsPaidByRecurrentExpenseID(ctx, expectedID, expectedStatus)
+			err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, expectedStatus)
 
 			var changed entities.Expense
 			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedID}}).Decode(&changed)
@@ -130,6 +132,28 @@ var _ = Describe("ExpensesImpl", func() {
 			Expect(changed.IsPaid).To(Equal(expectedStatus))
 
 			testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
+		})
+
+		When("expense is not recurrent", func() {
+			It("returns a NotFoundError", func() {
+				var (
+					expectedName   = faker.Name()
+					expectedStatus = true
+					mockData       = entities.Expense{
+						Name:   expectedName,
+						IsPaid: expectedStatus,
+					}
+				)
+				inserted, _ := coll.InsertOne(ctx, mockData)
+				expectedID := inserted.InsertedID.(primitive.ObjectID)
+
+				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, expectedStatus)
+
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+
+				testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
+			})
 		})
 	})
 })

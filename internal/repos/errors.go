@@ -7,7 +7,12 @@ import (
 
 type (
 	AlreadyExistsError struct {
-		Identifier string
+		Identifier interface{}
+		Entity     string
+	}
+	NotFoundError struct {
+		Identifier interface{}
+		Message    string
 		Entity     string
 	}
 )
@@ -18,4 +23,12 @@ func (c AlreadyExistsError) Error() string {
 
 func (c AlreadyExistsError) StatusCode() int {
 	return http.StatusBadRequest
+}
+
+func (c NotFoundError) Error() string {
+	return fmt.Sprintf("record for entity '%s' with identifier '%s' already exists", c.Entity, c.Identifier)
+}
+
+func (c NotFoundError) StatusCode() int {
+	return http.StatusNotFound
 }
