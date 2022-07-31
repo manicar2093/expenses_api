@@ -55,8 +55,9 @@ func incomesRouter() {
 
 func expensesRoutes() {
 	var (
-		createExpense = expenses.NewCreateExpensesImpl(expensesRepo)
-		expensesGroup = e.Group("/expenses")
+		createExpense    = expenses.NewCreateExpensesImpl(expensesRepo)
+		setExpenseToPaid = expenses.NewSetExpenseToPaidImpl(expensesRepo)
+		expensesGroup    = e.Group("/expenses")
 	)
 	expensesGroup.POST("", func(ctx echo.Context) error {
 		var expenseRequest expenses.CreateExpenseInput
@@ -68,6 +69,17 @@ func expensesRoutes() {
 			return errors.CreateResponseFromError(ctx, err)
 		}
 		return ctx.JSON(http.StatusCreated, newExpense)
+	})
+
+	expensesGroup.POST("/to_paid", func(ctx echo.Context) error {
+		var request expenses.SetExpenseToPaidInput
+		if err := ctx.Bind(&request); err != nil {
+			return errors.CreateResponseFromError(ctx, err)
+		}
+		if err := setExpenseToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil {
+			return errors.CreateResponseFromError(ctx, err)
+		}
+		return ctx.NoContent(http.StatusOK)
 	})
 }
 
