@@ -26,6 +26,10 @@ var _ = Describe("CreateImpl", func() {
 		api = incomes.NewCreateIncomeImpl(incomesRepoMock)
 	})
 
+	AfterEach(func() {
+		incomesRepoMock.AssertExpectations(GinkgoT())
+	})
+
 	It("create an entities.Incomes from schema", func() {
 		var (
 			expectedName        = faker.Name()

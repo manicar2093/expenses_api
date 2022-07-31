@@ -30,28 +30,49 @@ var _ = Describe("GetCurrentMonth", func() {
 		service = reports.NewCurrentMonthDetailsImpl(expensesRepoMock, timeGetterMock)
 	})
 
+	AfterEach(func() {
+		T := GinkgoT()
+		expensesRepoMock.AssertExpectations(T)
+		timeGetterMock.AssertExpectations(T)
+	})
+
 	It("returns expenses data", func() {
 		// should return expenses quantity and total amount
 		var (
-			expectedAmount1    = 231.90
-			expectedAmount2    = 123.90
-			expectedAmount3    = 321.90
-			expectedRepoReturn = []entities.Expense{
-				{Amount: expectedAmount1, Month: uint(time.July)},
-				{Amount: expectedAmount2, Month: uint(time.July)},
-				{Amount: expectedAmount3, Month: uint(time.July)},
+			expectedPaidAmount1  = 231.90
+			expectedPaidAmount2  = 123.90
+			expectedPaidAmount3  = 321.90
+			expectedPaidExpenses = []entities.Expense{
+				{Amount: expectedPaidAmount1, Month: uint(time.July), IsRecurrent: false, IsPaid: true},
+				{Amount: expectedPaidAmount2, Month: uint(time.July), IsRecurrent: false, IsPaid: true},
+				{Amount: expectedPaidAmount3, Month: uint(time.July), IsRecurrent: true, IsPaid: true},
 			}
-			expectedExpensesCount = uint(len(expectedRepoReturn))
-			expectedTotalAmount   = expectedAmount1 + expectedAmount2 + expectedAmount3
+			expectedUnpaidAmount1  = 234.90
+			expectedUnpaidAmount2  = 345.90
+			expectedUnpaidExpenses = []entities.Expense{
+				{Amount: expectedUnpaidAmount1, Month: uint(time.July), IsRecurrent: true, IsPaid: false},
+				{Amount: expectedUnpaidAmount2, Month: uint(time.July), IsRecurrent: true, IsPaid: false},
+			}
+			expectedTotalPaidAmount     = expectedPaidAmount1 + expectedPaidAmount2 + expectedPaidAmount3
+			expectedTotalUnpaidAmount   = expectedUnpaidAmount1 + expectedUnpaidAmount2
+			expectedRepoReturn          = append(expectedPaidExpenses, expectedUnpaidExpenses...)
+			expectedTotalExpenses       = uint(len(expectedRepoReturn))
+			expectedPaidExpensesCount   = uint(len(expectedPaidExpenses))
+			expectedUnpaidExpensesCount = uint(len(expectedUnpaidExpenses))
 		)
 		expensesRepoMock.EXPECT().GetExpensesByMonth(ctx, time.July).Return(&expectedRepoReturn, nil)
 
 		got, err := service.GetExpenses(ctx)
 
 		Expect(err).ToNot(HaveOccurred())
-		Expect(got.TotalAmount).To(Equal(expectedTotalAmount))
-		Expect(got.TotalExpenses).To(Equal(expectedExpensesCount))
-		Expect(got.Expenses).To(Equal(&expectedRepoReturn))
+		Expect(got.TotalPaidAmount).To(Equal(expectedTotalPaidAmount))
+		Expect(got.TotalUnpaidAmount).To(Equal(expectedTotalUnpaidAmount))
+		Expect(got.ExpensesCount).To(Equal(expectedTotalExpenses))
+		Expect(got.PaidExpensesCount).To(Equal(expectedPaidExpensesCount))
+		Expect(got.UnpaidExpensesCount).To(Equal(expectedUnpaidExpensesCount))
+		Expect(got.Expenses).To(Equal(expectedRepoReturn))
+		Expect(got.PaidExpenses).To(Equal(expectedPaidExpenses))
+		Expect(got.UnpaidExpenses).To(Equal(expectedUnpaidExpenses))
 	})
 
 })

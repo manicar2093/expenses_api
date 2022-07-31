@@ -45,6 +45,8 @@ var _ = Describe("CreateImpl", func() {
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,
+				IsPaid:      true,
+				IsRecurrent: false,
 			}
 		)
 		expenseRepoMock.EXPECT().Save(ctx, &expectedExpenseToSave).Return(nil)

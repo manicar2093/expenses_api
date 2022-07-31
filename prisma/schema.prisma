@@ -17,6 +17,8 @@ model Expense {
   day Int
   month Int
   year Int
+  is_recurrent Boolean
+  is_paid Boolean
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
 
@@ -34,4 +36,15 @@ model Incomes {
   updated_at DateTime? @updatedAt
 
   @@map("incomes")
+}
+
+model RecurrentExpense {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String @unique
+  amount Float
+  description String
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("recurrent_expenses")
 }

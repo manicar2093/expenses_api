@@ -22,10 +22,6 @@ var _ = Describe("Mongo", func() {
 			ctx = context.TODO()
 		})
 
-		AfterEach(func() {
-			conn.Drop(ctx) //nolint: errcheck
-		})
-
 		It("Should connect successfully", func() {
 			conn = connections.GetMongoConn()
 			coll = conn.Collection("testing_connection")
@@ -33,6 +29,8 @@ var _ = Describe("Mongo", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(res).ToNot(BeNil())
+
+			coll.Drop(ctx) //nolint: errcheck
 		})
 
 	})

@@ -8,6 +8,8 @@ import (
 	entities "github.com/manicar2093/expenses_api/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 
+	primitive "go.mongodb.org/mongo-driver/bson/primitive"
+
 	time "time"
 )
 
@@ -105,6 +107,45 @@ func (_c *ExpensesRepository_Save_Call) Run(run func(ctx context.Context, expens
 }
 
 func (_c *ExpensesRepository_Save_Call) Return(_a0 error) *ExpensesRepository_Save_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+// UpdateIsPaidByExpenseID provides a mock function with given fields: ctx, expenseID, status
+func (_m *ExpensesRepository) UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error {
+	ret := _m.Called(ctx, expenseID, status)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID, bool) error); ok {
+		r0 = rf(ctx, expenseID, status)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// ExpensesRepository_UpdateIsPaidByExpenseID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateIsPaidByExpenseID'
+type ExpensesRepository_UpdateIsPaidByExpenseID_Call struct {
+	*mock.Call
+}
+
+// UpdateIsPaidByExpenseID is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenseID primitive.ObjectID
+//  - status bool
+func (_e *ExpensesRepository_Expecter) UpdateIsPaidByExpenseID(ctx interface{}, expenseID interface{}, status interface{}) *ExpensesRepository_UpdateIsPaidByExpenseID_Call {
+	return &ExpensesRepository_UpdateIsPaidByExpenseID_Call{Call: _e.mock.On("UpdateIsPaidByExpenseID", ctx, expenseID, status)}
+}
+
+func (_c *ExpensesRepository_UpdateIsPaidByExpenseID_Call) Run(run func(ctx context.Context, expenseID primitive.ObjectID, status bool)) *ExpensesRepository_UpdateIsPaidByExpenseID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(primitive.ObjectID), args[2].(bool))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_UpdateIsPaidByExpenseID_Call) Return(_a0 error) *ExpensesRepository_UpdateIsPaidByExpenseID_Call {
 	_c.Call.Return(_a0)
 	return _c
 }

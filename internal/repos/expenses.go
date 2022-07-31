@@ -15,6 +15,7 @@ type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error)
+		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -27,12 +28,14 @@ func NewExpensesRepositoryImpl(coll *mongo.Database) *ExpensesRepositoryImpl {
 
 func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Expense) error {
 	expense.ID = primitive.NewObjectID()
-	createdAt := dates.GetNormalizedDate()
-	expense.CreatedAt = &createdAt
+	if expense.CreatedAt == nil {
+		createdAt := dates.GetNormalizedDate()
+		expense.CreatedAt = &createdAt
+	}
 
-	expense.Day = uint(createdAt.Day())
-	expense.Month = uint(createdAt.Month())
-	expense.Year = uint(createdAt.Year())
+	expense.Day = uint(expense.CreatedAt.Day())
+	expense.Month = uint(expense.CreatedAt.Month())
+	expense.Year = uint(expense.CreatedAt.Year())
 
 	if _, err := c.coll.InsertOne(ctx, expense); err != nil {
 		return err
@@ -60,4 +63,26 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 	}
 
 	return &response, nil
+}
+
+func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error {
+	var (
+		filter   = bson.D{{Key: "_id", Value: expenseID}, {Key: "is_recurrent", Value: true}}
+		updating = bson.D{
+			{
+				Key:   "$set",
+				Value: bson.D{{Key: "is_paid", Value: status}},
+			},
+		}
+	)
+
+	res, err := c.coll.UpdateOne(ctx, filter, updating)
+	switch {
+	case err != nil:
+		return err
+	case res.MatchedCount == 0:
+		return &NotFoundError{Identifier: expenseID.Hex(), Entity: "Expense", Message: "it is not recurrent expense"}
+	default:
+		return nil
+	}
 }
