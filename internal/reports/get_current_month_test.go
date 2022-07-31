@@ -30,6 +30,12 @@ var _ = Describe("GetCurrentMonth", func() {
 		service = reports.NewCurrentMonthDetailsImpl(expensesRepoMock, timeGetterMock)
 	})
 
+	AfterEach(func() {
+		T := GinkgoT()
+		expensesRepoMock.AssertExpectations(T)
+		timeGetterMock.AssertExpectations(T)
+	})
+
 	It("returns expenses data", func() {
 		// should return expenses quantity and total amount
 		var (

@@ -24,6 +24,11 @@ var _ = Describe("SetExpenseToPaid", func() {
 		ctx = context.Background()
 		api = expenses.NewSetExpenseToPaidImpl(expensesRepoMock)
 	})
+
+	AfterEach(func() {
+		expensesRepoMock.AssertExpectations(GinkgoT())
+	})
+
 	It("change expense to paid", func() {
 		var (
 			expectedID = primitive.NewObjectID().Hex()
