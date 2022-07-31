@@ -7,9 +7,9 @@ mocking:
 test:
 	@ make push_mongo ENV=test
 ifdef FILE
-	@ dotenv -e test.env -- ginkgo $(FILE) -v
+	@ dotenv -e test.env -- ginkgo $(FILE)
 else
-	@ dotenv -e test.env -- ginkgo ./... -v
+	@ dotenv -e test.env -- ginkgo -v ./...
 endif
 
 lint:
