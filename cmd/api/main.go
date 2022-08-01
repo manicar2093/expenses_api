@@ -19,7 +19,7 @@ var (
 	mongoConn             = connections.GetMongoConn()
 	expensesRepo          = repos.NewExpensesRepositoryImpl(mongoConn)
 	recurrentExpensesRepo = repos.NewRecurrentExpenseRepoImpl(mongoConn)
-	timeGetter            = dates.TimeGetter{}
+	timeGetter            = &dates.TimeGetter{}
 	e                     = echo.New() //nolint:varnamelen
 )
 
@@ -55,7 +55,7 @@ func incomesRouter() {
 
 func expensesRoutes() {
 	var (
-		createExpense    = expenses.NewCreateExpensesImpl(expensesRepo)
+		createExpense    = expenses.NewCreateExpensesImpl(expensesRepo, timeGetter)
 		setExpenseToPaid = expenses.NewSetExpenseToPaidImpl(expensesRepo)
 		expensesGroup    = e.Group("/expenses")
 	)
@@ -85,7 +85,7 @@ func expensesRoutes() {
 
 func reportsRoutes() {
 	var (
-		getCurrentMonth = reports.NewCurrentMonthDetailsImpl(expensesRepo, &timeGetter)
+		getCurrentMonth = reports.NewCurrentMonthDetailsImpl(expensesRepo, timeGetter)
 		reportsGroup    = e.Group("/reports")
 	)
 
@@ -103,7 +103,7 @@ func recurrentExpensesRoutes() {
 		createRecurrentExpense = recurrentexpenses.NewCreateRecurrentExpenseImpl(
 			recurrentExpensesRepo,
 			expensesRepo,
-			&timeGetter,
+			timeGetter,
 		)
 		getAllRecurrentExpenses = recurrentexpenses.NewGetAllRecurrentExpensesImpl(recurrentExpensesRepo)
 		recurrentExpenseGroup   = e.Group("/recurrent_expenses")
