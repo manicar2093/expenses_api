@@ -2,6 +2,7 @@ package expenses
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
@@ -42,6 +43,12 @@ func (c *CreateExpenseImpl) Create(ctx context.Context, expense *CreateExpenseIn
 	}
 	if expense.ForNextMonth {
 		nextMonthTime := c.timeGetter.GetNextMonthAtFirtsDay()
+		today := c.timeGetter.GetCurrentTime()
+		newExpense.Description = fmt.Sprintf(
+			"%s\n\nFecha de registro: %s",
+			newExpense.Description,
+			today.Format("02/01/2006"),
+		)
 		newExpense.CreatedAt = &nextMonthTime
 	}
 	if err := c.expensesRepo.Save(ctx, newExpense); err != nil {
