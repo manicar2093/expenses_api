@@ -156,4 +156,45 @@ var _ = Describe("ExpensesImpl", func() {
 			})
 		})
 	})
+
+	Describe("FindByNameAndIsRecurrent", func() {
+		It("finds a expense that is recurrent by its name", func() {
+			var (
+				expectedExpenseName = faker.Name()
+				expectedMockData    = []interface{}{
+					entities.Expense{Name: expectedExpenseName, IsRecurrent: true},
+					entities.Expense{Name: faker.Name(), IsRecurrent: true},
+					entities.Expense{Name: faker.Name(), IsRecurrent: false},
+				}
+			)
+			inserted, _ := coll.InsertMany(ctx, expectedMockData)
+			defer testfunc.DeleteManyByObjectID(ctx, coll, inserted)
+
+			got, err := repo.FindByNameAndIsRecurrent(ctx, expectedExpenseName)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got.Name).To(Equal(expectedExpenseName))
+			Expect(got.IsRecurrent).To(BeTrue())
+		})
+
+		When("expense does not exist", func() {
+			It("return an repos.NotFoundError", func() {
+				var (
+					expectedExpenseName = faker.Name()
+					expectedMockData    = []interface{}{
+						entities.Expense{Name: faker.Name(), IsRecurrent: true},
+						entities.Expense{Name: faker.Name(), IsRecurrent: true},
+						entities.Expense{Name: faker.Name(), IsRecurrent: false},
+					}
+				)
+				inserted, _ := coll.InsertMany(ctx, expectedMockData)
+				defer testfunc.DeleteManyByObjectID(ctx, coll, inserted)
+
+				got, err := repo.FindByNameAndIsRecurrent(ctx, expectedExpenseName)
+
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(got).To(BeNil())
+			})
+		})
+	})
 })

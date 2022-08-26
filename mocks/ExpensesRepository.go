@@ -26,6 +26,53 @@ func (_m *ExpensesRepository) EXPECT() *ExpensesRepository_Expecter {
 	return &ExpensesRepository_Expecter{mock: &_m.Mock}
 }
 
+// FindByNameAndIsRecurrent provides a mock function with given fields: ctx, expenseName
+func (_m *ExpensesRepository) FindByNameAndIsRecurrent(ctx context.Context, expenseName string) (*entities.Expense, error) {
+	ret := _m.Called(ctx, expenseName)
+
+	var r0 *entities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entities.Expense); ok {
+		r0 = rf(ctx, expenseName)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.Expense)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, expenseName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExpensesRepository_FindByNameAndIsRecurrent_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByNameAndIsRecurrent'
+type ExpensesRepository_FindByNameAndIsRecurrent_Call struct {
+	*mock.Call
+}
+
+// FindByNameAndIsRecurrent is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenseName string
+func (_e *ExpensesRepository_Expecter) FindByNameAndIsRecurrent(ctx interface{}, expenseName interface{}) *ExpensesRepository_FindByNameAndIsRecurrent_Call {
+	return &ExpensesRepository_FindByNameAndIsRecurrent_Call{Call: _e.mock.On("FindByNameAndIsRecurrent", ctx, expenseName)}
+}
+
+func (_c *ExpensesRepository_FindByNameAndIsRecurrent_Call) Run(run func(ctx context.Context, expenseName string)) *ExpensesRepository_FindByNameAndIsRecurrent_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_FindByNameAndIsRecurrent_Call) Return(_a0 *entities.Expense, _a1 error) *ExpensesRepository_FindByNameAndIsRecurrent_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
 // GetExpensesByMonth provides a mock function with given fields: ctx, month
 func (_m *ExpensesRepository) GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error) {
 	ret := _m.Called(ctx, month)
