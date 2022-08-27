@@ -10,7 +10,11 @@ import (
 
 type (
 	CreateMonthlyRecurrentExpenses interface {
-		CreateMonthlyRecurrentExpenses(ctx context.Context) error
+		CreateMonthlyRecurrentExpenses(ctx context.Context) (*CreateMonthlyRecurrentExpensesOutput, error)
+	}
+
+	CreateMonthlyRecurrentExpensesOutput struct {
+		ExpensesCreated []entities.Expense `json:"expenses_created,omitempty"`
 	}
 	CreateMonthlyRecurrentExpensesImpl struct {
 		recurrentExpensesRepo repos.RecurrentExpenseRepo
@@ -31,34 +35,38 @@ func NewCreateMonthlyRecurrentExpensesImpl(
 	}
 }
 
-func (c *CreateMonthlyRecurrentExpensesImpl) CreateMonthlyRecurrentExpenses(ctx context.Context) error {
+func (c *CreateMonthlyRecurrentExpensesImpl) CreateMonthlyRecurrentExpenses(ctx context.Context) (*CreateMonthlyRecurrentExpensesOutput, error) {
 	allRecurrentExpensesRegistered, err := c.recurrentExpensesRepo.FindAll(ctx)
+	log.Printf("%v+", allRecurrentExpensesRegistered)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	nextMonthDay := c.timeGetable.GetNextMonthAtFirtsDay()
+	nextMonthDate := c.timeGetable.GetNextMonthAtFirtsDay()
+	nextMonthAsUint := uint(nextMonthDate.Month())
+	var expensesCreated []entities.Expense
 	for _, recurrentExpense := range *allRecurrentExpensesRegistered {
-		_, err := c.expensesRepo.FindByNameAndIsRecurrent(ctx, recurrentExpense.Name)
+		_, err := c.expensesRepo.FindByNameAndMonthAndIsRecurrent(ctx, nextMonthAsUint, recurrentExpense.Name)
 		if err != nil {
 			_, isNotFound := err.(*repos.NotFoundError)
 			if isNotFound {
-
 				expenseToSave := entities.Expense{
 					Name:        recurrentExpense.Name,
 					Description: recurrentExpense.Description,
 					Amount:      recurrentExpense.Amount,
 					IsRecurrent: true,
-					CreatedAt:   &nextMonthDay,
+					CreatedAt:   &nextMonthDate,
 				}
 				if err := c.expensesRepo.Save(ctx, &expenseToSave); err != nil {
-					return err
+					return nil, err
 				}
+				expensesCreated = append(expensesCreated, expenseToSave)
 				continue
 			}
 		}
-
 	}
 
-	return nil
+	return &CreateMonthlyRecurrentExpensesOutput{
+		ExpensesCreated: expensesCreated,
+	}, nil
 }

@@ -135,9 +135,10 @@ func recurrentExpensesRoutes() {
 	})
 
 	recurrentExpenseGroup.POST("/monthly_expenses", func(ctx echo.Context) error {
-		if err := createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context()); err != nil {
+		got, err := createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context())
+		if err != nil {
 			return errors.CreateResponseFromError(ctx, err)
 		}
-		return ctx.NoContent(http.StatusOK)
+		return ctx.JSON(http.StatusOK, got)
 	})
 }

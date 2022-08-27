@@ -110,5 +110,4 @@ func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Co
 	}
 
 	return found, nil
-
 }
