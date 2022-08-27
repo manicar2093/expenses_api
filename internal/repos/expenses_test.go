@@ -157,12 +157,12 @@ var _ = Describe("ExpensesImpl", func() {
 		})
 	})
 
-	Describe("FindByNameAndIsRecurrent", func() {
+	Describe("FindByNameAndMonthAndIsRecurrent", func() {
 		It("finds a expense that is recurrent by its name", func() {
 			var (
 				expectedExpenseName = faker.Name()
 				expectedMockData    = []interface{}{
-					entities.Expense{Name: expectedExpenseName, IsRecurrent: true},
+					entities.Expense{Name: expectedExpenseName, IsRecurrent: true, Month: 8},
 					entities.Expense{Name: faker.Name(), IsRecurrent: true},
 					entities.Expense{Name: faker.Name(), IsRecurrent: false},
 				}
@@ -170,7 +170,7 @@ var _ = Describe("ExpensesImpl", func() {
 			inserted, _ := coll.InsertMany(ctx, expectedMockData)
 			defer testfunc.DeleteManyByObjectID(ctx, coll, inserted)
 
-			got, err := repo.FindByNameAndIsRecurrent(ctx, expectedExpenseName)
+			got, err := repo.FindByNameAndMonthAndIsRecurrent(ctx, 8, expectedExpenseName)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Name).To(Equal(expectedExpenseName))
@@ -182,7 +182,7 @@ var _ = Describe("ExpensesImpl", func() {
 				var (
 					expectedExpenseName = faker.Name()
 					expectedMockData    = []interface{}{
-						entities.Expense{Name: faker.Name(), IsRecurrent: true},
+						entities.Expense{Name: expectedExpenseName, IsRecurrent: true},
 						entities.Expense{Name: faker.Name(), IsRecurrent: true},
 						entities.Expense{Name: faker.Name(), IsRecurrent: false},
 					}
@@ -190,7 +190,7 @@ var _ = Describe("ExpensesImpl", func() {
 				inserted, _ := coll.InsertMany(ctx, expectedMockData)
 				defer testfunc.DeleteManyByObjectID(ctx, coll, inserted)
 
-				got, err := repo.FindByNameAndIsRecurrent(ctx, expectedExpenseName)
+				got, err := repo.FindByNameAndMonthAndIsRecurrent(ctx, 8, expectedExpenseName)
 
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(got).To(BeNil())

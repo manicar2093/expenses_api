@@ -16,7 +16,7 @@ type (
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
-		FindByNameAndIsRecurrent(ctx context.Context, expenseName string) (*entities.Expense, error)
+		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -88,9 +88,9 @@ func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, ex
 	}
 }
 
-func (c *ExpensesRepositoryImpl) FindByNameAndIsRecurrent(ctx context.Context, expenseName string) (*entities.Expense, error) {
+func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
 	var (
-		filter = bson.D{{Key: "name", Value: expenseName}, {Key: "is_recurrent", Value: true}}
+		filter = bson.D{{Key: "name", Value: expenseName}, {Key: "is_recurrent", Value: true}, {Key: "month", Value: month}}
 		found  = new(entities.Expense)
 	)
 
