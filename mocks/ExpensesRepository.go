@@ -26,6 +26,54 @@ func (_m *ExpensesRepository) EXPECT() *ExpensesRepository_Expecter {
 	return &ExpensesRepository_Expecter{mock: &_m.Mock}
 }
 
+// FindByNameAndMonthAndIsRecurrent provides a mock function with given fields: ctx, month, expenseName
+func (_m *ExpensesRepository) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
+	ret := _m.Called(ctx, month, expenseName)
+
+	var r0 *entities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context, uint, string) *entities.Expense); ok {
+		r0 = rf(ctx, month, expenseName)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.Expense)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, uint, string) error); ok {
+		r1 = rf(ctx, month, expenseName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByNameAndMonthAndIsRecurrent'
+type ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call struct {
+	*mock.Call
+}
+
+// FindByNameAndMonthAndIsRecurrent is a helper method to define mock.On call
+//  - ctx context.Context
+//  - month uint
+//  - expenseName string
+func (_e *ExpensesRepository_Expecter) FindByNameAndMonthAndIsRecurrent(ctx interface{}, month interface{}, expenseName interface{}) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
+	return &ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call{Call: _e.mock.On("FindByNameAndMonthAndIsRecurrent", ctx, month, expenseName)}
+}
+
+func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Run(run func(ctx context.Context, month uint, expenseName string)) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uint), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *entities.Expense, _a1 error) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
 // GetExpensesByMonth provides a mock function with given fields: ctx, month
 func (_m *ExpensesRepository) GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error) {
 	ret := _m.Called(ctx, month)

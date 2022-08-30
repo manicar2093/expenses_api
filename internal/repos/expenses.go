@@ -16,6 +16,7 @@ type (
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
+		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -85,4 +86,28 @@ func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, ex
 	default:
 		return nil
 	}
+}
+
+func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
+	var (
+		filter = bson.D{{Key: "name", Value: expenseName}, {Key: "is_recurrent", Value: true}, {Key: "month", Value: month}}
+		found  = new(entities.Expense)
+	)
+
+	res := c.coll.FindOne(ctx, filter)
+	if res.Err() != nil {
+		err := res.Err()
+		switch {
+		case err.Error() == "mongo: no documents in result":
+			return nil, &NotFoundError{Identifier: expenseName, Entity: "Recurrent Expense", Message: err.Error()}
+		default:
+			return nil, err
+		}
+	}
+
+	if err := res.Decode(&found); err != nil {
+		return nil, err
+	}
+
+	return found, nil
 }
