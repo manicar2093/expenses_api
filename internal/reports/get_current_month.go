@@ -10,14 +10,14 @@ import (
 
 type (
 	CurrentMonthDetailsOutput struct {
-		TotalPaidAmount     float64            `json:"total_paid_amount,omitempty"`
-		TotalUnpaidAmount   float64            `json:"total_unpaid_amount,omitempty"`
-		ExpensesCount       uint               `json:"expenses_count,omitempty"`
-		PaidExpensesCount   uint               `json:"paid_expenses_count,omitempty"`
-		UnpaidExpensesCount uint               `json:"unpaid_expenses_count,omitempty"`
-		Expenses            []entities.Expense `json:"expenses,omitempty"`
-		PaidExpenses        []entities.Expense `json:"paid_expenses,omitempty"`
-		UnpaidExpenses      []entities.Expense `json:"unpaid_expenses,omitempty"`
+		TotalPaidAmount     float64            `json:"total_paid_amount"`
+		TotalUnpaidAmount   float64            `json:"total_unpaid_amount"`
+		ExpensesCount       uint               `json:"expenses_count"`
+		PaidExpensesCount   uint               `json:"paid_expenses_count"`
+		UnpaidExpensesCount uint               `json:"unpaid_expenses_count"`
+		Expenses            []entities.Expense `json:"expenses"`
+		PaidExpenses        []entities.Expense `json:"paid_expenses"`
+		UnpaidExpenses      []entities.Expense `json:"unpaid_expenses"`
 	}
 	CurrentMonthDetailsGettable interface {
 		GetExpenses(ctx context.Context) (*CurrentMonthDetailsOutput, error)
@@ -39,8 +39,8 @@ func (c *CurrentMonthDetails) GetExpenses(ctx context.Context) (*CurrentMonthDet
 	}
 
 	var (
-		paidExpenses   []entities.Expense
-		unpaidExpenses []entities.Expense
+		paidExpenses   = []entities.Expense{}
+		unpaidExpenses = []entities.Expense{}
 		totalPaid      float64
 		totalUnpaid    float64
 	)
