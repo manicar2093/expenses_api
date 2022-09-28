@@ -1,3 +1,9 @@
+## v2.4.0 (2022-09-28)
+
+### Feat
+
+- Add controllers package (#30)
+
 ## v2.3.0 (2022-09-28)
 
 ### Feat
