@@ -5,6 +5,7 @@ import (
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/converters"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 )
 
@@ -56,8 +57,8 @@ func (c *CurrentMonthDetails) GetExpenses(ctx context.Context) (*CurrentMonthDet
 	}
 
 	return &CurrentMonthDetailsOutput{
-		TotalPaidAmount:     totalPaid,
-		TotalUnpaidAmount:   totalUnpaid,
+		TotalPaidAmount:     converters.Round(totalPaid),
+		TotalUnpaidAmount:   converters.Round(totalUnpaid),
 		ExpensesCount:       uint(len(*monthExpenses)),
 		PaidExpensesCount:   uint(len(paidExpenses)),
 		UnpaidExpensesCount: uint(len(unpaidExpenses)),

@@ -37,7 +37,6 @@ var _ = Describe("GetCurrentMonth", func() {
 	})
 
 	It("returns expenses data", func() {
-		// should return expenses quantity and total amount
 		var (
 			expectedPaidAmount1  = 231.90
 			expectedPaidAmount2  = 123.90
