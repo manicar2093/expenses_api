@@ -41,14 +41,14 @@ var _ = Describe("GetCurrentMonth", func() {
 			expectedPaidAmount1  = 231.90
 			expectedPaidAmount2  = 123.90
 			expectedPaidAmount3  = 321.90
-			expectedPaidExpenses = []entities.Expense{
+			expectedPaidExpenses = []*entities.Expense{
 				{Amount: expectedPaidAmount1, Month: uint(time.July), IsRecurrent: false, IsPaid: true},
 				{Amount: expectedPaidAmount2, Month: uint(time.July), IsRecurrent: false, IsPaid: true},
 				{Amount: expectedPaidAmount3, Month: uint(time.July), IsRecurrent: true, IsPaid: true},
 			}
 			expectedUnpaidAmount1  = 234.90
 			expectedUnpaidAmount2  = 345.90
-			expectedUnpaidExpenses = []entities.Expense{
+			expectedUnpaidExpenses = []*entities.Expense{
 				{Amount: expectedUnpaidAmount1, Month: uint(time.July), IsRecurrent: true, IsPaid: false},
 				{Amount: expectedUnpaidAmount2, Month: uint(time.July), IsRecurrent: true, IsPaid: false},
 			}
@@ -59,7 +59,7 @@ var _ = Describe("GetCurrentMonth", func() {
 			expectedPaidExpensesCount   = uint(len(expectedPaidExpenses))
 			expectedUnpaidExpensesCount = uint(len(expectedUnpaidExpenses))
 		)
-		expensesRepoMock.EXPECT().GetExpensesByMonth(ctx, time.July).Return(&expectedRepoReturn, nil)
+		expensesRepoMock.EXPECT().GetExpensesByMonth(ctx, time.July).Return(expectedRepoReturn, nil)
 
 		got, err := service.GetExpenses(ctx)
 
