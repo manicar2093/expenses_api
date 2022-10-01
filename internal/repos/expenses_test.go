@@ -103,9 +103,19 @@ var _ = Describe("ExpensesImpl", func() {
 			got, err := repo.GetExpensesByMonth(ctx, time.July)
 
 			Expect(err).ToNot(HaveOccurred())
-			Expect(*got).To(HaveLen(3))
+			Expect(got).To(HaveLen(3))
+			Expect(got[0]).To(BeAssignableToTypeOf(&entities.Expense{}))
 
 			testfunc.DeleteManyByObjectID(ctx, coll, inserted)
+		})
+		When("There is no data saved", func() {
+			It("returns an empty slice", func() {
+				got, err := repo.GetExpensesByMonth(ctx, time.July)
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(got).To(HaveLen(0))
+
+			})
 		})
 	})
 

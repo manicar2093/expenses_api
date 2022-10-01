@@ -14,7 +14,7 @@ import (
 type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
-		GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error)
+		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
 	}
@@ -45,7 +45,7 @@ func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Exp
 	return nil
 }
 
-func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error) {
+func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error) {
 	cursor, err := c.coll.Find(ctx, bson.D{
 		{Key: "month", Value: month},
 	})
@@ -53,17 +53,17 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 		return nil, err
 	}
 
-	var response []entities.Expense
+	response := make([]*entities.Expense, 0)
 
 	for cursor.Next(ctx) {
 		var entityTemp entities.Expense
 		if err := cursor.Decode(&entityTemp); err != nil {
 			return nil, err
 		}
-		response = append(response, entityTemp)
+		response = append(response, &entityTemp)
 	}
 
-	return &response, nil
+	return response, nil
 }
 
 func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error {
