@@ -1,3 +1,9 @@
+## v2.4.1 (2022-10-03)
+
+### Fix
+
+- recurrent month expenses return null (#31)
+
 ## v2.4.0 (2022-09-28)
 
 ### Feat
