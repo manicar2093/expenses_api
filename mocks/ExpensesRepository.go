@@ -75,15 +75,15 @@ func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *
 }
 
 // GetExpensesByMonth provides a mock function with given fields: ctx, month
-func (_m *ExpensesRepository) GetExpensesByMonth(ctx context.Context, month time.Month) (*[]entities.Expense, error) {
+func (_m *ExpensesRepository) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error) {
 	ret := _m.Called(ctx, month)
 
-	var r0 *[]entities.Expense
-	if rf, ok := ret.Get(0).(func(context.Context, time.Month) *[]entities.Expense); ok {
+	var r0 []*entities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context, time.Month) []*entities.Expense); ok {
 		r0 = rf(ctx, month)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]entities.Expense)
+			r0 = ret.Get(0).([]*entities.Expense)
 		}
 	}
 
@@ -116,7 +116,7 @@ func (_c *ExpensesRepository_GetExpensesByMonth_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *ExpensesRepository_GetExpensesByMonth_Call) Return(_a0 *[]entities.Expense, _a1 error) *ExpensesRepository_GetExpensesByMonth_Call {
+func (_c *ExpensesRepository_GetExpensesByMonth_Call) Return(_a0 []*entities.Expense, _a1 error) *ExpensesRepository_GetExpensesByMonth_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
