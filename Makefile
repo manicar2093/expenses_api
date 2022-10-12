@@ -1,3 +1,5 @@
+TAG=`git describe --always --tags | cut -c 2-`
+
 run:
 	@ dotenv -e example.env -- go run cmd/api/*.go
 
@@ -16,7 +18,8 @@ lint:
 	@ golangci-lint run
 
 build_image:
-	@ docker build -t expenses_api:latest .
+	@ docker build . -t expenses_api:latest
+	@ docker build . -t "expenses_api:$(TAG)"
 
 push_mongo:
 ifdef ENV
