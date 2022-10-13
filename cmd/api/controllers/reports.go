@@ -21,6 +21,13 @@ func (c *ReportsController) Register() {
 	c.group.GET("/current_month", c.currentMonth)
 }
 
+// @Summary     Get current month details
+// @Description Generates current month general details
+// @Tags        reports
+// @Produce     json
+// @Success     200
+// @Failure     500
+// @Router      /reports/current_month [get]
 func (c *ReportsController) currentMonth(ctx echo.Context) error {
 	currentMonthDetails, err := c.getCurrentMonth.GetExpenses(ctx.Request().Context())
 	if err != nil {

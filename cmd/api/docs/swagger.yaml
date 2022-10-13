@@ -1,0 +1,165 @@
+definitions:
+  entities.Expense:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      day:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      is_paid:
+        type: boolean
+      is_recurrent:
+        type: boolean
+      month:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      year:
+        type: integer
+    type: object
+  expenses.CreateExpenseInput:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+      for_next_month:
+        type: boolean
+      name:
+        type: string
+    type: object
+  expenses.SetExpenseToPaidInput:
+    properties:
+      id:
+        type: string
+    type: object
+  recurrentexpenses.CreateRecurrentExpenseInput:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a sample server Petstore server.
+  title: Expenses API
+  version: "1.0"
+paths:
+  /expenses:
+    post:
+      consumes:
+      - application/json
+      description: Register a expense into the database
+      parameters:
+      - description: Expense to be created
+        in: body
+        name: create_expense
+        required: true
+        schema:
+          $ref: '#/definitions/expenses.CreateExpenseInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Expense'
+        "500":
+          description: Internal Server Error
+      summary: Create an expense
+      tags:
+      - expenses
+  /expenses/to_paid:
+    post:
+      consumes:
+      - application/json
+      description: Change a expense is_paid status
+      parameters:
+      - description: ID to change to is paid
+        in: body
+        name: expense_id
+        required: true
+        schema:
+          $ref: '#/definitions/expenses.SetExpenseToPaidInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Set expense to paid
+      tags:
+      - expenses
+  /recurrent_expenses:
+    post:
+      consumes:
+      - application/json
+      description: Register into db a recurrent expense
+      parameters:
+      - description: Recurrent Expense
+        in: body
+        name: recurrent_expense
+        required: true
+        schema:
+          $ref: '#/definitions/recurrentexpenses.CreateRecurrentExpenseInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "500":
+          description: Internal Server Error
+      summary: Create a recurrent expense
+      tags:
+      - recurrent expenses
+  /recurrent_expenses/all:
+    get:
+      description: Finds all recurrent expenses registered in db
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Get all recurrent expense
+      tags:
+      - recurrent expenses
+  /recurrent_expenses/monthly_expenses:
+    post:
+      description: Register expenses from all recurrent expenses for current month
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Create expenses from all recurrent expenses into db
+      tags:
+      - recurrent expenses
+  /reports/current_month:
+    get:
+      description: Generates current month general details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Get current month details
+      tags:
+      - reports
+swagger: "2.0"

@@ -45,7 +45,27 @@ jobs:
         run: |
           go mod download
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+          go install github.com/swaggo/swag/cmd/swag@latest
           npm install -g dotenv-cli
           npm i --include=dev
       - name: Tests
         run: make test
+
+  docs:
+    name: Check docs integrity
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18.x
+    - run: go env -w GOBIN=/usr/local/bin
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+        go mod download
+        go install github.com/swaggo/swag/cmd/swag@latest
+        make fmt
+    - name: Gen docs
+      run: make gen_swag
