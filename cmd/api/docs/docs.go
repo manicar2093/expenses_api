@@ -55,18 +55,20 @@ const docTemplate = `{
         },
         "/expenses/to_paid": {
             "post": {
-                "description": "get string by ID",
+                "description": "Change a expense is_paid status",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "expenses"
+                ],
                 "summary": "Set expense to paid",
-                "operationId": "get-string-by-int",
                 "parameters": [
                     {
-                        "description": "Some ID",
+                        "description": "ID to change to is paid",
                         "name": "expense_id",
                         "in": "body",
                         "required": true,
@@ -78,6 +80,83 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/recurrent_expenses": {
+            "post": {
+                "description": "Register into db a recurrent expense",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recurrent expenses"
+                ],
+                "summary": "Create a recurrent expense",
+                "parameters": [
+                    {
+                        "description": "Recurrent Expense",
+                        "name": "recurrent_expense",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/recurrentexpenses.CreateRecurrentExpenseInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/recurrent_expenses/all": {
+            "get": {
+                "description": "Finds all recurrent expenses registered in db",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recurrent expenses"
+                ],
+                "summary": "Get all recurrent expense",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/recurrent_expenses/monthly_expenses": {
+            "post": {
+                "description": "Generates current month general details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recurrent expenses"
+                ],
+                "summary": "Get current month details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -143,6 +222,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "recurrentexpenses.CreateRecurrentExpenseInput": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

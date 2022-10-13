@@ -40,6 +40,15 @@ definitions:
       id:
         type: string
     type: object
+  recurrentexpenses.CreateRecurrentExpenseInput:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact: {}
   description: This is a sample server Petstore server.
@@ -74,10 +83,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: get string by ID
-      operationId: get-string-by-int
+      description: Change a expense is_paid status
       parameters:
-      - description: Some ID
+      - description: ID to change to is paid
         in: body
         name: expense_id
         required: true
@@ -88,5 +96,57 @@ paths:
       responses:
         "200":
           description: OK
+        "500":
+          description: Internal Server Error
       summary: Set expense to paid
+      tags:
+      - expenses
+  /recurrent_expenses:
+    post:
+      consumes:
+      - application/json
+      description: Register into db a recurrent expense
+      parameters:
+      - description: Recurrent Expense
+        in: body
+        name: recurrent_expense
+        required: true
+        schema:
+          $ref: '#/definitions/recurrentexpenses.CreateRecurrentExpenseInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Create a recurrent expense
+      tags:
+      - recurrent expenses
+  /recurrent_expenses/all:
+    get:
+      description: Finds all recurrent expenses registered in db
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Get all recurrent expense
+      tags:
+      - recurrent expenses
+  /recurrent_expenses/monthly_expenses:
+    post:
+      description: Generates current month general details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Get current month details
+      tags:
+      - recurrent expenses
 swagger: "2.0"

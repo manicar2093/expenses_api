@@ -30,3 +30,7 @@ endif
 
 gen_swag:
 	@ swag init --dir cmd/api --output cmd/api/docs --parseInternal --parseDependency --parseDepth 1
+
+fmt:
+	@ go fmt ./...
+	@ swag fmt
