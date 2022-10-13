@@ -73,7 +73,7 @@ func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, res)
 }
 
-// @Summary     Create all recurrent expenses into db
+// @Summary     Create expenses from all recurrent expenses into db
 // @Description Register expenses from all recurrent expenses for current month
 // @Tags        recurrent expenses
 // @Produce     json

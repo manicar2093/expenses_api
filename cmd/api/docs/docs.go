@@ -112,8 +112,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "201": {
+                        "description": "Created"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -143,12 +143,32 @@ const docTemplate = `{
         },
         "/recurrent_expenses/monthly_expenses": {
             "post": {
-                "description": "Generates current month general details",
+                "description": "Register expenses from all recurrent expenses for current month",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "recurrent expenses"
+                ],
+                "summary": "Create expenses from all recurrent expenses into db",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/reports/current_month": {
+            "get": {
+                "description": "Generates current month general details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reports"
                 ],
                 "summary": "Get current month details",
                 "responses": {

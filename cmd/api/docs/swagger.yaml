@@ -116,8 +116,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
         "500":
           description: Internal Server Error
       summary: Create a recurrent expense
@@ -138,6 +138,19 @@ paths:
       - recurrent expenses
   /recurrent_expenses/monthly_expenses:
     post:
+      description: Register expenses from all recurrent expenses for current month
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Create expenses from all recurrent expenses into db
+      tags:
+      - recurrent expenses
+  /reports/current_month:
+    get:
       description: Generates current month general details
       produces:
       - application/json
@@ -148,5 +161,5 @@ paths:
           description: Internal Server Error
       summary: Get current month details
       tags:
-      - recurrent expenses
+      - reports
 swagger: "2.0"
