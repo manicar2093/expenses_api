@@ -1,0 +1,92 @@
+definitions:
+  entities.Expense:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      day:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      is_paid:
+        type: boolean
+      is_recurrent:
+        type: boolean
+      month:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      year:
+        type: integer
+    type: object
+  expenses.CreateExpenseInput:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+      for_next_month:
+        type: boolean
+      name:
+        type: string
+    type: object
+  expenses.SetExpenseToPaidInput:
+    properties:
+      id:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a sample server Petstore server.
+  title: Expenses API
+  version: "1.0"
+paths:
+  /expenses:
+    post:
+      consumes:
+      - application/json
+      description: Register a expense into the database
+      parameters:
+      - description: Expense to be created
+        in: body
+        name: create_expense
+        required: true
+        schema:
+          $ref: '#/definitions/expenses.CreateExpenseInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Expense'
+        "500":
+          description: Internal Server Error
+      summary: Create an expense
+      tags:
+      - expenses
+  /expenses/to_paid:
+    post:
+      consumes:
+      - application/json
+      description: get string by ID
+      operationId: get-string-by-int
+      parameters:
+      - description: Some ID
+        in: body
+        name: expense_id
+        required: true
+        schema:
+          $ref: '#/definitions/expenses.SetExpenseToPaidInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Set expense to paid
+swagger: "2.0"

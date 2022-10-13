@@ -4,12 +4,15 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/manicar2093/expenses_api/cmd/api/controllers"
+	_ "github.com/manicar2093/expenses_api/cmd/api/docs"
 	"github.com/manicar2093/expenses_api/internal/connections"
+	_ "github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 var (
@@ -48,6 +51,9 @@ var (
 	e = echo.New() //nolint:varnamelen
 )
 
+// @title       Expenses API
+// @version     1.0
+// @description This is a sample server Petstore server.
 func main() {
 	configEcho()
 	registerControllers()
@@ -55,6 +61,7 @@ func main() {
 }
 
 func configEcho() {
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
