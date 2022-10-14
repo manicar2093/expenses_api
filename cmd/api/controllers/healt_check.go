@@ -37,7 +37,7 @@ func (c *HealthCheckController) Register() {
 // @Description It does a ping to db and returns service version
 // @Tags        healt check
 // @Produce     json
-// @Success     202            {object} HealthCheckOutput
+// @Success     202 {object} HealthCheckOutput
 // @Failure     424 {object} HealthCheckOutput
 // @Failure     500
 // @Router      /health_check [get]
