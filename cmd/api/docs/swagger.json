@@ -1,7 +1,6 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample server Petstore server.",
         "title": "Expenses API",
         "contact": {},
         "version": "1.0"
@@ -71,6 +70,35 @@
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/health_check": {
+            "get": {
+                "description": "It does a ping to db and returns service version",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healt check"
+                ],
+                "summary": "Checks service health",
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.HealthCheckOutput"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.HealthCheckOutput"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -174,6 +202,17 @@
         }
     },
     "definitions": {
+        "controllers.HealthCheckOutput": {
+            "type": "object",
+            "properties": {
+                "no_sqldb_status": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.Expense": {
             "type": "object",
             "properties": {

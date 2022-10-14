@@ -82,4 +82,9 @@ func registerControllers() {
 		getCurrentMonth,
 		e,
 	).Register()
+	controllers.NewHealthCheckController(
+		mongoConn.Client(),
+		e,
+	).Register()
+
 }
