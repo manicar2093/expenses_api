@@ -4,6 +4,7 @@ name = "cz_conventional_commits"
 version = "2.5.0"
 tag_format = "v$version"
 version_files = [
-    ".cz.toml:version"
+    ".cz.toml:version",
+    "pkg/versioning/version.go:Version"
 ]
 bump_message = "bump: Semantic Release Bot: Realease Version: $new_version 🤖🚀 [skip ci]"
