@@ -1,3 +1,9 @@
+## v2.7.0 (2022-10-14)
+
+### Feat
+
+- Add health check endpoint (#49)
+
 ## v2.6.0 (2022-10-14)
 
 ### Feat
