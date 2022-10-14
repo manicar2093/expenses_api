@@ -1,3 +1,9 @@
+## v2.6.0 (2022-10-14)
+
+### Feat
+
+- Add version_file to .cz.toml
+
 ## v2.5.0 (2022-10-14)
 
 ### Feat
