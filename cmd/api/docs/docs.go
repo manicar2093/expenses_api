@@ -87,6 +87,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/health_check": {
+            "get": {
+                "description": "It does a ping to db and returns service version",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healt check"
+                ],
+                "summary": "Checks service health",
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.HealthCheckOutput"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.HealthCheckOutput"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/recurrent_expenses": {
             "post": {
                 "description": "Register into db a recurrent expense",
@@ -183,6 +212,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.HealthCheckOutput": {
+            "type": "object",
+            "properties": {
+                "no_sqldb_status": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.Expense": {
             "type": "object",
             "properties": {
@@ -270,7 +310,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Expenses API",
-	Description:      "This is a sample server Petstore server.",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

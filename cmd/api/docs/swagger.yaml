@@ -1,4 +1,11 @@
 definitions:
+  controllers.HealthCheckOutput:
+    properties:
+      no_sqldb_status:
+        type: string
+      version:
+        type: string
+    type: object
   entities.Expense:
     properties:
       amount:
@@ -51,7 +58,6 @@ definitions:
     type: object
 info:
   contact: {}
-  description: This is a sample server Petstore server.
   title: Expenses API
   version: "1.0"
 paths:
@@ -101,6 +107,25 @@ paths:
       summary: Set expense to paid
       tags:
       - expenses
+  /health_check:
+    get:
+      description: It does a ping to db and returns service version
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/controllers.HealthCheckOutput'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/controllers.HealthCheckOutput'
+        "500":
+          description: Internal Server Error
+      summary: Checks service health
+      tags:
+      - healt check
   /recurrent_expenses:
     post:
       consumes:

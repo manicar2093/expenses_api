@@ -51,8 +51,8 @@ var (
 	e = echo.New() //nolint:varnamelen
 )
 
-// @title       Expenses API
-// @version     1.0
+// @title   Expenses API
+// @version 1.0
 func main() {
 	configEcho()
 	registerControllers()
@@ -80,6 +80,10 @@ func registerControllers() {
 	).Register()
 	controllers.NewReportsController(
 		getCurrentMonth,
+		e,
+	).Register()
+	controllers.NewHealthCheckController(
+		mongoConn.Client(),
 		e,
 	).Register()
 }
