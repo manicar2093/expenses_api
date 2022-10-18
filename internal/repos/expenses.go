@@ -19,9 +19,9 @@ type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
-		UpdateIsPaidByExpenseID(ctx context.Context, expenseID string, status bool) error
+		UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
-		GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error)
+		GetExpenseStatusByID(ctx context.Context, expenseID interface{}) (*schemas.ExpenseIDWithIsPaidStatus, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -71,7 +71,7 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 	return response, nil
 }
 
-func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID string, status bool) error {
+func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error {
 	expenseObjectID, err := converters.TurnToObjectID(expenseID)
 	if err != nil {
 		return err
@@ -121,7 +121,7 @@ func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Co
 	return found, nil
 }
 
-func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expenseID interface{}) (*schemas.ExpenseIDWithIsPaidStatus, error) {
 	expenseObjectID, err := converters.TurnToObjectID(expenseID)
 	if err != nil {
 		return nil, err

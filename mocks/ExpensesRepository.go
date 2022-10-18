@@ -75,11 +75,11 @@ func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *
 }
 
 // GetExpenseStatusByID provides a mock function with given fields: ctx, expenseID
-func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID interface{}) (*schemas.ExpenseIDWithIsPaidStatus, error) {
 	ret := _m.Called(ctx, expenseID)
 
 	var r0 *schemas.ExpenseIDWithIsPaidStatus
-	if rf, ok := ret.Get(0).(func(context.Context, string) *schemas.ExpenseIDWithIsPaidStatus); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}) *schemas.ExpenseIDWithIsPaidStatus); ok {
 		r0 = rf(ctx, expenseID)
 	} else {
 		if ret.Get(0) != nil {
@@ -88,7 +88,7 @@ func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseI
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, interface{}) error); ok {
 		r1 = rf(ctx, expenseID)
 	} else {
 		r1 = ret.Error(1)
@@ -104,14 +104,14 @@ type ExpensesRepository_GetExpenseStatusByID_Call struct {
 
 // GetExpenseStatusByID is a helper method to define mock.On call
 //  - ctx context.Context
-//  - expenseID string
+//  - expenseID interface{}
 func (_e *ExpensesRepository_Expecter) GetExpenseStatusByID(ctx interface{}, expenseID interface{}) *ExpensesRepository_GetExpenseStatusByID_Call {
 	return &ExpensesRepository_GetExpenseStatusByID_Call{Call: _e.mock.On("GetExpenseStatusByID", ctx, expenseID)}
 }
 
-func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Run(run func(ctx context.Context, expenseID string)) *ExpensesRepository_GetExpenseStatusByID_Call {
+func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Run(run func(ctx context.Context, expenseID interface{})) *ExpensesRepository_GetExpenseStatusByID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string))
+		run(args[0].(context.Context), args[1].(interface{}))
 	})
 	return _c
 }
@@ -207,11 +207,11 @@ func (_c *ExpensesRepository_Save_Call) Return(_a0 error) *ExpensesRepository_Sa
 }
 
 // UpdateIsPaidByExpenseID provides a mock function with given fields: ctx, expenseID, status
-func (_m *ExpensesRepository) UpdateIsPaidByExpenseID(ctx context.Context, expenseID string, status bool) error {
+func (_m *ExpensesRepository) UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error {
 	ret := _m.Called(ctx, expenseID, status)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, bool) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, bool) error); ok {
 		r0 = rf(ctx, expenseID, status)
 	} else {
 		r0 = ret.Error(0)
@@ -227,15 +227,15 @@ type ExpensesRepository_UpdateIsPaidByExpenseID_Call struct {
 
 // UpdateIsPaidByExpenseID is a helper method to define mock.On call
 //  - ctx context.Context
-//  - expenseID string
+//  - expenseID interface{}
 //  - status bool
 func (_e *ExpensesRepository_Expecter) UpdateIsPaidByExpenseID(ctx interface{}, expenseID interface{}, status interface{}) *ExpensesRepository_UpdateIsPaidByExpenseID_Call {
 	return &ExpensesRepository_UpdateIsPaidByExpenseID_Call{Call: _e.mock.On("UpdateIsPaidByExpenseID", ctx, expenseID, status)}
 }
 
-func (_c *ExpensesRepository_UpdateIsPaidByExpenseID_Call) Run(run func(ctx context.Context, expenseID string, status bool)) *ExpensesRepository_UpdateIsPaidByExpenseID_Call {
+func (_c *ExpensesRepository_UpdateIsPaidByExpenseID_Call) Run(run func(ctx context.Context, expenseID interface{}, status bool)) *ExpensesRepository_UpdateIsPaidByExpenseID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string), args[2].(bool))
+		run(args[0].(context.Context), args[1].(interface{}), args[2].(bool))
 	})
 	return _c
 }
