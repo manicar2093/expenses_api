@@ -77,6 +77,43 @@
                 }
             }
         },
+        "/expenses/toggle_is_paid": {
+            "post": {
+                "description": "Toggle is paid status from an expense",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "Toggle is paid status from an expense",
+                "parameters": [
+                    {
+                        "description": "ID to toggle is paid status",
+                        "name": "expense_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/expenses.ToggleExpenseIsPaidInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/expenses.ToggleExpenseIsPaidOutput"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/health_check": {
             "get": {
                 "description": "It does a ping to db and returns service version",
@@ -271,6 +308,25 @@
         "expenses.SetExpenseToPaidInput": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "expenses.ToggleExpenseIsPaidInput": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "expenses.ToggleExpenseIsPaidOutput": {
+            "type": "object",
+            "properties": {
+                "current_is_paid_status": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 }

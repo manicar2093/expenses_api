@@ -139,5 +139,4 @@ func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expen
 		return nil, err
 	}
 	return &expenseFound, nil
-
 }

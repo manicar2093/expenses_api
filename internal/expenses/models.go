@@ -19,8 +19,8 @@ type (
 		ID string `json:"id,omitempty"`
 	}
 	ToggleExpenseIsPaidOutput struct {
-		ID                  string `json:"id,omitempty"`
-		CurrentIsPaidStatus bool   `json:"current_is_paid_status,omitempty"`
+		ID                  string `json:"id"`
+		CurrentIsPaidStatus bool   `json:"current_is_paid_status"`
 	}
 	ExpenseServiceImpl struct {
 		expensesRepo repos.ExpensesRepository

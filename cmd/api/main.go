@@ -67,6 +67,7 @@ func registerControllers() {
 	controllers.NewExpensesController(
 		expenseService,
 		expenseService,
+		expenseService,
 		e,
 	).Register()
 	controllers.NewRecurrentExpensesController(
