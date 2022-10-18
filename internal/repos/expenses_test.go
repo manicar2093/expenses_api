@@ -8,6 +8,7 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/converters"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -133,7 +134,7 @@ var _ = Describe("ExpensesImpl", func() {
 			inserted, _ := coll.InsertOne(ctx, mockData)
 			expectedID := inserted.InsertedID.(primitive.ObjectID)
 
-			err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, expectedStatus)
+			err := repo.UpdateIsPaidByExpenseID(ctx, expectedID.Hex(), expectedStatus)
 
 			var changed entities.Expense
 			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedID}}).Decode(&changed)
@@ -157,12 +158,24 @@ var _ = Describe("ExpensesImpl", func() {
 				inserted, _ := coll.InsertOne(ctx, mockData)
 				expectedID := inserted.InsertedID.(primitive.ObjectID)
 
-				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, expectedStatus)
+				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID.Hex(), expectedStatus)
 
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
 
 				testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
+			})
+		})
+
+		When("expenseID is not primitive.ObjectID", func() {
+			It("returns an error", func() {
+				var (
+					expectedID = "not_an_object_id"
+				)
+
+				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, false)
+
+				Expect(err).To(BeAssignableToTypeOf(&converters.IDNotValidIDError{}))
 			})
 		})
 	})
@@ -204,6 +217,57 @@ var _ = Describe("ExpensesImpl", func() {
 
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(got).To(BeNil())
+			})
+		})
+	})
+
+	Describe("GetExpenseStatusByID", func() {
+		It("finds a expense by ID retriving just is_paid and its ID", func() {
+			var (
+				expectedStatus = true
+				expectedID     = primitive.NewObjectID()
+				mockData       = entities.Expense{
+					ID:     expectedID,
+					Name:   faker.Name(),
+					IsPaid: expectedStatus,
+				}
+			)
+			inserted, _ := coll.InsertOne(ctx, mockData)
+
+			got, err := repo.GetExpenseStatusByID(ctx, expectedID.Hex())
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got.ID).To(Equal(inserted.InsertedID))
+			Expect(got.IsPaid).To(Equal(expectedStatus))
+
+			testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
+		})
+
+		When("expense is not found", func() {
+			It("returns a NotFound error", func() {
+				var (
+					expectedID = primitive.NewObjectID().Hex()
+				)
+
+				got, err := repo.GetExpenseStatusByID(ctx, expectedID)
+
+				Expect(got).To(BeNil())
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+
+			})
+		})
+
+		When("expenseID is not primitive.ObjectID", func() {
+			It("returns an error", func() {
+				var (
+					expectedID = "not_an_object_id"
+				)
+
+				got, err := repo.GetExpenseStatusByID(ctx, expectedID)
+
+				Expect(got).To(BeNil())
+				Expect(err).To(BeAssignableToTypeOf(&converters.IDNotValidIDError{}))
 			})
 		})
 	})

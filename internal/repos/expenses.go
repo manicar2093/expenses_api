@@ -2,21 +2,26 @@ package repos
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/schemas"
+	"github.com/manicar2093/expenses_api/pkg/converters"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
-		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
+		UpdateIsPaidByExpenseID(ctx context.Context, expenseID string, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
+		GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -66,9 +71,13 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 	return response, nil
 }
 
-func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error {
+func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID string, status bool) error {
+	expenseObjectID, err := converters.TurnToObjectID(expenseID)
+	if err != nil {
+		return err
+	}
 	var (
-		filter   = bson.D{{Key: "_id", Value: expenseID}, {Key: "is_recurrent", Value: true}}
+		filter   = bson.D{{Key: "_id", Value: expenseObjectID}, {Key: "is_recurrent", Value: true}}
 		updating = bson.D{
 			{
 				Key:   "$set",
@@ -82,7 +91,7 @@ func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, ex
 	case err != nil:
 		return err
 	case res.MatchedCount == 0:
-		return &NotFoundError{Identifier: expenseID.Hex(), Entity: "Expense", Message: "it is not recurrent expense"}
+		return &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "it is not recurrent expense"}
 	default:
 		return nil
 	}
@@ -110,4 +119,24 @@ func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Co
 	}
 
 	return found, nil
+}
+
+func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+	expenseObjectID, err := converters.TurnToObjectID(expenseID)
+	if err != nil {
+		return nil, err
+	}
+	var (
+		filter       = bson.D{{Key: "_id", Value: expenseObjectID}}
+		projection   = bson.D{{Key: "_id", Value: 1}, {Key: "is_paid", Value: 1}}
+		expenseFound = schemas.ExpenseIDWithIsPaidStatus{}
+	)
+
+	if err := c.coll.FindOne(ctx, filter, &options.FindOneOptions{Projection: projection}).Decode(&expenseFound); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "does not exists"}
+		}
+		return nil, err
+	}
+	return &expenseFound, nil
 }

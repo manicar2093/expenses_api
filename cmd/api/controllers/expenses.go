@@ -9,26 +9,30 @@ import (
 )
 
 type ExpensesController struct {
-	createExpense expenses.CreateExpense
-	setToPaid     expenses.SetExpenseToPaid
-	group         *echo.Group
+	createExpense   expenses.ExpenseCreatable
+	setToPaid       expenses.ExpenseToPaidSetteable
+	togglableIsPaid expenses.ExpenseToPaidTogglable
+	group           *echo.Group
 }
 
 func NewExpensesController(
-	createExpense expenses.CreateExpense,
-	setToPaid expenses.SetExpenseToPaid,
-	e *echo.Echo,
+	createExpense expenses.ExpenseCreatable,
+	setToPaid expenses.ExpenseToPaidSetteable,
+	togglableIsPaid expenses.ExpenseToPaidTogglable,
+	e *echo.Echo, //nolint:varnamelen
 ) *ExpensesController {
 	return &ExpensesController{
-		createExpense: createExpense,
-		setToPaid:     setToPaid,
-		group:         e.Group("/expenses"),
+		createExpense:   createExpense,
+		setToPaid:       setToPaid,
+		togglableIsPaid: togglableIsPaid,
+		group:           e.Group("/expenses"),
 	}
 }
 
 func (c *ExpensesController) Register() {
 	c.group.POST("", c.create)
 	c.group.POST("/to_paid", c.toPaid)
+	c.group.POST("/toggle_is_paid", c.toggleIsPaid)
 }
 
 // @Summary     Create an expense
@@ -66,8 +70,29 @@ func (c *ExpensesController) toPaid(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return errors.CreateResponseFromError(ctx, err)
 	}
-	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil {
+	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil { //nolint: staticcheck
 		return errors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.NoContent(http.StatusOK)
+}
+
+// @Summary     Toggle is paid status from an expense
+// @Description Toggle is paid status from an expense
+// @Tags        expenses
+// @Accept      json
+// @Produce     json
+// @Param       expense_id body     expenses.ToggleExpenseIsPaidInput true "ID to toggle is paid status"
+// @Success     200        {object} expenses.ToggleExpenseIsPaidOutput
+// @Failure     500
+// @Router      /expenses/toggle_is_paid [post]
+func (c *ExpensesController) toggleIsPaid(ctx echo.Context) error {
+	var request expenses.ToggleExpenseIsPaidInput
+	if err := ctx.Bind(&request); err != nil {
+		return errors.CreateResponseFromError(ctx, err)
+	}
+	got, err := c.togglableIsPaid.ToggleIsPaid(ctx.Request().Context(), &request)
+	if err != nil {
+		return errors.CreateResponseFromError(ctx, err)
+	}
+	return ctx.JSON(http.StatusOK, got)
 }

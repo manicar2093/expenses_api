@@ -20,14 +20,14 @@ var _ = Describe("CreateImpl", func() {
 		expenseRepoMock *mocks.ExpensesRepository
 		timeGetterMock  *mocks.TimeGetable
 		ctx             context.Context
-		api             *expenses.CreateExpenseImpl
+		api             *expenses.ExpenseServiceImpl
 	)
 
 	BeforeEach(func() {
 		expenseRepoMock = &mocks.ExpensesRepository{}
 		timeGetterMock = &mocks.TimeGetable{}
 		ctx = context.TODO()
-		api = expenses.NewCreateExpensesImpl(expenseRepoMock, timeGetterMock)
+		api = expenses.NewExpenseServiceImpl(expenseRepoMock, timeGetterMock)
 	})
 
 	AfterEach(func() {
