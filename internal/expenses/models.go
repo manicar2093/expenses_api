@@ -15,6 +15,13 @@ type (
 		Description  string  `json:"description,omitempty"`
 		ForNextMonth bool    `json:"for_next_month,omitempty"`
 	}
+	ToggleExpenseIsPaidInput struct {
+		ID string `json:"id,omitempty"`
+	}
+	ToggleExpenseIsPaidOutput struct {
+		ID                  string `json:"id,omitempty"`
+		CurrentIsPaidStatus bool   `json:"current_is_paid_status,omitempty"`
+	}
 	ExpenseServiceImpl struct {
 		expensesRepo repos.ExpensesRepository
 		timeGetter   dates.TimeGetable

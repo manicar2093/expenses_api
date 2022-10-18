@@ -13,8 +13,12 @@ type (
 	ExpenseCreatable interface {
 		Create(context.Context, *CreateExpenseInput) (*entities.Expense, error)
 	}
+	ExpenseToPaidTogglable interface {
+		ToggleIsPaid(ctx context.Context, input *ToggleExpenseIsPaidInput) (*ToggleExpenseIsPaidOutput, error)
+	}
 	ExpenseSevice interface {
 		ExpenseToPaidSetteable
 		ExpenseCreatable
+		ExpenseToPaidTogglable
 	}
 )
