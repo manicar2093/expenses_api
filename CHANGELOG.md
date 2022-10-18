@@ -1,3 +1,9 @@
+## v2.9.0 (2022-10-18)
+
+### Feat
+
+- add expenses repo find by interface id (#51)
+
 ## v2.8.0 (2022-10-18)
 
 ### Feat
