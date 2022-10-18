@@ -1,3 +1,9 @@
+## v2.8.0 (2022-10-18)
+
+### Feat
+
+- Add toggle to is paid status (#50)
+
 ## v2.7.0 (2022-10-14)
 
 ### Feat
