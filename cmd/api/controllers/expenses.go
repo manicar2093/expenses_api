@@ -9,14 +9,14 @@ import (
 )
 
 type ExpensesController struct {
-	createExpense expenses.CreateExpense
-	setToPaid     expenses.SetExpenseToPaid
+	createExpense expenses.ExpenseCreatable
+	setToPaid     expenses.ExpenseToPaidSetteable
 	group         *echo.Group
 }
 
 func NewExpensesController(
-	createExpense expenses.CreateExpense,
-	setToPaid expenses.SetExpenseToPaid,
+	createExpense expenses.ExpenseCreatable,
+	setToPaid expenses.ExpenseToPaidSetteable,
 	e *echo.Echo,
 ) *ExpensesController {
 	return &ExpensesController{

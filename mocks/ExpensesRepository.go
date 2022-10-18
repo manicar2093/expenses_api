@@ -77,11 +77,11 @@ func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *
 }
 
 // GetExpenseStatusByID provides a mock function with given fields: ctx, expenseID
-func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID primitive.ObjectID) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error) {
 	ret := _m.Called(ctx, expenseID)
 
 	var r0 *schemas.ExpenseIDWithIsPaidStatus
-	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) *schemas.ExpenseIDWithIsPaidStatus); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *schemas.ExpenseIDWithIsPaidStatus); ok {
 		r0 = rf(ctx, expenseID)
 	} else {
 		if ret.Get(0) != nil {
@@ -90,7 +90,7 @@ func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseI
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, primitive.ObjectID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(ctx, expenseID)
 	} else {
 		r1 = ret.Error(1)
@@ -106,14 +106,14 @@ type ExpensesRepository_GetExpenseStatusByID_Call struct {
 
 // GetExpenseStatusByID is a helper method to define mock.On call
 //  - ctx context.Context
-//  - expenseID primitive.ObjectID
+//  - expenseID string
 func (_e *ExpensesRepository_Expecter) GetExpenseStatusByID(ctx interface{}, expenseID interface{}) *ExpensesRepository_GetExpenseStatusByID_Call {
 	return &ExpensesRepository_GetExpenseStatusByID_Call{Call: _e.mock.On("GetExpenseStatusByID", ctx, expenseID)}
 }
 
-func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Run(run func(ctx context.Context, expenseID primitive.ObjectID)) *ExpensesRepository_GetExpenseStatusByID_Call {
+func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Run(run func(ctx context.Context, expenseID string)) *ExpensesRepository_GetExpenseStatusByID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(primitive.ObjectID))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }

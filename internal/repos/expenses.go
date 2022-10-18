@@ -7,6 +7,7 @@ import (
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/schemas"
+	"github.com/manicar2093/expenses_api/pkg/converters"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,7 +21,7 @@ type (
 		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
-		GetExpenseStatusByID(ctx context.Context, expenseID primitive.ObjectID) (*schemas.ExpenseIDWithIsPaidStatus, error)
+		GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -116,16 +117,20 @@ func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Co
 	return found, nil
 }
 
-func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expenseID primitive.ObjectID) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+	expenseObjectID, err := converters.TurnToObjectID(expenseID)
+	if err != nil {
+		return nil, err
+	}
 	var (
-		filter       = bson.D{{Key: "_id", Value: expenseID}}
+		filter       = bson.D{{Key: "_id", Value: expenseObjectID}}
 		projection   = bson.D{{Key: "_id", Value: 1}, {Key: "is_paid", Value: 1}}
 		expenseFound = schemas.ExpenseIDWithIsPaidStatus{}
 	)
 
 	if err := c.coll.FindOne(ctx, filter, &options.FindOneOptions{Projection: projection}).Decode(&expenseFound); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, &NotFoundError{Identifier: expenseID.Hex(), Entity: "Expense", Message: "does not exists"}
+			return nil, &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "does not exists"}
 		}
 		return nil, err
 	}

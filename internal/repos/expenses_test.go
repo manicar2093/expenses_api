@@ -8,6 +8,7 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/converters"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -221,7 +222,7 @@ var _ = Describe("ExpensesImpl", func() {
 			)
 			inserted, _ := coll.InsertOne(ctx, mockData)
 
-			got, err := repo.GetExpenseStatusByID(ctx, expectedID)
+			got, err := repo.GetExpenseStatusByID(ctx, expectedID.Hex())
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.ID).To(Equal(inserted.InsertedID))
@@ -233,7 +234,7 @@ var _ = Describe("ExpensesImpl", func() {
 		When("expense is not found", func() {
 			It("returns a NotFound error", func() {
 				var (
-					expectedID = primitive.NewObjectID()
+					expectedID = primitive.NewObjectID().Hex()
 				)
 
 				got, err := repo.GetExpenseStatusByID(ctx, expectedID)
@@ -242,6 +243,19 @@ var _ = Describe("ExpensesImpl", func() {
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
 
+			})
+		})
+
+		When("expenseID is not primitive.ObjectID", func() {
+			It("returns an error", func() {
+				var (
+					expectedID = "not_an_object_id"
+				)
+
+				got, err := repo.GetExpenseStatusByID(ctx, expectedID)
+
+				Expect(got).To(BeNil())
+				Expect(err).To(BeAssignableToTypeOf(&converters.IDNotValidIDError{}))
 			})
 		})
 	})

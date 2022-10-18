@@ -15,14 +15,16 @@ import (
 var _ = Describe("SetExpenseToPaid", func() {
 	var (
 		expensesRepoMock *mocks.ExpensesRepository
+		timeGetableMock  *mocks.TimeGetable
 		ctx              context.Context
-		api              *expenses.SetExpenseToPaidImpl
+		api              *expenses.ExpenseServiceImpl
 	)
 
 	BeforeEach(func() {
 		expensesRepoMock = &mocks.ExpensesRepository{}
+		timeGetableMock = &mocks.TimeGetable{}
 		ctx = context.Background()
-		api = expenses.NewSetExpenseToPaidImpl(expensesRepoMock)
+		api = expenses.NewExpenseServiceImpl(expensesRepoMock, timeGetableMock)
 	})
 
 	AfterEach(func() {

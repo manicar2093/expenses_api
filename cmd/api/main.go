@@ -23,13 +23,10 @@ var (
 	recurrentExpensesRepo = repos.NewRecurrentExpenseRepoImpl(
 		mongoConn,
 	)
-	timeGetter    = &dates.TimeGetter{}
-	createExpense = expenses.NewCreateExpensesImpl(
+	timeGetter     = &dates.TimeGetter{}
+	expenseService = expenses.NewExpenseServiceImpl(
 		expensesRepo,
 		timeGetter,
-	)
-	setExpenseToPaid = expenses.NewSetExpenseToPaidImpl(
-		expensesRepo,
 	)
 	getCurrentMonth = reports.NewCurrentMonthDetailsImpl(
 		expensesRepo,
@@ -68,8 +65,8 @@ func configEcho() {
 
 func registerControllers() {
 	controllers.NewExpensesController(
-		createExpense,
-		setExpenseToPaid,
+		expenseService,
+		expenseService,
 		e,
 	).Register()
 	controllers.NewRecurrentExpensesController(
