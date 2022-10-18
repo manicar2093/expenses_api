@@ -207,4 +207,42 @@ var _ = Describe("ExpensesImpl", func() {
 			})
 		})
 	})
+
+	Describe("GetExpenseStatusByID", func() {
+		It("finds a expense by ID retriving just is_paid and its ID", func() {
+			var (
+				expectedStatus = true
+				expectedID     = primitive.NewObjectID()
+				mockData       = entities.Expense{
+					ID:     expectedID,
+					Name:   faker.Name(),
+					IsPaid: expectedStatus,
+				}
+			)
+			inserted, _ := coll.InsertOne(ctx, mockData)
+
+			got, err := repo.GetExpenseStatusByID(ctx, expectedID)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got.ID).To(Equal(inserted.InsertedID))
+			Expect(got.IsPaid).To(Equal(expectedStatus))
+
+			testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
+		})
+
+		When("expense is not found", func() {
+			It("returns a NotFound error", func() {
+				var (
+					expectedID = primitive.NewObjectID()
+				)
+
+				got, err := repo.GetExpenseStatusByID(ctx, expectedID)
+
+				Expect(got).To(BeNil())
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+
+			})
+		})
+	})
 })

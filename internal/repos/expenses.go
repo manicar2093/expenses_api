@@ -2,13 +2,16 @@ package repos
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/schemas"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type (
@@ -17,6 +20,7 @@ type (
 		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
+		GetExpenseStatusByID(ctx context.Context, expenseID primitive.ObjectID) (*schemas.ExpenseIDWithIsPaidStatus, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -110,4 +114,21 @@ func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Co
 	}
 
 	return found, nil
+}
+
+func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expenseID primitive.ObjectID) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+	var (
+		filter       = bson.D{{Key: "_id", Value: expenseID}}
+		projection   = bson.D{{Key: "_id", Value: 1}, {Key: "is_paid", Value: 1}}
+		expenseFound = schemas.ExpenseIDWithIsPaidStatus{}
+	)
+
+	if err := c.coll.FindOne(ctx, filter, &options.FindOneOptions{Projection: projection}).Decode(&expenseFound); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, &NotFoundError{Identifier: expenseID.Hex(), Entity: "Expense", Message: "does not exists"}
+		}
+		return nil, err
+	}
+	return &expenseFound, nil
+
 }

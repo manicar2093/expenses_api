@@ -10,6 +10,8 @@ import (
 
 	primitive "go.mongodb.org/mongo-driver/bson/primitive"
 
+	schemas "github.com/manicar2093/expenses_api/internal/schemas"
+
 	time "time"
 )
 
@@ -70,6 +72,53 @@ func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Run(run func
 }
 
 func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *entities.Expense, _a1 error) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+// GetExpenseStatusByID provides a mock function with given fields: ctx, expenseID
+func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID primitive.ObjectID) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+	ret := _m.Called(ctx, expenseID)
+
+	var r0 *schemas.ExpenseIDWithIsPaidStatus
+	if rf, ok := ret.Get(0).(func(context.Context, primitive.ObjectID) *schemas.ExpenseIDWithIsPaidStatus); ok {
+		r0 = rf(ctx, expenseID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*schemas.ExpenseIDWithIsPaidStatus)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, primitive.ObjectID) error); ok {
+		r1 = rf(ctx, expenseID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExpensesRepository_GetExpenseStatusByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetExpenseStatusByID'
+type ExpensesRepository_GetExpenseStatusByID_Call struct {
+	*mock.Call
+}
+
+// GetExpenseStatusByID is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenseID primitive.ObjectID
+func (_e *ExpensesRepository_Expecter) GetExpenseStatusByID(ctx interface{}, expenseID interface{}) *ExpensesRepository_GetExpenseStatusByID_Call {
+	return &ExpensesRepository_GetExpenseStatusByID_Call{Call: _e.mock.On("GetExpenseStatusByID", ctx, expenseID)}
+}
+
+func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Run(run func(ctx context.Context, expenseID primitive.ObjectID)) *ExpensesRepository_GetExpenseStatusByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(primitive.ObjectID))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Return(_a0 *schemas.ExpenseIDWithIsPaidStatus, _a1 error) *ExpensesRepository_GetExpenseStatusByID_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
