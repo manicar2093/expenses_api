@@ -134,7 +134,7 @@ var _ = Describe("ExpensesImpl", func() {
 			inserted, _ := coll.InsertOne(ctx, mockData)
 			expectedID := inserted.InsertedID.(primitive.ObjectID)
 
-			err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, expectedStatus)
+			err := repo.UpdateIsPaidByExpenseID(ctx, expectedID.Hex(), expectedStatus)
 
 			var changed entities.Expense
 			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedID}}).Decode(&changed)
@@ -158,12 +158,24 @@ var _ = Describe("ExpensesImpl", func() {
 				inserted, _ := coll.InsertOne(ctx, mockData)
 				expectedID := inserted.InsertedID.(primitive.ObjectID)
 
-				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, expectedStatus)
+				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID.Hex(), expectedStatus)
 
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
 
 				testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
+			})
+		})
+
+		When("expenseID is not primitive.ObjectID", func() {
+			It("returns an error", func() {
+				var (
+					expectedID = "not_an_object_id"
+				)
+
+				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, false)
+
+				Expect(err).To(BeAssignableToTypeOf(&converters.IDNotValidIDError{}))
 			})
 		})
 	})

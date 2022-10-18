@@ -19,7 +19,7 @@ type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
-		UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error
+		UpdateIsPaidByExpenseID(ctx context.Context, expenseID string, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
 		GetExpenseStatusByID(ctx context.Context, expenseID string) (*schemas.ExpenseIDWithIsPaidStatus, error)
 	}
@@ -71,9 +71,13 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 	return response, nil
 }
 
-func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID primitive.ObjectID, status bool) error {
+func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID string, status bool) error {
+	expenseObjectID, err := converters.TurnToObjectID(expenseID)
+	if err != nil {
+		return err
+	}
 	var (
-		filter   = bson.D{{Key: "_id", Value: expenseID}, {Key: "is_recurrent", Value: true}}
+		filter   = bson.D{{Key: "_id", Value: expenseObjectID}, {Key: "is_recurrent", Value: true}}
 		updating = bson.D{
 			{
 				Key:   "$set",
@@ -87,7 +91,7 @@ func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, ex
 	case err != nil:
 		return err
 	case res.MatchedCount == 0:
-		return &NotFoundError{Identifier: expenseID.Hex(), Entity: "Expense", Message: "it is not recurrent expense"}
+		return &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "it is not recurrent expense"}
 	default:
 		return nil
 	}
