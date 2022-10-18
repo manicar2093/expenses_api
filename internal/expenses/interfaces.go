@@ -8,6 +8,7 @@ import (
 
 type (
 	ExpenseToPaidSetteable interface {
+		// Deprecated: Use ToggleIsPaid instead
 		SetToPaid(ctx context.Context, input *SetExpenseToPaidInput) error
 	}
 	ExpenseCreatable interface {

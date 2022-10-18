@@ -70,7 +70,7 @@ func (c *ExpensesController) toPaid(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return errors.CreateResponseFromError(ctx, err)
 	}
-	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil {
+	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil { //nolint: staticcheck
 		return errors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.NoContent(http.StatusOK)
