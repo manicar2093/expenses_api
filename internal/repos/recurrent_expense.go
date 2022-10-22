@@ -23,7 +23,7 @@ type (
 
 func NewRecurrentExpenseRepoImpl(conn *mongo.Database) *RecurrentExpenseRepoImpl {
 	return &RecurrentExpenseRepoImpl{
-		coll: conn.Collection(entities.RecurrentExpenseCollectonName),
+		coll: conn.Collection(entities.RecurrentExpensesCollectonName),
 	}
 }
 

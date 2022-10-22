@@ -35,13 +35,15 @@ var _ = Describe("ExpensesImpl", func() {
 		It("saves an entities.Expense in database", func() {
 
 			var (
-				expectedName        = faker.Name()
-				expectedAmount      = faker.Latitude()
-				expectedDescription = faker.Sentence()
-				expectedExpense     = entities.Expense{
-					Name:        expectedName,
-					Amount:      expectedAmount,
-					Description: expectedDescription,
+				expectedRecurrentExpenseID = primitive.NewObjectID()
+				expectedName               = faker.Name()
+				expectedAmount             = faker.Latitude()
+				expectedDescription        = faker.Sentence()
+				expectedExpense            = entities.Expense{
+					Name:               expectedName,
+					Amount:             expectedAmount,
+					Description:        expectedDescription,
+					RecurrentExpenseID: &expectedRecurrentExpenseID,
 				}
 			)
 
@@ -54,10 +56,11 @@ var _ = Describe("ExpensesImpl", func() {
 			Expect(expectedExpense.Year).ToNot(BeZero())
 			Expect(expectedExpense.IsPaid).To(BeFalse())
 			Expect(expectedExpense.IsRecurrent).To(BeFalse())
+			Expect(expectedExpense.RecurrentExpenseID).To(Equal(&expectedRecurrentExpenseID))
 			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
 			Expect(expectedExpense.UpdatedAt).To(BeNil())
 
-			testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
+			// testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
 		})
 
 		When("createdAt is given set", func() {

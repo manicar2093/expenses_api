@@ -2,6 +2,7 @@ package repos_test
 
 import (
 	"context"
+	"time"
 
 	"github.com/bxcodec/faker/v3"
 	. "github.com/onsi/ginkgo/v2"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/periodtypes"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 )
 
@@ -31,10 +33,13 @@ var _ = Describe("RecurrentExpense", func() {
 	Describe("Save", func() {
 		It("saves an instance", func() {
 			var (
-				toSave = entities.RecurrentExpense{
-					Name:        faker.Name(),
-					Amount:      faker.Latitude(),
-					Description: faker.Paragraph(),
+				expectedLastCreationDate = time.Now()
+				toSave                   = entities.RecurrentExpense{
+					Name:             faker.Name(),
+					Amount:           faker.Latitude(),
+					Description:      faker.Paragraph(),
+					Periodicity:      periodtypes.Monthly,
+					LastCreationDate: &expectedLastCreationDate,
 				}
 			)
 
@@ -42,6 +47,8 @@ var _ = Describe("RecurrentExpense", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(toSave.ID.String()).ToNot(BeEmpty())
+			Expect(toSave.Periodicity).To(Equal(periodtypes.Monthly))
+			Expect(toSave.LastCreationDate).To(Equal(&expectedLastCreationDate))
 			Expect(toSave.CreatedAt).ToNot(BeZero())
 			Expect(toSave.UpdatedAt).To(BeNil())
 
