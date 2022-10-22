@@ -18,6 +18,7 @@ import (
 type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
+		SaveAsRecurrent(ctx context.Context, expense *entities.Expense) error
 		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
@@ -139,4 +140,9 @@ func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expen
 		return nil, err
 	}
 	return &expenseFound, nil
+}
+
+func (c *ExpensesRepositoryImpl) SaveAsRecurrent(ctx context.Context, expense *entities.Expense) error {
+	expense.IsRecurrent = true
+	return c.Save(ctx, expense)
 }

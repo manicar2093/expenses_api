@@ -54,10 +54,9 @@ func (c *CreateMonthlyRecurrentExpensesImpl) CreateMonthlyRecurrentExpenses(ctx 
 					Name:        recurrentExpense.Name,
 					Description: recurrentExpense.Description,
 					Amount:      recurrentExpense.Amount,
-					IsRecurrent: true,
 					CreatedAt:   &nextMonthDate,
 				}
-				if err := c.expensesRepo.Save(ctx, &expenseToSave); err != nil {
+				if err := c.expensesRepo.SaveAsRecurrent(ctx, &expenseToSave); err != nil {
 					return nil, err
 				}
 				expensesCreated = append(expensesCreated, expenseToSave)

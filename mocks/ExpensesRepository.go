@@ -206,6 +206,44 @@ func (_c *ExpensesRepository_Save_Call) Return(_a0 error) *ExpensesRepository_Sa
 	return _c
 }
 
+// SaveAsRecurrent provides a mock function with given fields: ctx, expense
+func (_m *ExpensesRepository) SaveAsRecurrent(ctx context.Context, expense *entities.Expense) error {
+	ret := _m.Called(ctx, expense)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *entities.Expense) error); ok {
+		r0 = rf(ctx, expense)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// ExpensesRepository_SaveAsRecurrent_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveAsRecurrent'
+type ExpensesRepository_SaveAsRecurrent_Call struct {
+	*mock.Call
+}
+
+// SaveAsRecurrent is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expense *entities.Expense
+func (_e *ExpensesRepository_Expecter) SaveAsRecurrent(ctx interface{}, expense interface{}) *ExpensesRepository_SaveAsRecurrent_Call {
+	return &ExpensesRepository_SaveAsRecurrent_Call{Call: _e.mock.On("SaveAsRecurrent", ctx, expense)}
+}
+
+func (_c *ExpensesRepository_SaveAsRecurrent_Call) Run(run func(ctx context.Context, expense *entities.Expense)) *ExpensesRepository_SaveAsRecurrent_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*entities.Expense))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_SaveAsRecurrent_Call) Return(_a0 error) *ExpensesRepository_SaveAsRecurrent_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
 // UpdateIsPaidByExpenseID provides a mock function with given fields: ctx, expenseID, status
 func (_m *ExpensesRepository) UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error {
 	ret := _m.Called(ctx, expenseID, status)

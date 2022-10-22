@@ -61,10 +61,10 @@ var _ = Describe("CreateMonthly", func() {
 			{Name: expectedName4, Amount: expectedAmount4},
 		}
 		expectedExpensesToCreate = []entities.Expense{
-			{Name: expectedName1, Amount: expectedAmount1, IsRecurrent: true, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
-			{Name: expectedName2, Amount: expectedAmount2, IsRecurrent: true, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
-			{Name: expectedName3, Amount: expectedAmount3, IsRecurrent: true, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
-			{Name: expectedName4, Amount: expectedAmount4, IsRecurrent: true, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Name: expectedName1, Amount: expectedAmount1, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Name: expectedName2, Amount: expectedAmount2, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Name: expectedName3, Amount: expectedAmount3, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Name: expectedName4, Amount: expectedAmount4, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
 		}
 	})
 
@@ -82,10 +82,10 @@ var _ = Describe("CreateMonthly", func() {
 		expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[1].Name).Return(nil, &repos.NotFoundError{}).Once()
 		expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[2].Name).Return(nil, &repos.NotFoundError{}).Once()
 		expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[3].Name).Return(nil, &repos.NotFoundError{}).Once()
-		expensesRepoMock.EXPECT().Save(ctx, &expectedExpensesToCreate[0]).Return(nil).Once()
-		expensesRepoMock.EXPECT().Save(ctx, &expectedExpensesToCreate[1]).Return(nil).Once()
-		expensesRepoMock.EXPECT().Save(ctx, &expectedExpensesToCreate[2]).Return(nil).Once()
-		expensesRepoMock.EXPECT().Save(ctx, &expectedExpensesToCreate[3]).Return(nil).Once()
+		expensesRepoMock.EXPECT().SaveAsRecurrent(ctx, &expectedExpensesToCreate[0]).Return(nil).Once()
+		expensesRepoMock.EXPECT().SaveAsRecurrent(ctx, &expectedExpensesToCreate[1]).Return(nil).Once()
+		expensesRepoMock.EXPECT().SaveAsRecurrent(ctx, &expectedExpensesToCreate[2]).Return(nil).Once()
+		expensesRepoMock.EXPECT().SaveAsRecurrent(ctx, &expectedExpensesToCreate[3]).Return(nil).Once()
 
 		got, err := api.CreateMonthlyRecurrentExpenses(ctx)
 
@@ -101,8 +101,8 @@ var _ = Describe("CreateMonthly", func() {
 			expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[1].Name).Return(&expectedExpensesToCreate[1], nil).Once()
 			expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[2].Name).Return(nil, &repos.NotFoundError{}).Once()
 			expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[3].Name).Return(nil, &repos.NotFoundError{}).Once()
-			expensesRepoMock.EXPECT().Save(ctx, &expectedExpensesToCreate[2]).Return(nil).Once()
-			expensesRepoMock.EXPECT().Save(ctx, &expectedExpensesToCreate[3]).Return(nil).Once()
+			expensesRepoMock.EXPECT().SaveAsRecurrent(ctx, &expectedExpensesToCreate[2]).Return(nil).Once()
+			expensesRepoMock.EXPECT().SaveAsRecurrent(ctx, &expectedExpensesToCreate[3]).Return(nil).Once()
 
 			_, err := api.CreateMonthlyRecurrentExpenses(ctx)
 

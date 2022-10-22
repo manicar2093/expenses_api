@@ -60,7 +60,7 @@ var _ = Describe("ExpensesImpl", func() {
 			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
 			Expect(expectedExpense.UpdatedAt).To(BeNil())
 
-			// testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
+			testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
 		})
 
 		When("createdAt is given set", func() {
@@ -92,6 +92,39 @@ var _ = Describe("ExpensesImpl", func() {
 
 				testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
 			})
+		})
+	})
+
+	Describe("SaveAsRecurrent", func() {
+		It("saves an entities.Expense in database with IsRecurrent as true", func() {
+
+			var (
+				expectedRecurrentExpenseID = primitive.NewObjectID()
+				expectedName               = faker.Name()
+				expectedAmount             = faker.Latitude()
+				expectedDescription        = faker.Sentence()
+				expectedExpense            = entities.Expense{
+					Name:               expectedName,
+					Amount:             expectedAmount,
+					Description:        expectedDescription,
+					RecurrentExpenseID: &expectedRecurrentExpenseID,
+				}
+			)
+
+			err := repo.SaveAsRecurrent(ctx, &expectedExpense)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(expectedExpense.ID.String()).ToNot(BeEmpty())
+			Expect(expectedExpense.Day).ToNot(BeZero())
+			Expect(expectedExpense.Month).ToNot(BeZero())
+			Expect(expectedExpense.Year).ToNot(BeZero())
+			Expect(expectedExpense.IsPaid).To(BeFalse())
+			Expect(expectedExpense.IsRecurrent).To(BeTrue())
+			Expect(expectedExpense.RecurrentExpenseID).To(Equal(&expectedRecurrentExpenseID))
+			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
+			Expect(expectedExpense.UpdatedAt).To(BeNil())
+
+			testfunc.DeleteOneByObjectID(ctx, coll, expectedExpense.ID)
 		})
 	})
 

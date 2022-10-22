@@ -57,14 +57,13 @@ func (c *CreateRecurrentExpenseImpl) Create(
 			Name:        input.Name,
 			Amount:      input.Amount,
 			Description: input.Description,
-			IsRecurrent: true,
 			CreatedAt:   &nextMontTime,
 		}
 	)
 	if err := c.recurentExpensesRepo.Save(ctx, &recurrentExpense); err != nil {
 		return nil, err
 	}
-	if err := c.expensesRepo.Save(ctx, &expense); err != nil {
+	if err := c.expensesRepo.SaveAsRecurrent(ctx, &expense); err != nil {
 		return nil, err
 	}
 

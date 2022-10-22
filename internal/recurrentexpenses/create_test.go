@@ -57,13 +57,12 @@ var _ = Describe("Create", func() {
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,
-				IsRecurrent: true,
 				CreatedAt:   &expectedCreatedAt,
 			}
 		)
 		timeGetterMock.EXPECT().GetNextMonthAtFirtsDay().Return(expectedCreatedAt)
 		recurentExpensesRepoMock.EXPECT().Save(ctx, &expectedRecurrentExpenseSaved).Return(nil)
-		expensesRepoMock.EXPECT().Save(ctx, &expectedExpenseSaved).Return(nil)
+		expensesRepoMock.EXPECT().SaveAsRecurrent(ctx, &expectedExpenseSaved).Return(nil)
 
 		got, err := api.Create(ctx, &request)
 
