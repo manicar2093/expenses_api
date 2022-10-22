@@ -12,6 +12,8 @@ datasource db {
 
 model Expense {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
+  recurrent_expense RecurrentExpense @relation(fields: [recurrent_expense_id], references: [id])
+  recurrent_expense_id String @db.ObjectId
   name  String
   description String?
   day Int
@@ -43,6 +45,9 @@ model RecurrentExpense {
   name  String @unique
   amount Float
   description String
+  periodicity Int
+  last_creation_date DateTime
+  expenses Expense[]
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
 
