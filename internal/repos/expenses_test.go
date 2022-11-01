@@ -307,4 +307,28 @@ var _ = Describe("ExpensesImpl", func() {
 			})
 		})
 	})
+
+	Describe("SaveMany", func() {
+		It("saves many Expenses into db", func() {
+			var (
+				expectedExpenses = []*entities.Expense{
+					{Name: faker.Name()},
+					{Name: faker.Name()},
+					{Name: faker.Name()},
+					{Name: faker.Name()},
+				}
+			)
+
+			got, err := repo.SaveMany(ctx, expectedExpenses)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got.InsertedIDs).ToNot(BeEmpty())
+			for _, id := range got.InsertedIDs {
+				Expect(id.IsZero()).ToNot(BeTrue())
+			}
+
+			testfunc.DeleteManyByReposInsertManyResult(ctx, coll, got)
+
+		})
+	})
 })

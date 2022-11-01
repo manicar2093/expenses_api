@@ -16,6 +16,9 @@ import (
 )
 
 type (
+	InsertManyResult struct {
+		InsertedIDs []primitive.ObjectID
+	}
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
 		SaveAsRecurrent(ctx context.Context, expense *entities.Expense) error
@@ -23,6 +26,7 @@ type (
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
 		GetExpenseStatusByID(ctx context.Context, expenseID interface{}) (*schemas.ExpenseIDWithIsPaidStatus, error)
+		SaveMany(ctx context.Context, expenses []*entities.Expense) (*InsertManyResult, error)
 	}
 	ExpensesRepositoryImpl struct {
 		coll *mongo.Collection
@@ -145,4 +149,28 @@ func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expen
 func (c *ExpensesRepositoryImpl) SaveAsRecurrent(ctx context.Context, expense *entities.Expense) error {
 	expense.IsRecurrent = true
 	return c.Save(ctx, expense)
+}
+
+func (c *ExpensesRepositoryImpl) SaveMany(
+	ctx context.Context,
+	expenses []*entities.Expense,
+) (*InsertManyResult, error) {
+
+	insertable := []interface{}{}
+	for _, expense := range expenses {
+		expense.ID = primitive.NewObjectID()
+		insertable = append(insertable, expense)
+	}
+
+	got, err := c.coll.InsertMany(ctx, insertable)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &InsertManyResult{}
+	for _, id := range got.InsertedIDs {
+		result.InsertedIDs = append(result.InsertedIDs, id.(primitive.ObjectID))
+	}
+
+	return result, nil
 }

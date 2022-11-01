@@ -8,6 +8,8 @@ import (
 	entities "github.com/manicar2093/expenses_api/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 
+	repos "github.com/manicar2093/expenses_api/internal/repos"
+
 	schemas "github.com/manicar2093/expenses_api/internal/schemas"
 
 	time "time"
@@ -241,6 +243,53 @@ func (_c *ExpensesRepository_SaveAsRecurrent_Call) Run(run func(ctx context.Cont
 
 func (_c *ExpensesRepository_SaveAsRecurrent_Call) Return(_a0 error) *ExpensesRepository_SaveAsRecurrent_Call {
 	_c.Call.Return(_a0)
+	return _c
+}
+
+// SaveMany provides a mock function with given fields: ctx, expenses
+func (_m *ExpensesRepository) SaveMany(ctx context.Context, expenses []*entities.Expense) (*repos.InsertManyResult, error) {
+	ret := _m.Called(ctx, expenses)
+
+	var r0 *repos.InsertManyResult
+	if rf, ok := ret.Get(0).(func(context.Context, []*entities.Expense) *repos.InsertManyResult); ok {
+		r0 = rf(ctx, expenses)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*repos.InsertManyResult)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, []*entities.Expense) error); ok {
+		r1 = rf(ctx, expenses)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExpensesRepository_SaveMany_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveMany'
+type ExpensesRepository_SaveMany_Call struct {
+	*mock.Call
+}
+
+// SaveMany is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenses []*entities.Expense
+func (_e *ExpensesRepository_Expecter) SaveMany(ctx interface{}, expenses interface{}) *ExpensesRepository_SaveMany_Call {
+	return &ExpensesRepository_SaveMany_Call{Call: _e.mock.On("SaveMany", ctx, expenses)}
+}
+
+func (_c *ExpensesRepository_SaveMany_Call) Run(run func(ctx context.Context, expenses []*entities.Expense)) *ExpensesRepository_SaveMany_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].([]*entities.Expense))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_SaveMany_Call) Return(_a0 *repos.InsertManyResult, _a1 error) *ExpensesRepository_SaveMany_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
