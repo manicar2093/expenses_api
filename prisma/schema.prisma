@@ -53,3 +53,21 @@ model RecurrentExpense {
 
   @@map("recurrent_expenses")
 }
+
+
+type ExpensesCount {
+  recurrent_expense_id String @db.ObjectId
+  expenses_related String[] @db.ObjectId
+  total_expenses Int
+  total_expenses_paid Int
+
+}
+model RecurrentExpensesMonthlyCreated {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  month Int
+  year Int
+  expenses_count ExpensesCount
+  created_at DateTime @default(now())
+
+  @@map("recurrent_expenses_monthly_created")
+}
