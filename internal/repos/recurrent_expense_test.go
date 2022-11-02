@@ -135,23 +135,21 @@ var _ = Describe("RecurrentExpense", func() {
 	Describe("Update", func() {
 		It("changes recurrent expense data in db", func() {
 			var (
-				expectedLastCreationDate = time.Now()
-				toUpdate                 = entities.RecurrentExpense{
-					ID:               primitive.NewObjectID(),
-					Name:             faker.Name(),
-					Amount:           faker.Latitude(),
-					Description:      faker.Paragraph(),
-					Periodicity:      periodtypes.Monthly,
-					LastCreationDate: &expectedLastCreationDate,
+				toUpdate = entities.RecurrentExpense{
+					ID:          primitive.NewObjectID(),
+					Name:        faker.Name(),
+					Amount:      faker.Latitude(),
+					Description: faker.Paragraph(),
+					Periodicity: periodtypes.Monthly,
 				}
-				expectedDescription = faker.Paragraph()
-				expectedNewTime     = dates.NormalizeDate(time.Date(2022, 12, 26, 0, 0, 0, 0, time.Local))
-				expectedToday       = dates.NormalizeDate(time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local))
+				expectedDescription      = faker.Paragraph()
+				expectedLastCreationDate = dates.NormalizeDate(time.Now())
+				expectedToday            = dates.NormalizeDate(time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local))
 			)
 			timeGetter.EXPECT().GetCurrentTime().Return(expectedToday)
 			coll.InsertOne(ctx, &toUpdate)
 			toUpdate.Description = expectedDescription
-			toUpdate.LastCreationDate = &expectedNewTime
+			toUpdate.LastCreationDate = &expectedLastCreationDate
 
 			err := repo.Update(ctx, &toUpdate)
 			var updated entities.RecurrentExpense
@@ -161,7 +159,7 @@ var _ = Describe("RecurrentExpense", func() {
 			Expect(updated.ID).To(Equal(toUpdate.ID))
 			Expect(updated.Description).To(Equal(expectedDescription))
 			Expect(updated.Periodicity).To(Equal(toUpdate.Periodicity))
-			Expect(updated.LastCreationDate).To(Equal(&expectedNewTime))
+			Expect(updated.LastCreationDate).To(Equal(&expectedLastCreationDate))
 			Expect(updated.CreatedAt).To(Equal(toUpdate.CreatedAt))
 			Expect(updated.UpdatedAt).To(Equal(&expectedToday))
 

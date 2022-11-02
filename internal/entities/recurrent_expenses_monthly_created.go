@@ -16,7 +16,7 @@ type (
 		TotalExpensesPaid  uint                 `json:"total_expenses_paid,omitempty" bson:"total_expenses_paid,omitempty"`
 	}
 	RecurrentExpensesMonthlyCreated struct {
-		ID            primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+		ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 		Month         uint               `json:"month,omitempty" bson:"month,omitempty"`
 		Year          uint               `json:"year,omitempty" bson:"year,omitempty"`
 		ExpensesCount *ExpensesCount     `json:"expenses_count,omitempty" bson:"expenses_count,omitempty"`

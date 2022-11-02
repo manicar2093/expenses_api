@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/pkg/dates"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -14,6 +15,7 @@ type (
 			ctx context.Context,
 			recurrentExpense *entities.RecurrentExpensesMonthlyCreated,
 		)
+		FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error)
 	}
 	RecurrentExpensesMonthlyCreatedRepoImpl struct {
 		coll *mongo.Collection
@@ -32,10 +34,27 @@ func (c *RecurrentExpensesMonthlyCreatedRepoImpl) Save(
 	ctx context.Context,
 	recurrentExpense *entities.RecurrentExpensesMonthlyCreated,
 ) error {
+	nomalizedDate := dates.GetNormalizedDate()
 	recurrentExpense.ID = primitive.NewObjectID()
+	recurrentExpense.CreatedAt = &nomalizedDate
 	_, err := c.coll.InsertOne(ctx, recurrentExpense)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (c *RecurrentExpensesMonthlyCreatedRepoImpl) FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error) {
+	var (
+		found   entities.RecurrentExpensesMonthlyCreated
+		filters = primitive.D{
+			{Key: "month", Value: month},
+			{Key: "year", Value: year},
+		}
+	)
+	if err := c.coll.FindOne(ctx, filters).Decode(&found); err != nil {
+		return nil, err
+	}
+
+	return &found, nil
 }

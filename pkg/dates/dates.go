@@ -28,7 +28,7 @@ func GetNormalizedDate() time.Time {
 }
 
 func NormalizeDate(date time.Time) time.Time {
-	layout := "2006-02-01T15:04:05"
+	layout := "2006-02-01T15:04:05Z"
 	formated := date.Format(layout)
 	t, err := time.Parse(layout, formated)
 	if err != nil {

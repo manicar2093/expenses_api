@@ -2,7 +2,7 @@ package repos_test
 
 import (
 	"context"
-	"time"
+	"log"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
@@ -22,7 +22,7 @@ var _ = Describe("RecurrentExpense", func() {
 
 	BeforeEach(func() {
 		ctx = context.TODO()
-		coll = conn.Collection("recurrent_expenses_created_monthly")
+		coll = conn.Collection("recurrent_expenses_monthly_created")
 		repo = repos.NewRecurrentExpensesCreatedMonthlyRepoImpl(conn)
 
 	})
@@ -30,7 +30,6 @@ var _ = Describe("RecurrentExpense", func() {
 	Describe("Save", func() {
 		It("storage a registry at db", func() {
 			var (
-				expectedCreatedAt                      = time.Now()
 				expectedRecurrentExpenseCreatedMonthly = entities.RecurrentExpensesMonthlyCreated{
 					Month: 11,
 					Year:  2022,
@@ -43,13 +42,38 @@ var _ = Describe("RecurrentExpense", func() {
 						TotalExpenses:     2,
 						TotalExpensesPaid: 0,
 					},
-					CreatedAt: &expectedCreatedAt,
 				}
 			)
 			err := repo.Save(ctx, &expectedRecurrentExpenseCreatedMonthly)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(expectedRecurrentExpenseCreatedMonthly.ID.IsZero()).To(BeFalse())
+
+			testfunc.DeleteOneByObjectID(ctx, coll, expectedRecurrentExpenseCreatedMonthly.ID)
+		})
+	})
+
+	Describe("FindByMonthAndYear", func() {
+		It("returns found data", func() {
+			var (
+				expectedMonth                          = uint(11)
+				expectedYear                           = uint(2022)
+				expectedRecurrentExpenseCreatedMonthly = entities.RecurrentExpensesMonthlyCreated{
+					Month:         expectedMonth,
+					Year:          expectedYear,
+					ExpensesCount: &entities.ExpensesCount{},
+				}
+			)
+			_, err := coll.InsertOne(ctx, &expectedRecurrentExpenseCreatedMonthly)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			got, err := repo.FindByMonthAndYear(ctx, expectedMonth, expectedYear)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got.Month).To(Equal(expectedRecurrentExpenseCreatedMonthly.Month))
+			Expect(got.Year).To(Equal(expectedRecurrentExpenseCreatedMonthly.Year))
 
 			testfunc.DeleteOneByObjectID(ctx, coll, expectedRecurrentExpenseCreatedMonthly.ID)
 		})
