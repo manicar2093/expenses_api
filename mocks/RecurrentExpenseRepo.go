@@ -152,3 +152,41 @@ func (_c *RecurrentExpenseRepo_Save_Call) Return(_a0 error) *RecurrentExpenseRep
 	_c.Call.Return(_a0)
 	return _c
 }
+
+// Update provides a mock function with given fields: ctx, recurrentExpense
+func (_m *RecurrentExpenseRepo) Update(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error {
+	ret := _m.Called(ctx, recurrentExpense)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *entities.RecurrentExpense) error); ok {
+		r0 = rf(ctx, recurrentExpense)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RecurrentExpenseRepo_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type RecurrentExpenseRepo_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//  - ctx context.Context
+//  - recurrentExpense *entities.RecurrentExpense
+func (_e *RecurrentExpenseRepo_Expecter) Update(ctx interface{}, recurrentExpense interface{}) *RecurrentExpenseRepo_Update_Call {
+	return &RecurrentExpenseRepo_Update_Call{Call: _e.mock.On("Update", ctx, recurrentExpense)}
+}
+
+func (_c *RecurrentExpenseRepo_Update_Call) Run(run func(ctx context.Context, recurrentExpense *entities.RecurrentExpense)) *RecurrentExpenseRepo_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*entities.RecurrentExpense))
+	})
+	return _c
+}
+
+func (_c *RecurrentExpenseRepo_Update_Call) Return(_a0 error) *RecurrentExpenseRepo_Update_Call {
+	_c.Call.Return(_a0)
+	return _c
+}

@@ -22,6 +22,7 @@ var (
 	)
 	recurrentExpensesRepo = repos.NewRecurrentExpenseRepoImpl(
 		mongoConn,
+		timeGetter,
 	)
 	timeGetter     = &dates.TimeGetter{}
 	expenseService = expenses.NewExpenseServiceImpl(

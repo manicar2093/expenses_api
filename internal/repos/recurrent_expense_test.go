@@ -8,25 +8,30 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/mocks"
+	"github.com/manicar2093/expenses_api/pkg/dates"
 	"github.com/manicar2093/expenses_api/pkg/periodtypes"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 )
 
 var _ = Describe("RecurrentExpense", func() {
 	var (
-		ctx  context.Context
-		coll *mongo.Collection
-		repo *repos.RecurrentExpenseRepoImpl
+		ctx        context.Context
+		coll       *mongo.Collection
+		timeGetter *mocks.TimeGetable
+		repo       *repos.RecurrentExpenseRepoImpl
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		coll = conn.Collection("recurrent_expenses")
-		repo = repos.NewRecurrentExpenseRepoImpl(conn)
+		timeGetter = &mocks.TimeGetable{}
+		repo = repos.NewRecurrentExpenseRepoImpl(conn, timeGetter)
 
 	})
 
@@ -124,6 +129,43 @@ var _ = Describe("RecurrentExpense", func() {
 			Expect(*got).To(HaveLen(len(dataSaved)))
 
 			testfunc.DeleteManyByObjectID(ctx, coll, inserted)
+		})
+	})
+
+	Describe("Update", func() {
+		It("changes recurrent expense data in db", func() {
+			var (
+				expectedLastCreationDate = time.Now()
+				toUpdate                 = entities.RecurrentExpense{
+					ID:               primitive.NewObjectID(),
+					Name:             faker.Name(),
+					Amount:           faker.Latitude(),
+					Description:      faker.Paragraph(),
+					Periodicity:      periodtypes.Monthly,
+					LastCreationDate: &expectedLastCreationDate,
+				}
+				expectedDescription = faker.Paragraph()
+				expectedNewTime     = dates.NormalizeDate(time.Date(2022, 12, 26, 0, 0, 0, 0, time.Local))
+				expectedToday       = dates.NormalizeDate(time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local))
+			)
+			timeGetter.EXPECT().GetCurrentTime().Return(expectedToday)
+			coll.InsertOne(ctx, &toUpdate)
+			toUpdate.Description = expectedDescription
+			toUpdate.LastCreationDate = &expectedNewTime
+
+			err := repo.Update(ctx, &toUpdate)
+			var updated entities.RecurrentExpense
+			coll.FindOne(ctx, primitive.D{{Key: "_id", Value: toUpdate.ID}}).Decode(&updated)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(updated.ID).To(Equal(toUpdate.ID))
+			Expect(updated.Description).To(Equal(expectedDescription))
+			Expect(updated.Periodicity).To(Equal(toUpdate.Periodicity))
+			Expect(updated.LastCreationDate).To(Equal(&expectedNewTime))
+			Expect(updated.CreatedAt).To(Equal(toUpdate.CreatedAt))
+			Expect(updated.UpdatedAt).To(Equal(&expectedToday))
+
+			testfunc.DeleteOneByObjectID(ctx, coll, toUpdate.ID)
 		})
 	})
 })

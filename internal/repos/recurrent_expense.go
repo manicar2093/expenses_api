@@ -15,15 +15,21 @@ type (
 		Save(ctx context.Context, recExpense *entities.RecurrentExpense) error
 		FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error)
 		FindAll(ctx context.Context) (*[]entities.RecurrentExpense, error)
+		Update(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error
 	}
 	RecurrentExpenseRepoImpl struct {
-		coll *mongo.Collection
+		coll        *mongo.Collection
+		timeGetable dates.TimeGetable
 	}
 )
 
-func NewRecurrentExpenseRepoImpl(conn *mongo.Database) *RecurrentExpenseRepoImpl {
+func NewRecurrentExpenseRepoImpl(
+	conn *mongo.Database,
+	timeGetable dates.TimeGetable,
+) *RecurrentExpenseRepoImpl {
 	return &RecurrentExpenseRepoImpl{
-		coll: conn.Collection(entities.RecurrentExpensesCollectonName),
+		coll:        conn.Collection(entities.RecurrentExpensesCollectonName),
+		timeGetable: timeGetable,
 	}
 }
 
@@ -69,4 +75,23 @@ func (c *RecurrentExpenseRepoImpl) FindAll(ctx context.Context) (*[]entities.Rec
 		result = append(result, temp)
 	}
 	return &result, nil
+}
+
+func (c *RecurrentExpenseRepoImpl) Update(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error {
+	var (
+		today            = c.timeGetable.GetCurrentTime()
+		lastCreationDate = dates.NormalizeDate(*recurrentExpense.LastCreationDate)
+	)
+	recurrentExpense.UpdatedAt = &today
+	recurrentExpense.LastCreationDate = &lastCreationDate
+	_, err := c.coll.ReplaceOne(
+		ctx,
+		primitive.D{{Key: "_id", Value: recurrentExpense.ID}},
+		recurrentExpense,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
