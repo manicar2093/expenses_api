@@ -54,6 +54,7 @@ var _ = Describe("RecurrentExpense", func() {
 	})
 
 	Describe("FindByMonthAndYear", func() {
+
 		It("returns found data", func() {
 			var (
 				expectedMonth                          = uint(11)
@@ -76,6 +77,16 @@ var _ = Describe("RecurrentExpense", func() {
 			Expect(got.Year).To(Equal(expectedRecurrentExpenseCreatedMonthly.Year))
 
 			testfunc.DeleteOneByObjectID(ctx, coll, expectedRecurrentExpenseCreatedMonthly.ID)
+		})
+
+		When("there is any data in db", func() {
+			It("returns both results as nil", func() {
+				got, err := repo.FindByMonthAndYear(ctx, 20, 1993)
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(got).To(BeNil())
+
+			})
 		})
 	})
 })

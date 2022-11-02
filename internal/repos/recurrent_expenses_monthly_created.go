@@ -2,6 +2,7 @@ package repos
 
 import (
 	"context"
+	"errors"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/pkg/dates"
@@ -53,6 +54,9 @@ func (c *RecurrentExpensesMonthlyCreatedRepoImpl) FindByMonthAndYear(ctx context
 		}
 	)
 	if err := c.coll.FindOne(ctx, filters).Decode(&found); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

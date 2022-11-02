@@ -22,6 +22,54 @@ func (_m *RecurrentExpensesMonthlyCreatedRepo) EXPECT() *RecurrentExpensesMonthl
 	return &RecurrentExpensesMonthlyCreatedRepo_Expecter{mock: &_m.Mock}
 }
 
+// FindByMonthAndYear provides a mock function with given fields: ctx, month, year
+func (_m *RecurrentExpensesMonthlyCreatedRepo) FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error) {
+	ret := _m.Called(ctx, month, year)
+
+	var r0 *entities.RecurrentExpensesMonthlyCreated
+	if rf, ok := ret.Get(0).(func(context.Context, uint, uint) *entities.RecurrentExpensesMonthlyCreated); ok {
+		r0 = rf(ctx, month, year)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.RecurrentExpensesMonthlyCreated)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, uint, uint) error); ok {
+		r1 = rf(ctx, month, year)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByMonthAndYear'
+type RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call struct {
+	*mock.Call
+}
+
+// FindByMonthAndYear is a helper method to define mock.On call
+//  - ctx context.Context
+//  - month uint
+//  - year uint
+func (_e *RecurrentExpensesMonthlyCreatedRepo_Expecter) FindByMonthAndYear(ctx interface{}, month interface{}, year interface{}) *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call {
+	return &RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call{Call: _e.mock.On("FindByMonthAndYear", ctx, month, year)}
+}
+
+func (_c *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call) Run(run func(ctx context.Context, month uint, year uint)) *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uint), args[2].(uint))
+	})
+	return _c
+}
+
+func (_c *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call) Return(_a0 *entities.RecurrentExpensesMonthlyCreated, _a1 error) *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
 // Save provides a mock function with given fields: ctx, recurrentExpense
 func (_m *RecurrentExpensesMonthlyCreatedRepo) Save(ctx context.Context, recurrentExpense *entities.RecurrentExpensesMonthlyCreated) {
 	_m.Called(ctx, recurrentExpense)
