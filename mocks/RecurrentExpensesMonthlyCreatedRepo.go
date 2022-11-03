@@ -71,8 +71,17 @@ func (_c *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call) Return(_a
 }
 
 // Save provides a mock function with given fields: ctx, recurrentExpense
-func (_m *RecurrentExpensesMonthlyCreatedRepo) Save(ctx context.Context, recurrentExpense *entities.RecurrentExpensesMonthlyCreated) {
-	_m.Called(ctx, recurrentExpense)
+func (_m *RecurrentExpensesMonthlyCreatedRepo) Save(ctx context.Context, recurrentExpense *entities.RecurrentExpensesMonthlyCreated) error {
+	ret := _m.Called(ctx, recurrentExpense)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *entities.RecurrentExpensesMonthlyCreated) error); ok {
+		r0 = rf(ctx, recurrentExpense)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // RecurrentExpensesMonthlyCreatedRepo_Save_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Save'
@@ -94,7 +103,7 @@ func (_c *RecurrentExpensesMonthlyCreatedRepo_Save_Call) Run(run func(ctx contex
 	return _c
 }
 
-func (_c *RecurrentExpensesMonthlyCreatedRepo_Save_Call) Return() *RecurrentExpensesMonthlyCreatedRepo_Save_Call {
-	_c.Call.Return()
+func (_c *RecurrentExpensesMonthlyCreatedRepo_Save_Call) Return(_a0 error) *RecurrentExpensesMonthlyCreatedRepo_Save_Call {
+	_c.Call.Return(_a0)
 	return _c
 }

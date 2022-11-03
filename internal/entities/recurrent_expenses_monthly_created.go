@@ -19,7 +19,7 @@ type (
 		ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 		Month         uint               `json:"month,omitempty" bson:"month,omitempty"`
 		Year          uint               `json:"year,omitempty" bson:"year,omitempty"`
-		ExpensesCount *ExpensesCount     `json:"expenses_count,omitempty" bson:"expenses_count,omitempty"`
+		ExpensesCount []*ExpensesCount   `json:"expenses_count,omitempty" bson:"expenses_count,omitempty"`
 		CreatedAt     *time.Time         `json:"created_at,omitempty" bson:"created_at,omitempty"`
 	}
 )

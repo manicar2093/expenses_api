@@ -15,7 +15,7 @@ type (
 		Save(
 			ctx context.Context,
 			recurrentExpense *entities.RecurrentExpensesMonthlyCreated,
-		)
+		) error
 		FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error)
 	}
 	RecurrentExpensesMonthlyCreatedRepoImpl struct {
@@ -55,7 +55,10 @@ func (c *RecurrentExpensesMonthlyCreatedRepoImpl) FindByMonthAndYear(ctx context
 	)
 	if err := c.coll.FindOne(ctx, filters).Decode(&found); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			return nil, &NotFoundError{Identifier: map[string]interface{}{
+				"month": &month,
+				"year":  &year,
+			}, Entity: "RecurrentExpensesMonthlyCreated", Message: err.Error()}
 		}
 		return nil, err
 	}

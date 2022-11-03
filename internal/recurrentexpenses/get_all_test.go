@@ -29,12 +29,12 @@ var _ = Describe("GetAll", func() {
 
 	It("returns all registered recurrent expenses", func() {
 		var (
-			expectedRepoReturn = []entities.RecurrentExpense{
+			expectedRepoReturn = []*entities.RecurrentExpense{
 				{}, {}, {},
 			}
 			expectedRecurrentExpensesCount = uint(len(expectedRepoReturn))
 		)
-		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(&expectedRepoReturn, nil)
+		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(expectedRepoReturn, nil)
 
 		got, err := api.GetAll(ctx)
 

@@ -14,7 +14,7 @@ type (
 	RecurrentExpenseRepo interface {
 		Save(ctx context.Context, recExpense *entities.RecurrentExpense) error
 		FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error)
-		FindAll(ctx context.Context) (*[]entities.RecurrentExpense, error)
+		FindAll(ctx context.Context) ([]*entities.RecurrentExpense, error)
 		Update(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error
 	}
 	RecurrentExpenseRepoImpl struct {
@@ -60,21 +60,21 @@ func (c *RecurrentExpenseRepoImpl) FindByName(ctx context.Context, name string) 
 	return &result, nil
 }
 
-func (c *RecurrentExpenseRepoImpl) FindAll(ctx context.Context) (*[]entities.RecurrentExpense, error) {
+func (c *RecurrentExpenseRepoImpl) FindAll(ctx context.Context) ([]*entities.RecurrentExpense, error) {
 	cursor, err := c.coll.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
 
-	var result []entities.RecurrentExpense
+	var result []*entities.RecurrentExpense
 	for cursor.Next(ctx) {
 		var temp entities.RecurrentExpense
 		if err := cursor.Decode(&temp); err != nil {
 			return nil, err
 		}
-		result = append(result, temp)
+		result = append(result, &temp)
 	}
-	return &result, nil
+	return result, nil
 }
 
 func (c *RecurrentExpenseRepoImpl) Update(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error {

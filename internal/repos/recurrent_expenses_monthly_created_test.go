@@ -33,14 +33,16 @@ var _ = Describe("RecurrentExpense", func() {
 				expectedRecurrentExpenseCreatedMonthly = entities.RecurrentExpensesMonthlyCreated{
 					Month: 11,
 					Year:  2022,
-					ExpensesCount: &entities.ExpensesCount{
-						RecurrentExpenseID: primitive.NewObjectID(),
-						ExpensesRelated: []primitive.ObjectID{
-							primitive.NewObjectID(),
-							primitive.NewObjectID(),
+					ExpensesCount: []*entities.ExpensesCount{
+						{
+							RecurrentExpenseID: primitive.NewObjectID(),
+							ExpensesRelated: []primitive.ObjectID{
+								primitive.NewObjectID(),
+								primitive.NewObjectID(),
+							},
+							TotalExpenses:     2,
+							TotalExpensesPaid: 0,
 						},
-						TotalExpenses:     2,
-						TotalExpensesPaid: 0,
 					},
 				}
 			)
@@ -60,9 +62,12 @@ var _ = Describe("RecurrentExpense", func() {
 				expectedMonth                          = uint(11)
 				expectedYear                           = uint(2022)
 				expectedRecurrentExpenseCreatedMonthly = entities.RecurrentExpensesMonthlyCreated{
-					Month:         expectedMonth,
-					Year:          expectedYear,
-					ExpensesCount: &entities.ExpensesCount{},
+					Month: expectedMonth,
+					Year:  expectedYear,
+					ExpensesCount: []*entities.ExpensesCount{
+						{},
+						{},
+					},
 				}
 			)
 			_, err := coll.InsertOne(ctx, &expectedRecurrentExpenseCreatedMonthly)
@@ -71,7 +76,7 @@ var _ = Describe("RecurrentExpense", func() {
 			}
 
 			got, err := repo.FindByMonthAndYear(ctx, expectedMonth, expectedYear)
-
+			log.Println(*got)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Month).To(Equal(expectedRecurrentExpenseCreatedMonthly.Month))
 			Expect(got.Year).To(Equal(expectedRecurrentExpenseCreatedMonthly.Year))
@@ -80,10 +85,10 @@ var _ = Describe("RecurrentExpense", func() {
 		})
 
 		When("there is any data in db", func() {
-			It("returns both results as nil", func() {
+			It("returns a NotFoundError", func() {
 				got, err := repo.FindByMonthAndYear(ctx, 20, 1993)
 
-				Expect(err).ToNot(HaveOccurred())
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(got).To(BeNil())
 
 			})

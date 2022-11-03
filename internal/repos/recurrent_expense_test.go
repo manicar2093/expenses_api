@@ -126,7 +126,7 @@ var _ = Describe("RecurrentExpense", func() {
 			got, err := repo.FindAll(ctx)
 
 			Expect(err).ToNot(HaveOccurred())
-			Expect(*got).To(HaveLen(len(dataSaved)))
+			Expect(got).To(HaveLen(len(dataSaved)))
 
 			testfunc.DeleteManyByObjectID(ctx, coll, inserted)
 		})

@@ -45,7 +45,7 @@ func (c *CreateMonthlyRecurrentExpensesImpl) CreateMonthlyRecurrentExpenses(ctx 
 	nextMonthDate := c.timeGetable.GetNextMonthAtFirtsDay()
 	nextMonthAsUint := uint(nextMonthDate.Month())
 	var expensesCreated []entities.Expense
-	for _, recurrentExpense := range *allRecurrentExpensesRegistered {
+	for _, recurrentExpense := range allRecurrentExpensesRegistered {
 		_, err := c.expensesRepo.FindByNameAndMonthAndIsRecurrent(ctx, nextMonthAsUint, recurrentExpense.Name)
 		if err != nil {
 			_, isNotFound := err.(*repos.NotFoundError)

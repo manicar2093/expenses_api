@@ -33,7 +33,7 @@ var _ = Describe("CreateMonthly", func() {
 		expectedAmount2                      float64
 		expectedAmount3                      float64
 		expectedAmount4                      float64
-		expectedRecurrenteExpensesFound      []entities.RecurrentExpense
+		expectedRecurrenteExpensesFound      []*entities.RecurrentExpense
 		expectedExpensesToCreate             []entities.Expense
 	)
 
@@ -54,7 +54,7 @@ var _ = Describe("CreateMonthly", func() {
 		expectedAmount2 = faker.Latitude()
 		expectedAmount3 = faker.Latitude()
 		expectedAmount4 = faker.Latitude()
-		expectedRecurrenteExpensesFound = []entities.RecurrentExpense{
+		expectedRecurrenteExpensesFound = []*entities.RecurrentExpense{
 			{Name: expectedName1, Amount: expectedAmount1},
 			{Name: expectedName2, Amount: expectedAmount2},
 			{Name: expectedName3, Amount: expectedAmount3},
@@ -77,7 +77,7 @@ var _ = Describe("CreateMonthly", func() {
 
 	It("finds all recurrent expenses and creates them as expenses", func() {
 		timeGetableMock.EXPECT().GetNextMonthAtFirtsDay().Return(expectedGetNextMonthAtFirtsDayReturn)
-		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(&expectedRecurrenteExpensesFound, nil)
+		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(expectedRecurrenteExpensesFound, nil)
 		expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[0].Name).Return(nil, &repos.NotFoundError{}).Once()
 		expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[1].Name).Return(nil, &repos.NotFoundError{}).Once()
 		expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[2].Name).Return(nil, &repos.NotFoundError{}).Once()
@@ -96,7 +96,7 @@ var _ = Describe("CreateMonthly", func() {
 	When("some expenses was already created as recurrent expense", func() {
 		It("avoids creation", func() {
 			timeGetableMock.EXPECT().GetNextMonthAtFirtsDay().Return(expectedGetNextMonthAtFirtsDayReturn)
-			recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(&expectedRecurrenteExpensesFound, nil)
+			recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(expectedRecurrenteExpensesFound, nil)
 			expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[0].Name).Return(&expectedExpensesToCreate[0], nil).Once()
 			expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[1].Name).Return(&expectedExpensesToCreate[1], nil).Once()
 			expensesRepoMock.EXPECT().FindByNameAndMonthAndIsRecurrent(ctx, expectedMonth, expectedRecurrenteExpensesFound[2].Name).Return(nil, &repos.NotFoundError{}).Once()
