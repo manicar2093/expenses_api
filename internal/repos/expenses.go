@@ -155,7 +155,6 @@ func (c *ExpensesRepositoryImpl) SaveMany(
 	ctx context.Context,
 	expenses []*entities.Expense,
 ) (*InsertManyResult, error) {
-
 	insertable := []interface{}{}
 	for _, expense := range expenses {
 		expense.ID = primitive.NewObjectID()

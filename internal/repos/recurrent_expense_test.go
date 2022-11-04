@@ -147,13 +147,13 @@ var _ = Describe("RecurrentExpense", func() {
 				expectedToday            = dates.NormalizeDate(time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local))
 			)
 			timeGetter.EXPECT().GetCurrentTime().Return(expectedToday)
-			coll.InsertOne(ctx, &toUpdate)
+			coll.InsertOne(ctx, &toUpdate) //nolint:errcheck
 			toUpdate.Description = expectedDescription
 			toUpdate.LastCreationDate = &expectedLastCreationDate
 
 			err := repo.Update(ctx, &toUpdate)
 			var updated entities.RecurrentExpense
-			coll.FindOne(ctx, primitive.D{{Key: "_id", Value: toUpdate.ID}}).Decode(&updated)
+			coll.FindOne(ctx, primitive.D{{Key: "_id", Value: toUpdate.ID}}).Decode(&updated) //nolint:errcheck
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(updated.ID).To(Equal(toUpdate.ID))

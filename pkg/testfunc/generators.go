@@ -1,11 +1,9 @@
 package testfunc
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
-func GeneratePrimitiveObjectIDs(quantity uint) []primitive.ObjectID {
-	var res []primitive.ObjectID
+func SliceGenerator[T any](quantity uint, creator func() T) []T {
+	var res []T
 	for i := 0; i < int(quantity); i++ {
-		res = append(res, primitive.NewObjectID())
+		res = append(res, creator())
 	}
 	return res
 }

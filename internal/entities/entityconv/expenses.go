@@ -1,4 +1,4 @@
-package converters
+package entityconv
 
 import (
 	"time"

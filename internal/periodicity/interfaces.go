@@ -15,4 +15,3 @@ type ExpensePeriodicityCreateable interface {
 		error,
 	)
 }
-
