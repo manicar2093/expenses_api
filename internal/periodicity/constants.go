@@ -9,17 +9,17 @@ import (
 )
 
 type (
-	periodicityAction func(
+	PeriodicityAction func(
 		uint,
 		time.Time,
 		*entities.RecurrentExpense,
-		timeValidatorFunc,
+		TimeValidatorFunc,
 	) ([]*entities.Expense, bool)
 
-	timeValidatorFunc func(*time.Time, *time.Time, uint) bool
+	TimeValidatorFunc func(*time.Time, *time.Time, uint) bool
 )
 
-var periodicityActionMap = map[periodtypes.Periodicity]periodicityAction{
+var periodicityActionMap = map[periodtypes.Periodicity]PeriodicityAction{
 	periodtypes.Periodicity(0): defaulfExpensesGenerator,
 	periodtypes.Daily:          defaulfExpensesGenerator,
 	periodtypes.Weekly:         defaulfExpensesGenerator,
@@ -36,7 +36,7 @@ func defaulfExpensesGenerator(
 	quantity uint,
 	today time.Time,
 	recurrentExpense *entities.RecurrentExpense,
-	timeValidator timeValidatorFunc,
+	timeValidator TimeValidatorFunc,
 ) ([]*entities.Expense, bool) {
 	if timeValidation(today, recurrentExpense, timeValidator) {
 		return nil, false
@@ -51,7 +51,7 @@ func defaulfExpensesGenerator(
 func timeValidation(
 	today time.Time,
 	recurrentExpense *entities.RecurrentExpense,
-	timeValidator timeValidatorFunc,
+	timeValidator TimeValidatorFunc,
 ) bool {
 	return timeValidator != nil && !timeValidator(
 		&today,

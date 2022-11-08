@@ -3,12 +3,14 @@ package repos_test
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -76,7 +78,7 @@ var _ = Describe("RecurrentExpense", func() {
 			}
 
 			got, err := repo.FindByMonthAndYear(ctx, expectedMonth, expectedYear)
-			log.Println(*got)
+
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Month).To(Equal(expectedRecurrentExpenseCreatedMonthly.Month))
 			Expect(got.Year).To(Equal(expectedRecurrentExpenseCreatedMonthly.Year))
@@ -94,4 +96,55 @@ var _ = Describe("RecurrentExpense", func() {
 			})
 		})
 	})
+
+	Describe("Update", func() {
+		It("updates data in db with given instace", func() {
+			var (
+				expectedRecurrentExpenseCreatedMonthlySavedCreatedAt = time.Now()
+				expectedRecurrentExpenseCreatedMonthlySavedID        = primitive.NewObjectID()
+				expectedRecurrentExpenseCreatedMonthlySaved          = entities.RecurrentExpensesMonthlyCreated{
+					ID:    expectedRecurrentExpenseCreatedMonthlySavedID,
+					Month: 11,
+					Year:  2022,
+					ExpensesCount: []*entities.ExpensesCount{
+						{
+							RecurrentExpenseID: primitive.NewObjectID(),
+							ExpensesRelated:    []primitive.ObjectID{primitive.NewObjectID(), primitive.NewObjectID()},
+							TotalExpenses:      2,
+							TotalExpensesPaid:  0,
+						},
+					},
+					CreatedAt: &expectedRecurrentExpenseCreatedMonthlySavedCreatedAt,
+				}
+				expectedUpdatedRecurrentExpenseCreatedMonthly = entities.RecurrentExpensesMonthlyCreated{
+					ID:    expectedRecurrentExpenseCreatedMonthlySavedID,
+					Month: 11,
+					Year:  2022,
+					ExpensesCount: []*entities.ExpensesCount{
+						{
+							RecurrentExpenseID: primitive.NewObjectID(),
+							ExpensesRelated:    []primitive.ObjectID{primitive.NewObjectID()},
+							TotalExpenses:      1,
+							TotalExpensesPaid:  0,
+						},
+					},
+					CreatedAt: &expectedRecurrentExpenseCreatedMonthlySavedCreatedAt,
+				}
+			)
+			inserted, _ := coll.InsertOne(ctx, expectedRecurrentExpenseCreatedMonthlySaved)
+
+			err := repo.Update(ctx, &expectedUpdatedRecurrentExpenseCreatedMonthly)
+
+			var fromDB entities.RecurrentExpensesMonthlyCreated
+			coll.FindOne(ctx, bson.D{{Key: "_id", Value: inserted.InsertedID}}).Decode(&fromDB) //nolint:errcheck
+			Expect(err).ToNot(HaveOccurred())
+			Expect(fromDB.ID).To(Equal(expectedUpdatedRecurrentExpenseCreatedMonthly.ID))
+			Expect(fromDB.Month).To(Equal(expectedUpdatedRecurrentExpenseCreatedMonthly.Month))
+			Expect(fromDB.Year).To(Equal(expectedUpdatedRecurrentExpenseCreatedMonthly.Year))
+			Expect(fromDB.ExpensesCount).To(Equal(expectedUpdatedRecurrentExpenseCreatedMonthly.ExpensesCount))
+
+			testfunc.DeleteOneByObjectID(ctx, coll, inserted.InsertedID.(primitive.ObjectID))
+		})
+	})
+
 })

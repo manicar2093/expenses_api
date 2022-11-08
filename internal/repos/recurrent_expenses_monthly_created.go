@@ -6,6 +6,7 @@ import (
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -17,6 +18,7 @@ type (
 			recurrentExpense *entities.RecurrentExpensesMonthlyCreated,
 		) error
 		FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error)
+		Update(ctx context.Context, recurrentExpense *entities.RecurrentExpensesMonthlyCreated) error
 	}
 	RecurrentExpensesMonthlyCreatedRepoImpl struct {
 		coll *mongo.Collection
@@ -64,4 +66,12 @@ func (c *RecurrentExpensesMonthlyCreatedRepoImpl) FindByMonthAndYear(ctx context
 	}
 
 	return &found, nil
+}
+
+func (c *RecurrentExpensesMonthlyCreatedRepoImpl) Update(ctx context.Context, recurrentExpense *entities.RecurrentExpensesMonthlyCreated) error {
+	_, err := c.coll.ReplaceOne(ctx, bson.D{{Key: "_id", Value: recurrentExpense.ID}}, recurrentExpense)
+	if err != nil {
+		return err
+	}
+	return nil
 }
