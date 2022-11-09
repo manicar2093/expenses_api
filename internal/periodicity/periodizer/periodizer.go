@@ -2,7 +2,6 @@ package periodizer
 
 import (
 	"context"
-	"log"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"

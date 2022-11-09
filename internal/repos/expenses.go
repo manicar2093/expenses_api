@@ -132,8 +132,12 @@ func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expen
 		return nil, err
 	}
 	var (
-		filter       = bson.D{{Key: "_id", Value: expenseObjectID}}
-		projection   = bson.D{{Key: "_id", Value: 1}, {Key: "is_paid", Value: 1}}
+		filter     = bson.D{{Key: "_id", Value: expenseObjectID}}
+		projection = bson.D{
+			{Key: "_id", Value: 1},
+			{Key: "is_paid", Value: 1},
+			{Key: "recurrent_expense_id", Value: 1},
+		}
 		expenseFound = schemas.ExpenseIDWithIsPaidStatus{}
 	)
 

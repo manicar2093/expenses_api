@@ -3,6 +3,7 @@ package schemas
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type ExpenseIDWithIsPaidStatus struct {
-	ID     primitive.ObjectID `json:"id,omitempty" bson:"_id"`
-	IsPaid bool               `json:"is_paid,omitempty" bson:"is_paid"`
+	ID                 primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+	IsPaid             bool               `json:"is_paid,omitempty" bson:"is_paid"`
+	RecurrentExpenseID primitive.ObjectID `json:"recurrent_expense_id,omitempty" bson:"recurrent_expense_id,omitempty"`
 }

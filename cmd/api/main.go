@@ -35,8 +35,6 @@ var (
 	)
 	createRecurrentExpense = recurrentexpenses.NewCreateRecurrentExpenseImpl(
 		recurrentExpensesRepo,
-		expensesRepo,
-		timeGetter,
 	)
 	getAllRecurrentExpenses = recurrentexpenses.NewGetAllRecurrentExpensesImpl(
 		recurrentExpensesRepo,

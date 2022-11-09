@@ -40,6 +40,7 @@ func (c *ExpensePeriodicityServiceImpl) GenerateRecurrentExpensesByYearAndMonth(
 	*entities.RecurrentExpensesMonthlyCreated,
 	error,
 ) {
+	log.Println("month:", month, "year:", year)
 	savedData, err := c.recurrentExpensesMonthlyCreatedRepo.FindByCurrentMonthAndYear(ctx, month, year)
 	_, notFound := err.(*repos.NotFoundError)
 	switch {

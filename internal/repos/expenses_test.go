@@ -2,6 +2,7 @@ package repos_test
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -260,21 +261,25 @@ var _ = Describe("ExpensesImpl", func() {
 	Describe("GetExpenseStatusByID", func() {
 		It("finds a expense by ID retriving just is_paid and its ID", func() {
 			var (
-				expectedStatus = true
-				expectedID     = primitive.NewObjectID()
-				mockData       = entities.Expense{
-					ID:     expectedID,
-					Name:   faker.Name(),
-					IsPaid: expectedStatus,
+				expectedStatus             = true
+				expectedID                 = primitive.NewObjectID()
+				expectedRecurrentExpenseID = primitive.NewObjectID()
+				mockData                   = entities.Expense{
+					ID:                 expectedID,
+					RecurrentExpenseID: expectedRecurrentExpenseID,
+					Name:               faker.Name(),
+					IsPaid:             expectedStatus,
 				}
 			)
 			inserted, _ := coll.InsertOne(ctx, mockData)
 
 			got, err := repo.GetExpenseStatusByID(ctx, expectedID.Hex())
+			log.Println(got.RecurrentExpenseID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.ID).To(Equal(inserted.InsertedID))
 			Expect(got.IsPaid).To(Equal(expectedStatus))
+			Expect(got.RecurrentExpenseID).To(Equal(expectedRecurrentExpenseID))
 
 			testfunc.DeleteOneByObjectID(ctx, coll, expectedID)
 		})
