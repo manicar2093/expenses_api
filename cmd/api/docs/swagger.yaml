@@ -26,10 +26,37 @@ definitions:
         type: integer
       name:
         type: string
+      recurrent_expense:
+        $ref: '#/definitions/entities.RecurrentExpense'
+      recurrent_expense_id:
+        type: string
       updated_at:
         type: string
       year:
         type: integer
+    type: object
+  entities.RecurrentExpense:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      expenses:
+        items:
+          $ref: '#/definitions/entities.Expense'
+        type: array
+      id:
+        type: string
+      last_creation_date:
+        type: string
+      name:
+        type: string
+      periodicity:
+        type: integer
+      updated_at:
+        type: string
     type: object
   expenses.CreateExpenseInput:
     properties:
@@ -59,6 +86,13 @@ definitions:
       id:
         type: string
     type: object
+  recurrentexpenses.CreateMonthlyRecurrentExpensesOutput:
+    properties:
+      expenses_created:
+        items:
+          $ref: '#/definitions/entities.Expense'
+        type: array
+    type: object
   recurrentexpenses.CreateRecurrentExpenseInput:
     properties:
       amount:
@@ -67,6 +101,45 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  recurrentexpenses.CreateRecurrentExpenseOutput:
+    properties:
+      recurrent_expense:
+        $ref: '#/definitions/entities.RecurrentExpense'
+    type: object
+  recurrentexpenses.GetAllRecurrentExpensesOutput:
+    properties:
+      recurrent_expenses:
+        items:
+          $ref: '#/definitions/entities.RecurrentExpense'
+        type: array
+      recurrente_expenses_count:
+        type: integer
+    type: object
+  reports.CurrentMonthDetailsOutput:
+    properties:
+      expenses:
+        items:
+          $ref: '#/definitions/entities.Expense'
+        type: array
+      expenses_count:
+        type: integer
+      paid_expenses:
+        items:
+          $ref: '#/definitions/entities.Expense'
+        type: array
+      paid_expenses_count:
+        type: integer
+      total_paid_amount:
+        type: number
+      total_unpaid_amount:
+        type: number
+      unpaid_expenses:
+        items:
+          $ref: '#/definitions/entities.Expense'
+        type: array
+      unpaid_expenses_count:
+        type: integer
     type: object
 info:
   contact: {}
@@ -179,6 +252,8 @@ paths:
       responses:
         "201":
           description: Created
+          schema:
+            $ref: '#/definitions/recurrentexpenses.CreateRecurrentExpenseOutput'
         "500":
           description: Internal Server Error
       summary: Create a recurrent expense
@@ -192,6 +267,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/recurrentexpenses.GetAllRecurrentExpensesOutput'
         "500":
           description: Internal Server Error
       summary: Get all recurrent expense
@@ -205,6 +282,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/recurrentexpenses.CreateMonthlyRecurrentExpensesOutput'
         "500":
           description: Internal Server Error
       summary: Create expenses from all recurrent expenses into db
@@ -218,6 +297,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/reports.CurrentMonthDetailsOutput'
         "500":
           description: Internal Server Error
       summary: Get current month details

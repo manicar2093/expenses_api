@@ -8,6 +8,8 @@ import (
 	"github.com/manicar2093/expenses_api/internal/connections"
 	_ "github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
+	"github.com/manicar2093/expenses_api/internal/periodicity"
+	"github.com/manicar2093/expenses_api/internal/periodicity/periodizer"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
@@ -24,7 +26,15 @@ var (
 		mongoConn,
 		timeGetter,
 	)
-	timeGetter     = &dates.TimeGetter{}
+	timeGetter         = &dates.TimeGetter{}
+	periodicityService = periodicity.NewExpensePeriodicityServiceImpl(
+		expensesRepo,
+		recurrentExpensesRepo,
+		repos.NewRecurrentExpensesCreatedMonthlyRepoImpl(mongoConn),
+		timeGetter,
+		periodizer.NewPeriodicityService(expensesRepo, recurrentExpensesRepo, timeGetter),
+		repos.NewExpensesCountMongoRepo(mongoConn),
+	)
 	expenseService = expenses.NewExpenseServiceImpl(
 		expensesRepo,
 		timeGetter,
@@ -32,6 +42,7 @@ var (
 	getCurrentMonth = reports.NewCurrentMonthDetailsImpl(
 		expensesRepo,
 		timeGetter,
+		periodicityService,
 	)
 	createRecurrentExpense = recurrentexpenses.NewCreateRecurrentExpenseImpl(
 		recurrentExpensesRepo,

@@ -25,11 +25,11 @@ func (c *ReportsController) Register() {
 // @Description Generates current month general details
 // @Tags        reports
 // @Produce     json
-// @Success     200
+// @Success     200 {object} reports.CurrentMonthDetailsOutput
 // @Failure     500
 // @Router      /reports/current_month [get]
 func (c *ReportsController) currentMonth(ctx echo.Context) error {
-	currentMonthDetails, err := c.getCurrentMonth.GetExpenses(ctx.Request().Context())
+	currentMonthDetails, err := c.getCurrentMonth.GetCurrentMonthDetails(ctx.Request().Context())
 	if err != nil {
 		return errors.CreateResponseFromError(ctx, err)
 	}

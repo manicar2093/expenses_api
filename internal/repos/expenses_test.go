@@ -2,7 +2,6 @@ package repos_test
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"time"
 
@@ -274,7 +273,6 @@ var _ = Describe("ExpensesImpl", func() {
 			inserted, _ := coll.InsertOne(ctx, mockData)
 
 			got, err := repo.GetExpenseStatusByID(ctx, expectedID.Hex())
-			log.Println(got.RecurrentExpenseID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.ID).To(Equal(inserted.InsertedID))

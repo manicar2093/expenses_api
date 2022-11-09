@@ -9,13 +9,6 @@ import (
 const RecurrentExpensesCreatedMonthlyCollectionName = "recurrent_expenses_monthly_created"
 
 type (
-	ExpensesCount struct {
-		RecurrentExpenseID primitive.ObjectID   `json:"recurrent_expense_id,omitempty" bson:"recurrent_expense_id,omitempty"`
-		RecurrentExpense   *RecurrentExpense    `json:"recurrent_expense,omitempty" bson:"-"`
-		ExpensesRelated    []primitive.ObjectID `json:"expenses_related,omitempty" bson:"expenses_related,omitempty"`
-		TotalExpenses      uint                 `json:"total_expenses,omitempty" bson:"total_expenses,omitempty"`
-		TotalExpensesPaid  uint                 `json:"total_expenses_paid,omitempty" bson:"total_expenses_paid,omitempty"`
-	}
 	RecurrentExpensesMonthlyCreated struct {
 		ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 		Month         uint               `json:"month,omitempty" bson:"month,omitempty"`

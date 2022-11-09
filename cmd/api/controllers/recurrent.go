@@ -43,7 +43,7 @@ func (c *RecurrentExpensesController) Register() {
 // @Accept      json
 // @Produce     json
 // @Param       recurrent_expense body recurrentexpenses.CreateRecurrentExpenseInput true "Recurrent Expense"
-// @Success     201
+// @Success     201 {object} recurrentexpenses.CreateRecurrentExpenseOutput
 // @Failure     500
 // @Router      /recurrent_expenses [post]
 func (c *RecurrentExpensesController) create(ctx echo.Context) error {
@@ -62,7 +62,7 @@ func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 // @Description Finds all recurrent expenses registered in db
 // @Tags        recurrent expenses
 // @Produce     json
-// @Success     200
+// @Success     200 {object} recurrentexpenses.GetAllRecurrentExpensesOutput
 // @Failure     500
 // @Router      /recurrent_expenses/all [get]
 func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
@@ -77,7 +77,7 @@ func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
 // @Description Register expenses from all recurrent expenses for current month
 // @Tags        recurrent expenses
 // @Produce     json
-// @Success     200
+// @Success     200 {object} recurrentexpenses.CreateMonthlyRecurrentExpensesOutput
 // @Failure     500
 // @Router      /recurrent_expenses/monthly_expenses [post]
 func (c *RecurrentExpensesController) createMonthly(ctx echo.Context) error {

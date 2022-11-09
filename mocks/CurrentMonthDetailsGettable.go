@@ -22,8 +22,8 @@ func (_m *CurrentMonthDetailsGettable) EXPECT() *CurrentMonthDetailsGettable_Exp
 	return &CurrentMonthDetailsGettable_Expecter{mock: &_m.Mock}
 }
 
-// GetExpenses provides a mock function with given fields: ctx
-func (_m *CurrentMonthDetailsGettable) GetExpenses(ctx context.Context) (*reports.CurrentMonthDetailsOutput, error) {
+// GetCurrentMonthDetails provides a mock function with given fields: ctx
+func (_m *CurrentMonthDetailsGettable) GetCurrentMonthDetails(ctx context.Context) (*reports.CurrentMonthDetailsOutput, error) {
 	ret := _m.Called(ctx)
 
 	var r0 *reports.CurrentMonthDetailsOutput
@@ -45,25 +45,25 @@ func (_m *CurrentMonthDetailsGettable) GetExpenses(ctx context.Context) (*report
 	return r0, r1
 }
 
-// CurrentMonthDetailsGettable_GetExpenses_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetExpenses'
-type CurrentMonthDetailsGettable_GetExpenses_Call struct {
+// CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCurrentMonthDetails'
+type CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call struct {
 	*mock.Call
 }
 
-// GetExpenses is a helper method to define mock.On call
+// GetCurrentMonthDetails is a helper method to define mock.On call
 //  - ctx context.Context
-func (_e *CurrentMonthDetailsGettable_Expecter) GetExpenses(ctx interface{}) *CurrentMonthDetailsGettable_GetExpenses_Call {
-	return &CurrentMonthDetailsGettable_GetExpenses_Call{Call: _e.mock.On("GetExpenses", ctx)}
+func (_e *CurrentMonthDetailsGettable_Expecter) GetCurrentMonthDetails(ctx interface{}) *CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call {
+	return &CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call{Call: _e.mock.On("GetCurrentMonthDetails", ctx)}
 }
 
-func (_c *CurrentMonthDetailsGettable_GetExpenses_Call) Run(run func(ctx context.Context)) *CurrentMonthDetailsGettable_GetExpenses_Call {
+func (_c *CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call) Run(run func(ctx context.Context)) *CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context))
 	})
 	return _c
 }
 
-func (_c *CurrentMonthDetailsGettable_GetExpenses_Call) Return(_a0 *reports.CurrentMonthDetailsOutput, _a1 error) *CurrentMonthDetailsGettable_GetExpenses_Call {
+func (_c *CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call) Return(_a0 *reports.CurrentMonthDetailsOutput, _a1 error) *CurrentMonthDetailsGettable_GetCurrentMonthDetails_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }

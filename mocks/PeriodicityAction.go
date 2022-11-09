@@ -6,7 +6,7 @@ import (
 	entities "github.com/manicar2093/expenses_api/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 
-	periodicity "github.com/manicar2093/expenses_api/internal/periodicity"
+	periodizer "github.com/manicar2093/expenses_api/internal/periodicity/periodizer"
 
 	time "time"
 )
@@ -25,11 +25,11 @@ func (_m *PeriodicityAction) EXPECT() *PeriodicityAction_Expecter {
 }
 
 // Execute provides a mock function with given fields: _a0, _a1, _a2, _a3
-func (_m *PeriodicityAction) Execute(_a0 uint, _a1 time.Time, _a2 *entities.RecurrentExpense, _a3 periodicity.TimeValidatorFunc) ([]*entities.Expense, bool) {
+func (_m *PeriodicityAction) Execute(_a0 uint, _a1 time.Time, _a2 *entities.RecurrentExpense, _a3 periodizer.TimeValidatorFunc) ([]*entities.Expense, bool) {
 	ret := _m.Called(_a0, _a1, _a2, _a3)
 
 	var r0 []*entities.Expense
-	if rf, ok := ret.Get(0).(func(uint, time.Time, *entities.RecurrentExpense, periodicity.TimeValidatorFunc) []*entities.Expense); ok {
+	if rf, ok := ret.Get(0).(func(uint, time.Time, *entities.RecurrentExpense, periodizer.TimeValidatorFunc) []*entities.Expense); ok {
 		r0 = rf(_a0, _a1, _a2, _a3)
 	} else {
 		if ret.Get(0) != nil {
@@ -38,7 +38,7 @@ func (_m *PeriodicityAction) Execute(_a0 uint, _a1 time.Time, _a2 *entities.Recu
 	}
 
 	var r1 bool
-	if rf, ok := ret.Get(1).(func(uint, time.Time, *entities.RecurrentExpense, periodicity.TimeValidatorFunc) bool); ok {
+	if rf, ok := ret.Get(1).(func(uint, time.Time, *entities.RecurrentExpense, periodizer.TimeValidatorFunc) bool); ok {
 		r1 = rf(_a0, _a1, _a2, _a3)
 	} else {
 		r1 = ret.Get(1).(bool)
@@ -56,14 +56,14 @@ type PeriodicityAction_Execute_Call struct {
 //  - _a0 uint
 //  - _a1 time.Time
 //  - _a2 *entities.RecurrentExpense
-//  - _a3 periodicity.TimeValidatorFunc
+//  - _a3 periodizer.TimeValidatorFunc
 func (_e *PeriodicityAction_Expecter) Execute(_a0 interface{}, _a1 interface{}, _a2 interface{}, _a3 interface{}) *PeriodicityAction_Execute_Call {
 	return &PeriodicityAction_Execute_Call{Call: _e.mock.On("Execute", _a0, _a1, _a2, _a3)}
 }
 
-func (_c *PeriodicityAction_Execute_Call) Run(run func(_a0 uint, _a1 time.Time, _a2 *entities.RecurrentExpense, _a3 periodicity.TimeValidatorFunc)) *PeriodicityAction_Execute_Call {
+func (_c *PeriodicityAction_Execute_Call) Run(run func(_a0 uint, _a1 time.Time, _a2 *entities.RecurrentExpense, _a3 periodizer.TimeValidatorFunc)) *PeriodicityAction_Execute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(uint), args[1].(time.Time), args[2].(*entities.RecurrentExpense), args[3].(periodicity.TimeValidatorFunc))
+		run(args[0].(uint), args[1].(time.Time), args[2].(*entities.RecurrentExpense), args[3].(periodizer.TimeValidatorFunc))
 	})
 	return _c
 }

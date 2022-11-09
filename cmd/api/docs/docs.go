@@ -179,7 +179,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created"
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/recurrentexpenses.CreateRecurrentExpenseOutput"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -199,7 +202,10 @@ const docTemplate = `{
                 "summary": "Get all recurrent expense",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/recurrentexpenses.GetAllRecurrentExpensesOutput"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -219,7 +225,10 @@ const docTemplate = `{
                 "summary": "Create expenses from all recurrent expenses into db",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/recurrentexpenses.CreateMonthlyRecurrentExpensesOutput"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -239,7 +248,10 @@ const docTemplate = `{
                 "summary": "Get current month details",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/reports.CurrentMonthDetailsOutput"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -290,11 +302,52 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "recurrent_expense": {
+                    "$ref": "#/definitions/entities.RecurrentExpense"
+                },
+                "recurrent_expense_id": {
+                    "type": "string"
+                },
                 "updated_at": {
                     "type": "string"
                 },
                 "year": {
                     "type": "integer"
+                }
+            }
+        },
+        "entities.RecurrentExpense": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expenses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Expense"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_creation_date": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "periodicity": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -342,6 +395,17 @@ const docTemplate = `{
                 }
             }
         },
+        "recurrentexpenses.CreateMonthlyRecurrentExpensesOutput": {
+            "type": "object",
+            "properties": {
+                "expenses_created": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Expense"
+                    }
+                }
+            }
+        },
         "recurrentexpenses.CreateRecurrentExpenseInput": {
             "type": "object",
             "properties": {
@@ -353,6 +417,66 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "recurrentexpenses.CreateRecurrentExpenseOutput": {
+            "type": "object",
+            "properties": {
+                "recurrent_expense": {
+                    "$ref": "#/definitions/entities.RecurrentExpense"
+                }
+            }
+        },
+        "recurrentexpenses.GetAllRecurrentExpensesOutput": {
+            "type": "object",
+            "properties": {
+                "recurrent_expenses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.RecurrentExpense"
+                    }
+                },
+                "recurrente_expenses_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "reports.CurrentMonthDetailsOutput": {
+            "type": "object",
+            "properties": {
+                "expenses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Expense"
+                    }
+                },
+                "expenses_count": {
+                    "type": "integer"
+                },
+                "paid_expenses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Expense"
+                    }
+                },
+                "paid_expenses_count": {
+                    "type": "integer"
+                },
+                "total_paid_amount": {
+                    "type": "number"
+                },
+                "total_unpaid_amount": {
+                    "type": "number"
+                },
+                "unpaid_expenses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Expense"
+                    }
+                },
+                "unpaid_expenses_count": {
+                    "type": "integer"
                 }
             }
         }

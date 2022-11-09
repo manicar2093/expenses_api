@@ -121,6 +121,8 @@ var _ = Describe("RecurrentExpense", func() {
 					bson.D{{Key: "name", Value: faker.Name()}},
 				}
 			)
+			// avoid conflicts with recurrent expense monthly created FindByCurrentMonthAndYear testing
+			coll.Drop(ctx) //nolint:errcheck
 			inserted, _ := coll.InsertMany(ctx, dataSaved)
 
 			got, err := repo.FindAll(ctx)

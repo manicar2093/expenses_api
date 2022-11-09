@@ -24,6 +24,7 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 		recurrentExpensesMonthlyCreatedRepoMock *mocks.RecurrentExpensesMonthlyCreatedRepo
 		timeGetterMock                          *mocks.TimeGetable
 		periodizerExpensesGenMock               *mocks.ExpensesCountByRecurrentExpensePeriodicityGenerable
+		expensesCountRepoMock                   *mocks.ExpensesCountRepo
 		ctx                                     context.Context
 		service                                 *periodicity.ExpensePeriodicityServiceImpl
 	)
@@ -34,6 +35,7 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 		recurrentExpensesMonthlyCreatedRepoMock = &mocks.RecurrentExpensesMonthlyCreatedRepo{}
 		timeGetterMock = &mocks.TimeGetable{}
 		periodizerExpensesGenMock = &mocks.ExpensesCountByRecurrentExpensePeriodicityGenerable{}
+		expensesCountRepoMock = &mocks.ExpensesCountRepo{}
 		ctx = context.Background()
 		service = periodicity.NewExpensePeriodicityServiceImpl(
 			expensesRepoMock,
@@ -41,16 +43,18 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 			recurrentExpensesMonthlyCreatedRepoMock,
 			timeGetterMock,
 			periodizerExpensesGenMock,
+			expensesCountRepoMock,
 		)
 	})
 
 	AfterEach(func() {
-		T := GinkgoT()
+		T := GinkgoT() //nolint:varnamelen
 		expensesRepoMock.AssertExpectations(T)
 		recurrentExpensesRepoMock.AssertExpectations(T)
 		recurrentExpensesMonthlyCreatedRepoMock.AssertExpectations(T)
 		timeGetterMock.AssertExpectations(T)
 		periodizerExpensesGenMock.AssertExpectations(T)
+		expensesCountRepoMock.AssertExpectations(T)
 	})
 
 	Describe("GenerateRecurrentExpensesByYearAndMonth", func() {
@@ -86,7 +90,7 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 						ExpensesCount: []*entities.ExpensesCount{
 							{
 								RecurrentExpenseID: primitive.NewObjectID(),
-								ExpensesRelated: []primitive.ObjectID{
+								ExpensesRelatedIDs: []primitive.ObjectID{
 									primitive.NewObjectID(),
 									primitive.NewObjectID(),
 									primitive.NewObjectID(),
@@ -114,93 +118,6 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 			})
 		})
 
-		When("recurrent expense does not contain periodicity", func() {
-			It("creates it by default as monthly and update it at db", func() {
-				var (
-					expectedName                   = faker.Name()
-					expectedLastCreationDate       = time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local)
-					expectedRecurrentExpenesID     = primitive.NewObjectID()
-					expectedRecurrentExpenseAmount = faker.Latitude()
-					expectedServiceCallMonth       = uint(11)
-					expectedServiceCallYear        = uint(2022)
-					expectedRecurrentExpense       = entities.RecurrentExpense{
-						ID:               expectedRecurrentExpenesID,
-						Name:             expectedName,
-						Amount:           expectedRecurrentExpenseAmount,
-						LastCreationDate: &expectedLastCreationDate,
-					}
-					expectedRecurrentExpenses = []*entities.RecurrentExpense{
-						&expectedRecurrentExpense,
-					}
-					expectedToday              = expectedLastCreationDate.AddDate(0, 1, 0)
-					expectedDay                = uint(expectedToday.Day())
-					expectedMonth              = uint(expectedToday.Month())
-					expectedYear               = uint(expectedToday.Year())
-					expectedExpensesCreated    = uint(1)
-					expectedExpensesIDsCreated = testfunc.SliceGenerator(expectedExpensesCreated, primitive.NewObjectID)
-					expectedTotalExpensesPaid  = uint(0)
-					expectedExpenseToSaves     = []*entities.Expense{
-						{
-							RecurrentExpenseID: expectedRecurrentExpenesID,
-							Name:               expectedName,
-							Amount:             expectedRecurrentExpenseAmount,
-							Day:                expectedDay,
-							Month:              expectedMonth,
-							Year:               expectedYear,
-							IsRecurrent:        true,
-						},
-					}
-					expectedRecurrentExpensesMonthlyCreated = &entities.RecurrentExpensesMonthlyCreated{
-						Month: expectedMonth,
-						Year:  expectedYear,
-						ExpensesCount: []*entities.ExpensesCount{
-							{
-								RecurrentExpenseID: expectedRecurrentExpenesID,
-								RecurrentExpense:   &expectedRecurrentExpense,
-								ExpensesRelated:    expectedExpensesIDsCreated,
-								TotalExpenses:      expectedExpensesCreated,
-								TotalExpensesPaid:  0,
-							},
-						},
-					}
-					expectedRecurrentExpenseToUpdate = &entities.RecurrentExpense{
-						ID:               expectedRecurrentExpenesID,
-						Name:             expectedName,
-						Amount:           expectedRecurrentExpenseAmount,
-						Periodicity:      periodtypes.Monthly,
-						LastCreationDate: &expectedToday,
-					}
-				)
-				recurrentExpensesMonthlyCreatedRepoMock.EXPECT().FindByCurrentMonthAndYear(
-					ctx,
-					expectedServiceCallMonth,
-					expectedServiceCallYear,
-				).Return(nil, &repos.NotFoundError{})
-				recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(
-					expectedRecurrentExpenses, nil,
-				)
-				timeGetterMock.EXPECT().GetCurrentTime().Return(expectedToday)
-				periodizerExpensesGenMock.EXPECT().GenerateExpensesCountByRecurrentExpensePeriodicity(
-					ctx,
-					&expectedRecurrentExpense,
-				).Return(expectedExpenseToSaves, nil)
-				expensesRepoMock.EXPECT().SaveMany(ctx, expectedExpenseToSaves).Return(&repos.InsertManyResult{InsertedIDs: expectedExpensesIDsCreated}, nil)
-				recurrentExpensesMonthlyCreatedRepoMock.EXPECT().Save(ctx, expectedRecurrentExpensesMonthlyCreated).Return(nil)
-				recurrentExpensesRepoMock.EXPECT().Update(ctx, expectedRecurrentExpenseToUpdate).Return(nil)
-
-				got, err := service.GenerateRecurrentExpensesByYearAndMonth(ctx, expectedServiceCallMonth, expectedServiceCallYear)
-
-				Expect(err).ToNot(HaveOccurred())
-				Expect(got.Month).To(Equal(expectedMonth))
-				Expect(got.Year).To(Equal(expectedYear))
-				Expect(got.ExpensesCount[0].RecurrentExpenseID).To(Equal(expectedRecurrentExpenesID))
-				Expect(got.ExpensesCount[0].RecurrentExpense).To(Equal(&expectedRecurrentExpense))
-				Expect(got.ExpensesCount[0].ExpensesRelated).To(Equal(expectedExpensesIDsCreated))
-				Expect(got.ExpensesCount[0].TotalExpenses).To(Equal(expectedExpensesCreated))
-				Expect(got.ExpensesCount[0].TotalExpensesPaid).To(Equal(expectedTotalExpensesPaid))
-			})
-		})
-
 		When("data has not been processed", func() {
 
 			var (
@@ -219,39 +136,39 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 
 			It("instantiate all expenses and store them in db", func() {
 				var (
-					recurrentExpenseLastCreationDate = time.Date(2022, 10, 1, 0, 0, 0, 0, time.Local)
-					expectedRecurrentExpense         = &entities.RecurrentExpense{
-						ID:               primitive.NewObjectID(),
-						Name:             faker.Name(),
-						Amount:           faker.Latitude(),
-						Description:      faker.Paragraph(),
-						Periodicity:      periodtypes.Daily,
-						LastCreationDate: &recurrentExpenseLastCreationDate,
+					expectedRecurrentExpenseLastCreationDate = time.Date(2022, 10, 1, 0, 0, 0, 0, time.Local)
+					expectedRecurrentExpenesID               = primitive.NewObjectID()
+					expectedName                             = faker.Name()
+					expectedRecurrentExpenseAmount           = faker.Latitude()
+					expectedRecurrentDescription             = faker.Paragraph()
+					expectedPeriodicity                      = periodtypes.Daily
+					expectedRecurrentExpense                 = &entities.RecurrentExpense{
+						ID:               expectedRecurrentExpenesID,
+						Name:             expectedName,
+						Amount:           expectedRecurrentExpenseAmount,
+						Description:      expectedRecurrentDescription,
+						Periodicity:      expectedPeriodicity,
+						LastCreationDate: &expectedRecurrentExpenseLastCreationDate,
 					}
-					expectedExpensesCreated                 = uint(30)
-					expectedName                            = expectedRecurrentExpense.Name
-					expectedRecurrentExpenesID              = expectedRecurrentExpense.ID
-					expectedRecurrentDescription            = expectedRecurrentExpense.Description
-					expectedRecurrentExpenseAmount          = expectedRecurrentExpense.Amount
-					expectedPeriodicity                     = expectedRecurrentExpense.Periodicity
-					expectedToday                           = time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local)
-					expectedDay                             = uint(expectedToday.Day())
-					expectedMonth                           = uint(expectedToday.Month())
-					expectedYear                            = uint(expectedToday.Year())
-					expectedExpensesIDsCreated              = testfunc.SliceGenerator(expectedExpensesCreated, primitive.NewObjectID)
-					expectedTotalExpensesPaid               = uint(0)
-					expectedRecurrentExpensesMonthlyCreated = &entities.RecurrentExpensesMonthlyCreated{
+					expectedExpensesCreated                   = uint(30)
+					expectedToday                             = time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local)
+					expectedDay                               = uint(expectedToday.Day())
+					expectedMonth                             = uint(expectedToday.Month())
+					expectedYear                              = uint(expectedToday.Year())
+					expectedExpensesIDsCreated                = testfunc.SliceGenerator(expectedExpensesCreated, primitive.NewObjectID)
+					expectedTotalExpensesPaid                 = uint(0)
+					expectedRecurrentExpensesMonthlyCreatedID = primitive.NewObjectID()
+					expectedExpensesCount1                    = entities.ExpensesCount{
+						RecurrentExpenseID:                expectedRecurrentExpenesID,
+						RecurrentExpensesMonthlyCreatedID: expectedRecurrentExpensesMonthlyCreatedID,
+						RecurrentExpense:                  expectedRecurrentExpense,
+						ExpensesRelatedIDs:                expectedExpensesIDsCreated,
+						TotalExpenses:                     expectedExpensesCreated,
+						TotalExpensesPaid:                 0,
+					}
+					expectedRecurrentExpensesMonthlyCreated = entities.RecurrentExpensesMonthlyCreated{
 						Month: expectedMonth,
 						Year:  expectedYear,
-						ExpensesCount: []*entities.ExpensesCount{
-							{
-								RecurrentExpenseID: expectedRecurrentExpenesID,
-								RecurrentExpense:   expectedRecurrentExpense,
-								ExpensesRelated:    expectedExpensesIDsCreated,
-								TotalExpenses:      expectedExpensesCreated,
-								TotalExpensesPaid:  0,
-							},
-						},
 					}
 					expectedRecurrentExpenseToUpdate = &entities.RecurrentExpense{
 						ID:               expectedRecurrentExpenesID,
@@ -282,8 +199,17 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 					ctx,
 					expectedRecurrentExpense,
 				).Return(expectedExpensesToSave, nil)
-				expensesRepoMock.EXPECT().SaveMany(ctx, expectedExpensesToSave).Return(&repos.InsertManyResult{InsertedIDs: expectedExpensesIDsCreated}, nil)
-				recurrentExpensesMonthlyCreatedRepoMock.EXPECT().Save(ctx, expectedRecurrentExpensesMonthlyCreated).Return(nil)
+				expensesRepoMock.EXPECT().SaveMany(
+					ctx,
+					expectedExpensesToSave,
+				).Return(&repos.InsertManyResult{InsertedIDs: expectedExpensesIDsCreated}, nil)
+				recurrentExpensesMonthlyCreatedRepoMock.EXPECT().Save(
+					ctx,
+					&expectedRecurrentExpensesMonthlyCreated,
+				).Return(nil).Run(func(ctx context.Context, recurrentExpense *entities.RecurrentExpensesMonthlyCreated) {
+					recurrentExpense.ID = expectedRecurrentExpensesMonthlyCreatedID
+				})
+				expensesCountRepoMock.EXPECT().Save(ctx, &expectedExpensesCount1).Return(nil).Once()
 				recurrentExpensesRepoMock.EXPECT().Update(ctx, expectedRecurrentExpenseToUpdate).Return(nil)
 
 				got, err := service.GenerateRecurrentExpensesByYearAndMonth(ctx, expectedServiceCallMonth, expectedServiceCallYear)
@@ -293,7 +219,7 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 				Expect(got.Year).To(Equal(expectedYear))
 				Expect(got.ExpensesCount[0].RecurrentExpenseID).To(Equal(expectedRecurrentExpenesID))
 				Expect(got.ExpensesCount[0].RecurrentExpense).To(Equal(expectedRecurrentExpense))
-				Expect(got.ExpensesCount[0].ExpensesRelated).To(Equal(expectedExpensesIDsCreated))
+				Expect(got.ExpensesCount[0].ExpensesRelatedIDs).To(Equal(expectedExpensesIDsCreated))
 				Expect(got.ExpensesCount[0].TotalExpenses).To(Equal(expectedExpensesCreated))
 				Expect(got.ExpensesCount[0].TotalExpensesPaid).To(Equal(expectedTotalExpensesPaid))
 			})
@@ -320,9 +246,8 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 						expectedMonth                          = uint(expectedToday.Month())
 						expectedYear                           = uint(expectedToday.Year())
 						expectedRecurrentExpenseMonthlyCreated = &entities.RecurrentExpensesMonthlyCreated{
-							Month:         expectedMonth,
-							Year:          expectedYear,
-							ExpensesCount: []*entities.ExpensesCount{},
+							Month: expectedMonth,
+							Year:  expectedYear,
 						}
 					)
 					recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(
@@ -345,33 +270,7 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 			})
 
 		})
+
 	})
 
-	Describe("AddRecurrentExpense", func() {
-
-		When("there is data saved", func() {
-			It("adds new recurrent expense data", func() {
-				// TODO: first periodizer must exists
-			})
-		})
-
-		When("no data saved", func() {
-			It("generates all month data", func() {
-
-			})
-		})
-	})
-
-	Describe("ToggleExpenseIsPaidStatus", func() {
-		When("new status is false", func() {
-			It("substacts 1 from paid expenses count", func() {
-
-			})
-		})
-		When("new status is false", func() {
-			It("adds 1 from paid expenses count", func() {
-
-			})
-		})
-	})
 })

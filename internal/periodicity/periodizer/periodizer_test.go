@@ -45,16 +45,15 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 			It("creates it by default as monthly and set it in instance", func() {
 				var (
 					expectedName                   = faker.Name()
-					expectedLastCreationDate       = time.Date(2022, 11, 1, 0, 0, 0, 0, time.Local)
 					expectedRecurrentExpenesID     = primitive.NewObjectID()
 					expectedRecurrentExpenseAmount = faker.Latitude()
 					expectedRecurrentExpense       = entities.RecurrentExpense{
 						ID:               expectedRecurrentExpenesID,
 						Name:             expectedName,
 						Amount:           expectedRecurrentExpenseAmount,
-						LastCreationDate: &expectedLastCreationDate,
+						LastCreationDate: nil,
 					}
-					expectedToday           = expectedLastCreationDate.AddDate(0, 1, 0)
+					expectedToday           = time.Date(2022, 12, 1, 0, 0, 0, 0, time.Local)
 					expectedExpensesCreated = 1
 				)
 				timeGetterMock.EXPECT().GetCurrentTime().Return(expectedToday)
