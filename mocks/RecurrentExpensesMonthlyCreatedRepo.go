@@ -22,8 +22,8 @@ func (_m *RecurrentExpensesMonthlyCreatedRepo) EXPECT() *RecurrentExpensesMonthl
 	return &RecurrentExpensesMonthlyCreatedRepo_Expecter{mock: &_m.Mock}
 }
 
-// FindByMonthAndYear provides a mock function with given fields: ctx, month, year
-func (_m *RecurrentExpensesMonthlyCreatedRepo) FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error) {
+// FindByCurrentMonthAndYear provides a mock function with given fields: ctx, month, year
+func (_m *RecurrentExpensesMonthlyCreatedRepo) FindByCurrentMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error) {
 	ret := _m.Called(ctx, month, year)
 
 	var r0 *entities.RecurrentExpensesMonthlyCreated
@@ -45,27 +45,27 @@ func (_m *RecurrentExpensesMonthlyCreatedRepo) FindByMonthAndYear(ctx context.Co
 	return r0, r1
 }
 
-// RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByMonthAndYear'
-type RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call struct {
+// RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByCurrentMonthAndYear'
+type RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call struct {
 	*mock.Call
 }
 
-// FindByMonthAndYear is a helper method to define mock.On call
+// FindByCurrentMonthAndYear is a helper method to define mock.On call
 //  - ctx context.Context
 //  - month uint
 //  - year uint
-func (_e *RecurrentExpensesMonthlyCreatedRepo_Expecter) FindByMonthAndYear(ctx interface{}, month interface{}, year interface{}) *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call {
-	return &RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call{Call: _e.mock.On("FindByMonthAndYear", ctx, month, year)}
+func (_e *RecurrentExpensesMonthlyCreatedRepo_Expecter) FindByCurrentMonthAndYear(ctx interface{}, month interface{}, year interface{}) *RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call {
+	return &RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call{Call: _e.mock.On("FindByCurrentMonthAndYear", ctx, month, year)}
 }
 
-func (_c *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call) Run(run func(ctx context.Context, month uint, year uint)) *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call {
+func (_c *RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call) Run(run func(ctx context.Context, month uint, year uint)) *RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(uint), args[2].(uint))
 	})
 	return _c
 }
 
-func (_c *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call) Return(_a0 *entities.RecurrentExpensesMonthlyCreated, _a1 error) *RecurrentExpensesMonthlyCreatedRepo_FindByMonthAndYear_Call {
+func (_c *RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call) Return(_a0 *entities.RecurrentExpensesMonthlyCreated, _a1 error) *RecurrentExpensesMonthlyCreatedRepo_FindByCurrentMonthAndYear_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }

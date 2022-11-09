@@ -17,7 +17,7 @@ type (
 			ctx context.Context,
 			recurrentExpense *entities.RecurrentExpensesMonthlyCreated,
 		) error
-		FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error)
+		FindByCurrentMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error)
 		Update(ctx context.Context, recurrentExpense *entities.RecurrentExpensesMonthlyCreated) error
 	}
 	RecurrentExpensesMonthlyCreatedRepoImpl struct {
@@ -47,7 +47,7 @@ func (c *RecurrentExpensesMonthlyCreatedRepoImpl) Save(
 	return nil
 }
 
-func (c *RecurrentExpensesMonthlyCreatedRepoImpl) FindByMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error) {
+func (c *RecurrentExpensesMonthlyCreatedRepoImpl) FindByCurrentMonthAndYear(ctx context.Context, month uint, year uint) (*entities.RecurrentExpensesMonthlyCreated, error) {
 	var (
 		found   entities.RecurrentExpensesMonthlyCreated
 		filters = primitive.D{

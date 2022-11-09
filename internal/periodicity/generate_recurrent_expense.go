@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/periodicity/periodizer"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	"github.com/manicar2093/expenses_api/pkg/periodtypes"
 )
 
 type (
@@ -14,6 +16,7 @@ type (
 		recurrentExpensesRepo               repos.RecurrentExpenseRepo
 		recurrentExpensesMonthlyCreatedRepo repos.RecurrentExpensesMonthlyCreatedRepo
 		timeGetter                          dates.TimeGetable
+		periodizerExpensesGenerator         periodizer.ExpensesCountByRecurrentExpensePeriodicityGenerable
 	}
 )
 
@@ -22,12 +25,14 @@ func NewExpensePeriodicityServiceImpl(
 	recurrentExpensesRepo repos.RecurrentExpenseRepo,
 	recurrentExpensesMonthlyCreatedRepo repos.RecurrentExpensesMonthlyCreatedRepo,
 	timeGetter dates.TimeGetable,
+	periodizerExpensesGenerator periodizer.ExpensesCountByRecurrentExpensePeriodicityGenerable,
 ) *ExpensePeriodicityServiceImpl {
 	return &ExpensePeriodicityServiceImpl{
 		expensesRepo:                        expensesRepo,
 		recurrentExpensesRepo:               recurrentExpensesRepo,
 		recurrentExpensesMonthlyCreatedRepo: recurrentExpensesMonthlyCreatedRepo,
 		timeGetter:                          timeGetter,
+		periodizerExpensesGenerator:         periodizerExpensesGenerator,
 	}
 }
 
@@ -35,7 +40,7 @@ func (c *ExpensePeriodicityServiceImpl) GenerateRecurrentExpensesByYearAndMonth(
 	*entities.RecurrentExpensesMonthlyCreated,
 	error,
 ) {
-	savedData, err := c.recurrentExpensesMonthlyCreatedRepo.FindByMonthAndYear(ctx, month, year)
+	savedData, err := c.recurrentExpensesMonthlyCreatedRepo.FindByCurrentMonthAndYear(ctx, month, year)
 	_, notFound := err.(*repos.NotFoundError)
 	switch {
 	case savedData != nil:
@@ -55,7 +60,7 @@ func (c *ExpensePeriodicityServiceImpl) GenerateRecurrentExpensesByYearAndMonth(
 		expensesCounts = []*entities.ExpensesCount{}
 	)
 	for _, recurrentExpense := range recurrentExpensesRegistered {
-		expensesCount, err := c.GenerateExpensesByPeriodicity(ctx, recurrentExpense)
+		expensesCount, err := c.createExpensesCount(ctx, recurrentExpense)
 		if err != nil {
 			return nil, err
 		}
@@ -77,50 +82,38 @@ func (c *ExpensePeriodicityServiceImpl) GenerateRecurrentExpensesByYearAndMonth(
 	return &response, nil
 }
 
-func (c *ExpensePeriodicityServiceImpl) GenerateExpensesByPeriodicity(
+func (c *ExpensePeriodicityServiceImpl) createExpensesCount(
 	ctx context.Context,
 	recurrentExpense *entities.RecurrentExpense,
 ) (*entities.ExpensesCount, error) {
-	var today = c.timeGetter.GetCurrentTime()
-	expensesToCreate, hasExpenses := c.CategorizeByPeriodicity(ctx, recurrentExpense)
-	if !hasExpenses {
+	expensesToCreate, err := c.periodizerExpensesGenerator.GenerateExpensesCountByRecurrentExpensePeriodicity(ctx, recurrentExpense)
+	switch {
+	case err != nil:
+		return nil, err
+	case expensesToCreate == nil:
 		return nil, nil
+
 	}
+
 	insertedRes, err := c.expensesRepo.SaveMany(
 		ctx, expensesToCreate,
 	)
 	if err != nil {
 		return nil, err
 	}
+	today := c.timeGetter.GetCurrentTime()
 	recurrentExpense.LastCreationDate = &today
+	if recurrentExpense.Periodicity == periodtypes.Empty {
+		recurrentExpense.Periodicity = periodtypes.Monthly
+	}
 	if err := c.recurrentExpensesRepo.Update(ctx, recurrentExpense); err != nil {
 		return nil, err
 	}
 	return &entities.ExpensesCount{
 		RecurrentExpenseID: recurrentExpense.ID,
+		RecurrentExpense:   recurrentExpense,
 		ExpensesRelated:    insertedRes.InsertedIDs,
 		TotalExpenses:      uint(len(insertedRes.InsertedIDs)),
 		TotalExpensesPaid:  0,
 	}, nil
-}
-
-func (c *ExpensePeriodicityServiceImpl) CategorizeByPeriodicity(
-	ctx context.Context,
-	recurrentExpense *entities.RecurrentExpense,
-) ([]*entities.Expense, bool) {
-	var (
-		today       = c.timeGetter.GetCurrentTime()
-		periodicity = recurrentExpense.Periodicity
-	)
-	action, ok := periodicityActionMap[periodicity]
-	if !ok {
-		log.Printf(
-			"unhandled periodicity for '%s' recurrent expense: '%v'",
-			recurrentExpense.Name,
-			recurrentExpense.Periodicity,
-		)
-		return nil, false
-	}
-
-	return action(periodicity.GetExpensesQuantity(today), today, recurrentExpense, periodicity.GetTimeValidator())
 }

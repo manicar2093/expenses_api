@@ -38,6 +38,9 @@ var _ = Describe("RecurrentExpense", func() {
 					ExpensesCount: []*entities.ExpensesCount{
 						{
 							RecurrentExpenseID: primitive.NewObjectID(),
+							RecurrentExpense: &entities.RecurrentExpense{
+								ID: primitive.NewObjectID(),
+							},
 							ExpensesRelated: []primitive.ObjectID{
 								primitive.NewObjectID(),
 								primitive.NewObjectID(),
@@ -49,15 +52,18 @@ var _ = Describe("RecurrentExpense", func() {
 				}
 			)
 			err := repo.Save(ctx, &expectedRecurrentExpenseCreatedMonthly)
+			var fromDB entities.RecurrentExpensesMonthlyCreated
+			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedRecurrentExpenseCreatedMonthly.ID}}).Decode(&fromDB)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(expectedRecurrentExpenseCreatedMonthly.ID.IsZero()).To(BeFalse())
+			Expect(fromDB.ExpensesCount[0].RecurrentExpense).To(BeNil())
 
 			testfunc.DeleteOneByObjectID(ctx, coll, expectedRecurrentExpenseCreatedMonthly.ID)
 		})
 	})
 
-	Describe("FindByMonthAndYear", func() {
+	Describe("FindByCurrentMonthAndYear", func() {
 
 		It("returns found data", func() {
 			var (
@@ -77,7 +83,7 @@ var _ = Describe("RecurrentExpense", func() {
 				log.Fatal(err)
 			}
 
-			got, err := repo.FindByMonthAndYear(ctx, expectedMonth, expectedYear)
+			got, err := repo.FindByCurrentMonthAndYear(ctx, expectedMonth, expectedYear)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Month).To(Equal(expectedRecurrentExpenseCreatedMonthly.Month))
@@ -88,7 +94,7 @@ var _ = Describe("RecurrentExpense", func() {
 
 		When("there is any data in db", func() {
 			It("returns a NotFoundError", func() {
-				got, err := repo.FindByMonthAndYear(ctx, 20, 1993)
+				got, err := repo.FindByCurrentMonthAndYear(ctx, 20, 1993)
 
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(got).To(BeNil())
