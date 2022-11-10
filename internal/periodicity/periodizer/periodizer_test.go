@@ -66,6 +66,33 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 			})
 		})
 
+		When("recurrent expense has periodicity but not last creation date", func() {
+			It("instantiate expenses and set last creation date", func() {
+				var (
+					expectedName                   = faker.Name()
+					expectedRecurrentExpenesID     = primitive.NewObjectID()
+					expectedRecurrentExpenseAmount = faker.Latitude()
+					expectedPeriodicity            = periodtypes.BiMonthly
+					expectedRecurrentExpense       = entities.RecurrentExpense{
+						ID:               expectedRecurrentExpenesID,
+						Name:             expectedName,
+						Amount:           expectedRecurrentExpenseAmount,
+						Periodicity:      expectedPeriodicity,
+						LastCreationDate: nil,
+					}
+					expectedToday           = time.Date(2022, 12, 1, 0, 0, 0, 0, time.Local)
+					expectedExpensesCreated = 1
+				)
+				timeGetterMock.EXPECT().GetCurrentTime().Return(expectedToday)
+
+				got, err := service.GenerateExpensesCountByRecurrentExpensePeriodicity(ctx, &expectedRecurrentExpense)
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(expectedRecurrentExpense.Periodicity).To(Equal(expectedPeriodicity))
+				Expect(got).To(HaveLen(expectedExpensesCreated))
+			})
+		})
+
 		DescribeTable("instantiate all expenses for supported periodicity", func(
 			expectedRecurrentExpense *entities.RecurrentExpense,
 			expectedExpensesCreated uint,

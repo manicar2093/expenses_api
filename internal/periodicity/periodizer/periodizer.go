@@ -56,6 +56,8 @@ func (c *PeriodicityService) categorizeByPeriodicity(
 		)
 		return nil, false
 	}
-
+	if recurrentExpense.LastCreationDate == nil {
+		return action(periodicity.GetExpensesQuantity(today), today, recurrentExpense, nil)
+	}
 	return action(periodicity.GetExpensesQuantity(today), today, recurrentExpense, periodicity.GetTimeValidator())
 }
