@@ -1,4 +1,4 @@
-package repos_test
+package mongorepos_test
 
 import (
 	"context"
@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/internal/repos/mongorepos"
 	"github.com/manicar2093/expenses_api/pkg/converters"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 	. "github.com/onsi/ginkgo/v2"
@@ -21,24 +22,24 @@ var _ = Describe("ExpensesImpl", func() {
 	var (
 		ctx  context.Context
 		coll *mongo.Collection
-		repo *repos.ExpensesRepositoryImpl
+		repo *mongorepos.ExpensesMongoRepo
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		coll = conn.Collection("expenses")
-		repo = repos.NewExpensesRepositoryImpl(conn)
+		repo = mongorepos.NewExpensesMongoRepo(conn)
 
 	})
 
 	Describe("Save", func() {
-		It("saves an entities.Expense in database", func() {
+		It("saves an mongoentities.Expense in database", func() {
 
 			var (
 				expectedName        = faker.Name()
 				expectedAmount      = faker.Latitude()
 				expectedDescription = faker.Sentence()
-				expectedExpense     = entities.Expense{
+				expectedExpense     = mongoentities.Expense{
 					Name:        expectedName,
 					Amount:      expectedAmount,
 					Description: expectedDescription,
@@ -67,7 +68,7 @@ var _ = Describe("ExpensesImpl", func() {
 					expectedAmount      = faker.Latitude()
 					expectedDescription = faker.Sentence()
 					expectedCreatedAt   = time.Date(2022, time.August, 0, 0, 0, 0, 0, time.Local)
-					expectedExpense     = entities.Expense{
+					expectedExpense     = mongoentities.Expense{
 						Name:        expectedName,
 						Amount:      expectedAmount,
 						Description: expectedDescription,
@@ -105,7 +106,7 @@ var _ = Describe("ExpensesImpl", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got).To(HaveLen(3))
-			Expect(got[0]).To(BeAssignableToTypeOf(&entities.Expense{}))
+			Expect(got[0]).To(BeAssignableToTypeOf(&mongoentities.Expense{}))
 
 			testfunc.DeleteManyByObjectID(ctx, coll, inserted)
 		})
@@ -125,7 +126,7 @@ var _ = Describe("ExpensesImpl", func() {
 			var (
 				expectedName   = faker.Name()
 				expectedStatus = true
-				mockData       = entities.Expense{
+				mockData       = mongoentities.Expense{
 					Name:        expectedName,
 					IsRecurrent: true,
 					IsPaid:      expectedStatus,
@@ -136,7 +137,7 @@ var _ = Describe("ExpensesImpl", func() {
 
 			err := repo.UpdateIsPaidByExpenseID(ctx, expectedID.Hex(), expectedStatus)
 
-			var changed entities.Expense
+			var changed mongoentities.Expense
 			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedID}}).Decode(&changed)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(changed.Name).To(Equal(expectedName))
@@ -150,7 +151,7 @@ var _ = Describe("ExpensesImpl", func() {
 				var (
 					expectedName   = faker.Name()
 					expectedStatus = true
-					mockData       = entities.Expense{
+					mockData       = mongoentities.Expense{
 						Name:   expectedName,
 						IsPaid: expectedStatus,
 					}
@@ -185,9 +186,9 @@ var _ = Describe("ExpensesImpl", func() {
 			var (
 				expectedExpenseName = faker.Name()
 				expectedMockData    = []interface{}{
-					entities.Expense{Name: expectedExpenseName, IsRecurrent: true, Month: 8},
-					entities.Expense{Name: faker.Name(), IsRecurrent: true},
-					entities.Expense{Name: faker.Name(), IsRecurrent: false},
+					mongoentities.Expense{Name: expectedExpenseName, IsRecurrent: true, Month: 8},
+					mongoentities.Expense{Name: faker.Name(), IsRecurrent: true},
+					mongoentities.Expense{Name: faker.Name(), IsRecurrent: false},
 				}
 			)
 			inserted, _ := coll.InsertMany(ctx, expectedMockData)
@@ -205,9 +206,9 @@ var _ = Describe("ExpensesImpl", func() {
 				var (
 					expectedExpenseName = faker.Name()
 					expectedMockData    = []interface{}{
-						entities.Expense{Name: expectedExpenseName, IsRecurrent: true},
-						entities.Expense{Name: faker.Name(), IsRecurrent: true},
-						entities.Expense{Name: faker.Name(), IsRecurrent: false},
+						mongoentities.Expense{Name: expectedExpenseName, IsRecurrent: true},
+						mongoentities.Expense{Name: faker.Name(), IsRecurrent: true},
+						mongoentities.Expense{Name: faker.Name(), IsRecurrent: false},
 					}
 				)
 				inserted, _ := coll.InsertMany(ctx, expectedMockData)
@@ -226,7 +227,7 @@ var _ = Describe("ExpensesImpl", func() {
 			var (
 				expectedStatus = true
 				expectedID     = primitive.NewObjectID()
-				mockData       = entities.Expense{
+				mockData       = mongoentities.Expense{
 					ID:     expectedID,
 					Name:   faker.Name(),
 					IsPaid: expectedStatus,

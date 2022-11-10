@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	entities "github.com/manicar2093/expenses_api/internal/entities"
+	mongoentities "github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -23,15 +23,15 @@ func (_m *RecurrentExpenseRepo) EXPECT() *RecurrentExpenseRepo_Expecter {
 }
 
 // FindAll provides a mock function with given fields: ctx
-func (_m *RecurrentExpenseRepo) FindAll(ctx context.Context) (*[]entities.RecurrentExpense, error) {
+func (_m *RecurrentExpenseRepo) FindAll(ctx context.Context) (*[]mongoentities.RecurrentExpense, error) {
 	ret := _m.Called(ctx)
 
-	var r0 *[]entities.RecurrentExpense
-	if rf, ok := ret.Get(0).(func(context.Context) *[]entities.RecurrentExpense); ok {
+	var r0 *[]mongoentities.RecurrentExpense
+	if rf, ok := ret.Get(0).(func(context.Context) *[]mongoentities.RecurrentExpense); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]entities.RecurrentExpense)
+			r0 = ret.Get(0).(*[]mongoentities.RecurrentExpense)
 		}
 	}
 
@@ -63,21 +63,21 @@ func (_c *RecurrentExpenseRepo_FindAll_Call) Run(run func(ctx context.Context)) 
 	return _c
 }
 
-func (_c *RecurrentExpenseRepo_FindAll_Call) Return(_a0 *[]entities.RecurrentExpense, _a1 error) *RecurrentExpenseRepo_FindAll_Call {
+func (_c *RecurrentExpenseRepo_FindAll_Call) Return(_a0 *[]mongoentities.RecurrentExpense, _a1 error) *RecurrentExpenseRepo_FindAll_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
 // FindByName provides a mock function with given fields: ctx, name
-func (_m *RecurrentExpenseRepo) FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error) {
+func (_m *RecurrentExpenseRepo) FindByName(ctx context.Context, name string) (*mongoentities.RecurrentExpense, error) {
 	ret := _m.Called(ctx, name)
 
-	var r0 *entities.RecurrentExpense
-	if rf, ok := ret.Get(0).(func(context.Context, string) *entities.RecurrentExpense); ok {
+	var r0 *mongoentities.RecurrentExpense
+	if rf, ok := ret.Get(0).(func(context.Context, string) *mongoentities.RecurrentExpense); ok {
 		r0 = rf(ctx, name)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entities.RecurrentExpense)
+			r0 = ret.Get(0).(*mongoentities.RecurrentExpense)
 		}
 	}
 
@@ -110,17 +110,17 @@ func (_c *RecurrentExpenseRepo_FindByName_Call) Run(run func(ctx context.Context
 	return _c
 }
 
-func (_c *RecurrentExpenseRepo_FindByName_Call) Return(_a0 *entities.RecurrentExpense, _a1 error) *RecurrentExpenseRepo_FindByName_Call {
+func (_c *RecurrentExpenseRepo_FindByName_Call) Return(_a0 *mongoentities.RecurrentExpense, _a1 error) *RecurrentExpenseRepo_FindByName_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
 // Save provides a mock function with given fields: ctx, recExpense
-func (_m *RecurrentExpenseRepo) Save(ctx context.Context, recExpense *entities.RecurrentExpense) error {
+func (_m *RecurrentExpenseRepo) Save(ctx context.Context, recExpense *mongoentities.RecurrentExpense) error {
 	ret := _m.Called(ctx, recExpense)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entities.RecurrentExpense) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *mongoentities.RecurrentExpense) error); ok {
 		r0 = rf(ctx, recExpense)
 	} else {
 		r0 = ret.Error(0)
@@ -136,14 +136,14 @@ type RecurrentExpenseRepo_Save_Call struct {
 
 // Save is a helper method to define mock.On call
 //  - ctx context.Context
-//  - recExpense *entities.RecurrentExpense
+//  - recExpense *mongoentities.RecurrentExpense
 func (_e *RecurrentExpenseRepo_Expecter) Save(ctx interface{}, recExpense interface{}) *RecurrentExpenseRepo_Save_Call {
 	return &RecurrentExpenseRepo_Save_Call{Call: _e.mock.On("Save", ctx, recExpense)}
 }
 
-func (_c *RecurrentExpenseRepo_Save_Call) Run(run func(ctx context.Context, recExpense *entities.RecurrentExpense)) *RecurrentExpenseRepo_Save_Call {
+func (_c *RecurrentExpenseRepo_Save_Call) Run(run func(ctx context.Context, recExpense *mongoentities.RecurrentExpense)) *RecurrentExpenseRepo_Save_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*entities.RecurrentExpense))
+		run(args[0].(context.Context), args[1].(*mongoentities.RecurrentExpense))
 	})
 	return _c
 }

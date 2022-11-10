@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	entities "github.com/manicar2093/expenses_api/internal/entities"
+	mongoentities "github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -23,11 +23,11 @@ func (_m *IncomesRepository) EXPECT() *IncomesRepository_Expecter {
 }
 
 // Save provides a mock function with given fields: _a0, _a1
-func (_m *IncomesRepository) Save(_a0 context.Context, _a1 *entities.Income) error {
+func (_m *IncomesRepository) Save(_a0 context.Context, _a1 *mongoentities.Income) error {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entities.Income) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *mongoentities.Income) error); ok {
 		r0 = rf(_a0, _a1)
 	} else {
 		r0 = ret.Error(0)
@@ -43,14 +43,14 @@ type IncomesRepository_Save_Call struct {
 
 // Save is a helper method to define mock.On call
 //  - _a0 context.Context
-//  - _a1 *entities.Income
+//  - _a1 *mongoentities.Income
 func (_e *IncomesRepository_Expecter) Save(_a0 interface{}, _a1 interface{}) *IncomesRepository_Save_Call {
 	return &IncomesRepository_Save_Call{Call: _e.mock.On("Save", _a0, _a1)}
 }
 
-func (_c *IncomesRepository_Save_Call) Run(run func(_a0 context.Context, _a1 *entities.Income)) *IncomesRepository_Save_Call {
+func (_c *IncomesRepository_Save_Call) Run(run func(_a0 context.Context, _a1 *mongoentities.Income)) *IncomesRepository_Save_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*entities.Income))
+		run(args[0].(context.Context), args[1].(*mongoentities.Income))
 	})
 	return _c
 }

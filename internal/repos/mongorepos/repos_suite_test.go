@@ -1,4 +1,4 @@
-package repos_test
+package mongorepos_test
 
 import (
 	"context"

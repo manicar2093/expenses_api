@@ -3,7 +3,7 @@ package expenses
 import (
 	"context"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 )
 
 type (
@@ -12,7 +12,7 @@ type (
 		SetToPaid(ctx context.Context, input *SetExpenseToPaidInput) error
 	}
 	ExpenseCreatable interface {
-		Create(context.Context, *CreateExpenseInput) (*entities.Expense, error)
+		Create(context.Context, *CreateExpenseInput) (*mongoentities.Expense, error)
 	}
 	ExpenseToPaidTogglable interface {
 		ToggleIsPaid(ctx context.Context, input *ToggleExpenseIsPaidInput) (*ToggleExpenseIsPaidOutput, error)

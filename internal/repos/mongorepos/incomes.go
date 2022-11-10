@@ -1,30 +1,27 @@
-package repos
+package mongorepos
 
 import (
 	"context"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type (
-	IncomesRepository interface {
-		Save(context.Context, *entities.Income) error
-	}
-	IncomesRepositoryImpl struct {
+	IncomesMongoRepo struct {
 		coll *mongo.Collection
 	}
 )
 
-func NewIncomesRepositoryImpl(conn *mongo.Database) *IncomesRepositoryImpl {
-	return &IncomesRepositoryImpl{
-		coll: conn.Collection(entities.IncomeCollectionName),
+func NewIncomesMongoRepo(conn *mongo.Database) *IncomesMongoRepo {
+	return &IncomesMongoRepo{
+		coll: conn.Collection(mongoentities.IncomeCollectionName),
 	}
 }
 
-func (c *IncomesRepositoryImpl) Save(ctx context.Context, income *entities.Income) error {
+func (c *IncomesMongoRepo) Save(ctx context.Context, income *mongoentities.Income) error {
 	income.ID = primitive.NewObjectID()
 	createdAt := dates.GetNormalizedDate()
 	income.CreatedAt = &createdAt

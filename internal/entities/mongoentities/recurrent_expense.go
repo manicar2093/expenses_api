@@ -1,4 +1,4 @@
-package entities
+package mongoentities
 
 import (
 	"time"

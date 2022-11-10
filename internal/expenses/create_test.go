@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/mocks"
 )
@@ -46,7 +46,7 @@ var _ = Describe("CreateImpl", func() {
 				Amount:      expectedAmount,
 				Description: expectedDescription,
 			}
-			expectedExpenseToSave = entities.Expense{
+			expectedExpenseToSave = mongoentities.Expense{
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,
@@ -78,7 +78,7 @@ var _ = Describe("CreateImpl", func() {
 					Description:  expectedDescription,
 					ForNextMonth: true,
 				}
-				expectedExpenseToSave = entities.Expense{
+				expectedExpenseToSave = mongoentities.Expense{
 					Name:        expectedName,
 					Amount:      expectedAmount,
 					Description: expectedExpenseDescription,

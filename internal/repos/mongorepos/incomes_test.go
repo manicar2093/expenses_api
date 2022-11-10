@@ -1,4 +1,4 @@
-package repos_test
+package mongorepos_test
 
 import (
 	"context"
@@ -7,30 +7,30 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
-	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
+	"github.com/manicar2093/expenses_api/internal/repos/mongorepos"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 )
 
 var _ = Describe("IncomesRepo", func() {
 	var (
 		ctx  context.Context
-		repo *repos.IncomesRepositoryImpl
+		repo *mongorepos.IncomesMongoRepo
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
-		repo = repos.NewIncomesRepositoryImpl(conn)
+		repo = mongorepos.NewIncomesMongoRepo(conn)
 
 	})
 
-	It("saves an entities.Income in database", func() {
+	It("saves an mongoentities.Income in database", func() {
 
 		var (
 			expectedName        = faker.Name()
 			expectedAmount      = faker.Latitude()
 			expectedDescription = faker.Sentence()
-			expectedIncome      = entities.Income{
+			expectedIncome      = mongoentities.Income{
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,

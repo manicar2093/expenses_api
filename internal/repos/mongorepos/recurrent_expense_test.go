@@ -1,4 +1,4 @@
-package repos_test
+package mongorepos_test
 
 import (
 	"context"
@@ -9,8 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/internal/repos/mongorepos"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 )
 
@@ -18,20 +19,20 @@ var _ = Describe("RecurrentExpense", func() {
 	var (
 		ctx  context.Context
 		coll *mongo.Collection
-		repo *repos.RecurrentExpenseRepoImpl
+		repo *mongorepos.RecurrentExpenseMongoRepo
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		coll = conn.Collection("recurrent_expenses")
-		repo = repos.NewRecurrentExpenseRepoImpl(conn)
+		repo = mongorepos.NewRecurrentExpenseMongoRepo(conn)
 
 	})
 
 	Describe("Save", func() {
 		It("saves an instance", func() {
 			var (
-				toSave = entities.RecurrentExpense{
+				toSave = mongoentities.RecurrentExpense{
 					Name:        faker.Name(),
 					Amount:      faker.Latitude(),
 					Description: faker.Paragraph(),
@@ -52,12 +53,12 @@ var _ = Describe("RecurrentExpense", func() {
 			It("returns an AlreadyExists", func() {
 				var (
 					expectedName = "testing"
-					Saved        = entities.RecurrentExpense{
+					Saved        = mongoentities.RecurrentExpense{
 						Name:        expectedName,
 						Amount:      faker.Latitude(),
 						Description: faker.Paragraph(),
 					}
-					toSave = entities.RecurrentExpense{
+					toSave = mongoentities.RecurrentExpense{
 						Name:        expectedName,
 						Amount:      faker.Latitude(),
 						Description: faker.Paragraph(),
