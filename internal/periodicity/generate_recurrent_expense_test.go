@@ -180,7 +180,7 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 					}
 					expectedExpensesToSave = testfunc.SliceGenerator(expectedExpensesCreated, func() *entities.Expense {
 						return &entities.Expense{
-							RecurrentExpenseID: expectedRecurrentExpenesID,
+							RecurrentExpenseID: &expectedRecurrentExpenesID,
 							Name:               expectedName,
 							Amount:             expectedRecurrentExpenseAmount,
 							Description:        expectedRecurrentDescription,

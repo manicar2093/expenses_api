@@ -43,7 +43,7 @@ var _ = Describe("ExpensesImpl", func() {
 					Name:               expectedName,
 					Amount:             expectedAmount,
 					Description:        expectedDescription,
-					RecurrentExpenseID: expectedRecurrentExpenseID,
+					RecurrentExpenseID: &expectedRecurrentExpenseID,
 				}
 			)
 
@@ -56,7 +56,7 @@ var _ = Describe("ExpensesImpl", func() {
 			Expect(expectedExpense.Year).ToNot(BeZero())
 			Expect(expectedExpense.IsPaid).To(BeFalse())
 			Expect(expectedExpense.IsRecurrent).To(BeFalse())
-			Expect(expectedExpense.RecurrentExpenseID).To(Equal(expectedRecurrentExpenseID))
+			Expect(expectedExpense.RecurrentExpenseID).To(Equal(&expectedRecurrentExpenseID))
 			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
 			Expect(expectedExpense.UpdatedAt).To(BeNil())
 
@@ -107,7 +107,7 @@ var _ = Describe("ExpensesImpl", func() {
 					Name:               expectedName,
 					Amount:             expectedAmount,
 					Description:        expectedDescription,
-					RecurrentExpenseID: expectedRecurrentExpenseID,
+					RecurrentExpenseID: &expectedRecurrentExpenseID,
 				}
 			)
 
@@ -120,7 +120,7 @@ var _ = Describe("ExpensesImpl", func() {
 			Expect(expectedExpense.Year).ToNot(BeZero())
 			Expect(expectedExpense.IsPaid).To(BeFalse())
 			Expect(expectedExpense.IsRecurrent).To(BeTrue())
-			Expect(expectedExpense.RecurrentExpenseID).To(Equal(expectedRecurrentExpenseID))
+			Expect(expectedExpense.RecurrentExpenseID).To(Equal(&expectedRecurrentExpenseID))
 			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
 			Expect(expectedExpense.UpdatedAt).To(BeNil())
 
@@ -265,7 +265,7 @@ var _ = Describe("ExpensesImpl", func() {
 				expectedRecurrentExpenseID = primitive.NewObjectID()
 				mockData                   = entities.Expense{
 					ID:                 expectedID,
-					RecurrentExpenseID: expectedRecurrentExpenseID,
+					RecurrentExpenseID: &expectedRecurrentExpenseID,
 					Name:               faker.Name(),
 					IsPaid:             expectedStatus,
 				}

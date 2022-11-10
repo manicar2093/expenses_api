@@ -35,15 +35,20 @@ var _ = Describe("Create", func() {
 			expectedExpenseName        = faker.Name()
 			expectedExpenseAmount      = faker.Latitude()
 			expectedExpenseDescription = faker.Paragraph()
-			request                    = recurrentexpenses.CreateRecurrentExpenseInput{
+			// expectedExpensePeriodicity = periodtypes.Paydaily
+			// expectedMonthToBeConsideredSince = 12
+			request = recurrentexpenses.CreateRecurrentExpenseInput{
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,
+				// Periodicity:                  expectedExpensePeriodicity,
+				// FromMonthToBeConsideredSince: expectedMonthToBeConsideredSince,
 			}
 			expectedRecurrentExpenseSaved = entities.RecurrentExpense{
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,
+				// Periodicity: expectedExpensePeriodicity,
 			}
 		)
 		recurentExpensesRepoMock.EXPECT().Save(ctx, &expectedRecurrentExpenseSaved).Return(nil)

@@ -11,7 +11,7 @@ func CreateExpenseFromRecurrentExpense(
 	date *time.Time,
 ) *entities.Expense {
 	return &entities.Expense{
-		RecurrentExpenseID: recurrentExpense.ID,
+		RecurrentExpenseID: &recurrentExpense.ID,
 		Name:               recurrentExpense.Name,
 		Amount:             recurrentExpense.Amount,
 		Description:        recurrentExpense.Description,

@@ -110,7 +110,7 @@ var _ = Describe("CheckRecurrentExpensePeriodicity", func() {
 				expectedYear                   = uint(expectedToday.Year())
 				expectedExpensesGenerated      = testfunc.SliceGenerator(expectedExpensesCreated, func() *entities.Expense {
 					return &entities.Expense{
-						RecurrentExpenseID: expectedRecurrentExpenesID,
+						RecurrentExpenseID: &expectedRecurrentExpenesID,
 						Name:               expectedName,
 						Amount:             expectedRecurrentExpenseAmount,
 						Description:        expectedRecurrentDescription,
