@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/pkg/json"
 )
 
-func (c *ExpenseServiceImpl) Create(ctx context.Context, expense *CreateExpenseInput) (*entities.Expense, error) {
+func (c *ExpenseServiceImpl) Create(ctx context.Context, expense *CreateExpenseInput) (*mongoentities.Expense, error) {
 	log.Println(json.MustMarshall(expense))
-	newExpense := &entities.Expense{
+	newExpense := &mongoentities.Expense{
 		Name:        expense.Name,
 		Amount:      expense.Amount,
 		Description: expense.Description,

@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/mocks"
@@ -33,8 +33,8 @@ var _ = Describe("CreateMonthly", func() {
 		expectedAmount2                      float64
 		expectedAmount3                      float64
 		expectedAmount4                      float64
-		expectedRecurrenteExpensesFound      []entities.RecurrentExpense
-		expectedExpensesToCreate             []entities.Expense
+		expectedRecurrenteExpensesFound      []mongoentities.RecurrentExpense
+		expectedExpensesToCreate             []mongoentities.Expense
 	)
 
 	BeforeEach(func() {
@@ -54,13 +54,13 @@ var _ = Describe("CreateMonthly", func() {
 		expectedAmount2 = faker.Latitude()
 		expectedAmount3 = faker.Latitude()
 		expectedAmount4 = faker.Latitude()
-		expectedRecurrenteExpensesFound = []entities.RecurrentExpense{
+		expectedRecurrenteExpensesFound = []mongoentities.RecurrentExpense{
 			{Name: expectedName1, Amount: expectedAmount1},
 			{Name: expectedName2, Amount: expectedAmount2},
 			{Name: expectedName3, Amount: expectedAmount3},
 			{Name: expectedName4, Amount: expectedAmount4},
 		}
-		expectedExpensesToCreate = []entities.Expense{
+		expectedExpensesToCreate = []mongoentities.Expense{
 			{Name: expectedName1, Amount: expectedAmount1, IsRecurrent: true, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
 			{Name: expectedName2, Amount: expectedAmount2, IsRecurrent: true, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
 			{Name: expectedName3, Amount: expectedAmount3, IsRecurrent: true, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},

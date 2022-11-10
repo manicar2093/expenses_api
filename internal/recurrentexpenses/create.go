@@ -3,7 +3,7 @@ package recurrentexpenses
 import (
 	"context"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"github.com/manicar2093/expenses_api/pkg/json"
@@ -19,8 +19,8 @@ type (
 		Description string  `json:"description,omitempty"`
 	}
 	CreateRecurrentExpenseOutput struct {
-		RecurrentExpense *entities.RecurrentExpense `json:"recurrent_expense,omitempty"`
-		NextMonthExpense *entities.Expense          `json:"next_month_expense,omitempty"`
+		RecurrentExpense *mongoentities.RecurrentExpense `json:"recurrent_expense,omitempty"`
+		NextMonthExpense *mongoentities.Expense          `json:"next_month_expense,omitempty"`
 	}
 	CreateRecurrentExpenseImpl struct {
 		recurentExpensesRepo repos.RecurrentExpenseRepo
@@ -48,12 +48,12 @@ func (c *CreateRecurrentExpenseImpl) Create(
 	log.Println("Request: ", json.MustMarshall(input))
 	var (
 		nextMontTime     = c.timeGetter.GetNextMonthAtFirtsDay()
-		recurrentExpense = entities.RecurrentExpense{
+		recurrentExpense = mongoentities.RecurrentExpense{
 			Name:        input.Name,
 			Amount:      input.Amount,
 			Description: input.Description,
 		}
-		expense = entities.Expense{
+		expense = mongoentities.Expense{
 			Name:        input.Name,
 			Amount:      input.Amount,
 			Description: input.Description,

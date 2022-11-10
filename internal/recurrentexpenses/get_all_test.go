@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/mocks"
 )
@@ -29,7 +29,7 @@ var _ = Describe("GetAll", func() {
 
 	It("returns all registered recurrent expenses", func() {
 		var (
-			expectedRepoReturn = []entities.RecurrentExpense{
+			expectedRepoReturn = []mongoentities.RecurrentExpense{
 				{}, {}, {},
 			}
 			expectedRecurrentExpensesCount = uint(len(expectedRepoReturn))

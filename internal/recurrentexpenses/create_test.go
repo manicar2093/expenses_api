@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/mocks"
 	. "github.com/onsi/ginkgo/v2"
@@ -48,12 +48,12 @@ var _ = Describe("Create", func() {
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,
 			}
-			expectedRecurrentExpenseSaved = entities.RecurrentExpense{
+			expectedRecurrentExpenseSaved = mongoentities.RecurrentExpense{
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,
 			}
-			expectedExpenseSaved = entities.Expense{
+			expectedExpenseSaved = mongoentities.Expense{
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,

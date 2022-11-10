@@ -1,11 +1,12 @@
-package repos
+package mongorepos
 
 import (
 	"context"
 	"errors"
 	"time"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
+	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/internal/schemas"
 	"github.com/manicar2093/expenses_api/pkg/converters"
 	"github.com/manicar2093/expenses_api/pkg/dates"
@@ -16,23 +17,16 @@ import (
 )
 
 type (
-	ExpensesRepository interface {
-		Save(ctx context.Context, expense *entities.Expense) error
-		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
-		UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error
-		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
-		GetExpenseStatusByID(ctx context.Context, expenseID interface{}) (*schemas.ExpenseIDWithIsPaidStatus, error)
-	}
-	ExpensesRepositoryImpl struct {
+	ExpensesMongoRepo struct {
 		coll *mongo.Collection
 	}
 )
 
-func NewExpensesRepositoryImpl(coll *mongo.Database) *ExpensesRepositoryImpl {
-	return &ExpensesRepositoryImpl{coll: coll.Collection(entities.ExpenseCollectionName)}
+func NewExpensesMongoRepo(coll *mongo.Database) *ExpensesMongoRepo {
+	return &ExpensesMongoRepo{coll: coll.Collection(mongoentities.ExpenseCollectionName)}
 }
 
-func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Expense) error {
+func (c *ExpensesMongoRepo) Save(ctx context.Context, expense *mongoentities.Expense) error {
 	expense.ID = primitive.NewObjectID()
 	if expense.CreatedAt == nil {
 		createdAt := dates.GetNormalizedDate()
@@ -50,7 +44,7 @@ func (c *ExpensesRepositoryImpl) Save(ctx context.Context, expense *entities.Exp
 	return nil
 }
 
-func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error) {
+func (c *ExpensesMongoRepo) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*mongoentities.Expense, error) {
 	cursor, err := c.coll.Find(ctx, bson.D{
 		{Key: "month", Value: month},
 	})
@@ -58,10 +52,10 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 		return nil, err
 	}
 
-	response := make([]*entities.Expense, 0)
+	response := make([]*mongoentities.Expense, 0)
 
 	for cursor.Next(ctx) {
-		var entityTemp entities.Expense
+		var entityTemp mongoentities.Expense
 		if err := cursor.Decode(&entityTemp); err != nil {
 			return nil, err
 		}
@@ -71,7 +65,7 @@ func (c *ExpensesRepositoryImpl) GetExpensesByMonth(ctx context.Context, month t
 	return response, nil
 }
 
-func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error {
+func (c *ExpensesMongoRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseID interface{}, status bool) error {
 	expenseObjectID, err := converters.TurnToObjectID(expenseID)
 	if err != nil {
 		return err
@@ -91,16 +85,16 @@ func (c *ExpensesRepositoryImpl) UpdateIsPaidByExpenseID(ctx context.Context, ex
 	case err != nil:
 		return err
 	case res.MatchedCount == 0:
-		return &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "it is not recurrent expense"}
+		return &repos.NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "it is not recurrent expense"}
 	default:
 		return nil
 	}
 }
 
-func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
+func (c *ExpensesMongoRepo) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*mongoentities.Expense, error) {
 	var (
 		filter = bson.D{{Key: "name", Value: expenseName}, {Key: "is_recurrent", Value: true}, {Key: "month", Value: month}}
-		found  = new(entities.Expense)
+		found  = new(mongoentities.Expense)
 	)
 
 	res := c.coll.FindOne(ctx, filter)
@@ -108,7 +102,7 @@ func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Co
 		err := res.Err()
 		switch {
 		case err.Error() == "mongo: no documents in result":
-			return nil, &NotFoundError{Identifier: expenseName, Entity: "Recurrent Expense", Message: err.Error()}
+			return nil, &repos.NotFoundError{Identifier: expenseName, Entity: "Recurrent Expense", Message: err.Error()}
 		default:
 			return nil, err
 		}
@@ -121,7 +115,7 @@ func (c *ExpensesRepositoryImpl) FindByNameAndMonthAndIsRecurrent(ctx context.Co
 	return found, nil
 }
 
-func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expenseID interface{}) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+func (c *ExpensesMongoRepo) GetExpenseStatusByID(ctx context.Context, expenseID interface{}) (*schemas.ExpenseIDWithIsPaidStatus, error) {
 	expenseObjectID, err := converters.TurnToObjectID(expenseID)
 	if err != nil {
 		return nil, err
@@ -134,7 +128,7 @@ func (c *ExpensesRepositoryImpl) GetExpenseStatusByID(ctx context.Context, expen
 
 	if err := c.coll.FindOne(ctx, filter, &options.FindOneOptions{Projection: projection}).Decode(&expenseFound); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "does not exists"}
+			return nil, &repos.NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "does not exists"}
 		}
 		return nil, err
 	}

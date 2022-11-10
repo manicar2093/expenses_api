@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	entities "github.com/manicar2093/expenses_api/internal/entities"
+	mongoentities "github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	mock "github.com/stretchr/testify/mock"
 
 	schemas "github.com/manicar2093/expenses_api/internal/schemas"
@@ -27,15 +27,15 @@ func (_m *ExpensesRepository) EXPECT() *ExpensesRepository_Expecter {
 }
 
 // FindByNameAndMonthAndIsRecurrent provides a mock function with given fields: ctx, month, expenseName
-func (_m *ExpensesRepository) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
+func (_m *ExpensesRepository) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*mongoentities.Expense, error) {
 	ret := _m.Called(ctx, month, expenseName)
 
-	var r0 *entities.Expense
-	if rf, ok := ret.Get(0).(func(context.Context, uint, string) *entities.Expense); ok {
+	var r0 *mongoentities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context, uint, string) *mongoentities.Expense); ok {
 		r0 = rf(ctx, month, expenseName)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entities.Expense)
+			r0 = ret.Get(0).(*mongoentities.Expense)
 		}
 	}
 
@@ -69,7 +69,7 @@ func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Run(run func
 	return _c
 }
 
-func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *entities.Expense, _a1 error) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
+func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *mongoentities.Expense, _a1 error) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
@@ -122,15 +122,15 @@ func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Return(_a0 *schemas.Expe
 }
 
 // GetExpensesByMonth provides a mock function with given fields: ctx, month
-func (_m *ExpensesRepository) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error) {
+func (_m *ExpensesRepository) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*mongoentities.Expense, error) {
 	ret := _m.Called(ctx, month)
 
-	var r0 []*entities.Expense
-	if rf, ok := ret.Get(0).(func(context.Context, time.Month) []*entities.Expense); ok {
+	var r0 []*mongoentities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context, time.Month) []*mongoentities.Expense); ok {
 		r0 = rf(ctx, month)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*entities.Expense)
+			r0 = ret.Get(0).([]*mongoentities.Expense)
 		}
 	}
 
@@ -163,17 +163,17 @@ func (_c *ExpensesRepository_GetExpensesByMonth_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *ExpensesRepository_GetExpensesByMonth_Call) Return(_a0 []*entities.Expense, _a1 error) *ExpensesRepository_GetExpensesByMonth_Call {
+func (_c *ExpensesRepository_GetExpensesByMonth_Call) Return(_a0 []*mongoentities.Expense, _a1 error) *ExpensesRepository_GetExpensesByMonth_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
 // Save provides a mock function with given fields: ctx, expense
-func (_m *ExpensesRepository) Save(ctx context.Context, expense *entities.Expense) error {
+func (_m *ExpensesRepository) Save(ctx context.Context, expense *mongoentities.Expense) error {
 	ret := _m.Called(ctx, expense)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entities.Expense) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *mongoentities.Expense) error); ok {
 		r0 = rf(ctx, expense)
 	} else {
 		r0 = ret.Error(0)
@@ -189,14 +189,14 @@ type ExpensesRepository_Save_Call struct {
 
 // Save is a helper method to define mock.On call
 //  - ctx context.Context
-//  - expense *entities.Expense
+//  - expense *mongoentities.Expense
 func (_e *ExpensesRepository_Expecter) Save(ctx interface{}, expense interface{}) *ExpensesRepository_Save_Call {
 	return &ExpensesRepository_Save_Call{Call: _e.mock.On("Save", ctx, expense)}
 }
 
-func (_c *ExpensesRepository_Save_Call) Run(run func(ctx context.Context, expense *entities.Expense)) *ExpensesRepository_Save_Call {
+func (_c *ExpensesRepository_Save_Call) Run(run func(ctx context.Context, expense *mongoentities.Expense)) *ExpensesRepository_Save_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*entities.Expense))
+		run(args[0].(context.Context), args[1].(*mongoentities.Expense))
 	})
 	return _c
 }

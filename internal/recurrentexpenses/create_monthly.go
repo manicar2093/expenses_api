@@ -3,7 +3,7 @@ package recurrentexpenses
 import (
 	"context"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 )
@@ -14,7 +14,7 @@ type (
 	}
 
 	CreateMonthlyRecurrentExpensesOutput struct {
-		ExpensesCreated []entities.Expense `json:"expenses_created,omitempty"`
+		ExpensesCreated []mongoentities.Expense `json:"expenses_created,omitempty"`
 	}
 	CreateMonthlyRecurrentExpensesImpl struct {
 		recurrentExpensesRepo repos.RecurrentExpenseRepo
@@ -44,13 +44,13 @@ func (c *CreateMonthlyRecurrentExpensesImpl) CreateMonthlyRecurrentExpenses(ctx 
 
 	nextMonthDate := c.timeGetable.GetNextMonthAtFirtsDay()
 	nextMonthAsUint := uint(nextMonthDate.Month())
-	var expensesCreated []entities.Expense
+	var expensesCreated []mongoentities.Expense
 	for _, recurrentExpense := range *allRecurrentExpensesRegistered {
 		_, err := c.expensesRepo.FindByNameAndMonthAndIsRecurrent(ctx, nextMonthAsUint, recurrentExpense.Name)
 		if err != nil {
 			_, isNotFound := err.(*repos.NotFoundError)
 			if isNotFound {
-				expenseToSave := entities.Expense{
+				expenseToSave := mongoentities.Expense{
 					Name:        recurrentExpense.Name,
 					Description: recurrentExpense.Description,
 					Amount:      recurrentExpense.Amount,

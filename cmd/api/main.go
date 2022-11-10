@@ -6,21 +6,21 @@ import (
 	"github.com/manicar2093/expenses_api/cmd/api/controllers"
 	_ "github.com/manicar2093/expenses_api/cmd/api/docs"
 	"github.com/manicar2093/expenses_api/internal/connections"
-	_ "github.com/manicar2093/expenses_api/internal/entities"
+	_ "github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
-	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/internal/repos/mongorepos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 var (
 	mongoConn    = connections.GetMongoConn()
-	expensesRepo = repos.NewExpensesRepositoryImpl(
+	expensesRepo = mongorepos.NewExpensesMongoRepo(
 		mongoConn,
 	)
-	recurrentExpensesRepo = repos.NewRecurrentExpenseRepoImpl(
+	recurrentExpensesRepo = mongorepos.NewRecurrentExpenseMongoRepo(
 		mongoConn,
 	)
 	timeGetter     = &dates.TimeGetter{}

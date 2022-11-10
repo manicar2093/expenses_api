@@ -3,14 +3,14 @@ package incomes
 import (
 	"context"
 
-	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/json"
 )
 
 type (
 	CreateIncome interface {
-		Create(ctx context.Context, incomeInput *CreateIncomeInput) (*entities.Income, error)
+		Create(ctx context.Context, incomeInput *CreateIncomeInput) (*mongoentities.Income, error)
 	}
 	CreateIncomeInput struct {
 		Name        string  `json:"name,omitempty"`
@@ -28,9 +28,9 @@ func NewCreateIncomeImpl(repo repos.IncomesRepository) *CreateIncomeImpl {
 	}
 }
 
-func (c *CreateIncomeImpl) Create(ctx context.Context, incomeInput *CreateIncomeInput) (*entities.Income, error) {
+func (c *CreateIncomeImpl) Create(ctx context.Context, incomeInput *CreateIncomeInput) (*mongoentities.Income, error) {
 	log.Println("Request: ", json.MustMarshall(incomeInput))
-	newIncome := entities.Income{
+	newIncome := mongoentities.Income{
 		Name:        incomeInput.Name,
 		Amount:      incomeInput.Amount,
 		Description: incomeInput.Description,
