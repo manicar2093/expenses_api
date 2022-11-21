@@ -6,18 +6,20 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Expense {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  recurrent_expense RecurrentExpense? @relation(fields: [recurrent_expense_id], references: [id])
+  recurrent_expense_id String? @db.Uuid
   name  String
+  amount Decimal @db.Decimal(15,2)
   description String?
   day Int
   month Int
   year Int
-  is_recurrent Boolean
   is_paid Boolean
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
@@ -26,8 +28,9 @@ model Expense {
 }
 
 model Incomes {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name  String
+  amount Decimal @db.Decimal(15,2)
   description String?
   day Int
   month Int
@@ -39,10 +42,11 @@ model Incomes {
 }
 
 model RecurrentExpense {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  expenses Expense[]
   name  String @unique
-  amount Float
-  description String
+  amount Decimal @db.Decimal(15,2)
+  description String?
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
 

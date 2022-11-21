@@ -2,7 +2,6 @@ package connections
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"

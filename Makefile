@@ -7,7 +7,7 @@ mocking:
 	@ mockery --all --with-expecter
 
 test:
-	@ make push_mongo ENV=test
+	@ dotenv -e test.env -- npx prisma db push
 ifdef FILE
 	@ dotenv -e test.env -- ginkgo $(FILE)
 else
@@ -21,11 +21,11 @@ build_image:
 	@ docker build . -t expenses_api:latest
 	@ docker build . -t "expenses_api:$(TAG)"
 
-push_mongo:
+push_postgres:
 ifdef ENV
-	@ dotenv -e $(ENV).env -- npx prisma db push
+	@ dotenv -e $(ENV).env -- npx prisma migrate dev --skip-generate --skip-seed
 else
-	@ dotenv -e example.env -- npx prisma db push
+	@ dotenv -e example.env -- npx prisma migrate dev --skip-generate --skip-seed
 endif
 
 gen_swag:
