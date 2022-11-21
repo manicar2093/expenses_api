@@ -25,6 +25,6 @@ type (
 	RecurrentExpenseRepo interface {
 		Save(ctx context.Context, recExpense *entities.RecurrentExpense) error
 		FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error)
-		FindAll(ctx context.Context) (*[]entities.RecurrentExpense, error)
+		FindAll(ctx context.Context) ([]*entities.RecurrentExpense, error)
 	}
 )

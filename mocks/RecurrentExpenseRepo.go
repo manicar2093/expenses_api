@@ -23,15 +23,15 @@ func (_m *RecurrentExpenseRepo) EXPECT() *RecurrentExpenseRepo_Expecter {
 }
 
 // FindAll provides a mock function with given fields: ctx
-func (_m *RecurrentExpenseRepo) FindAll(ctx context.Context) (*[]entities.RecurrentExpense, error) {
+func (_m *RecurrentExpenseRepo) FindAll(ctx context.Context) ([]*entities.RecurrentExpense, error) {
 	ret := _m.Called(ctx)
 
-	var r0 *[]entities.RecurrentExpense
-	if rf, ok := ret.Get(0).(func(context.Context) *[]entities.RecurrentExpense); ok {
+	var r0 []*entities.RecurrentExpense
+	if rf, ok := ret.Get(0).(func(context.Context) []*entities.RecurrentExpense); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]entities.RecurrentExpense)
+			r0 = ret.Get(0).([]*entities.RecurrentExpense)
 		}
 	}
 
@@ -63,7 +63,7 @@ func (_c *RecurrentExpenseRepo_FindAll_Call) Run(run func(ctx context.Context)) 
 	return _c
 }
 
-func (_c *RecurrentExpenseRepo_FindAll_Call) Return(_a0 *[]entities.RecurrentExpense, _a1 error) *RecurrentExpenseRepo_FindAll_Call {
+func (_c *RecurrentExpenseRepo_FindAll_Call) Return(_a0 []*entities.RecurrentExpense, _a1 error) *RecurrentExpenseRepo_FindAll_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
