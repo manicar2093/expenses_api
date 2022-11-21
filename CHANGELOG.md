@@ -1,3 +1,9 @@
+## v3.0.0 (2022-11-21)
+
+### BREAKING CHANGE
+
+- migrate to postgres (#56)
+
 ## v2.10.0 (2022-11-10)
 
 ### Feat
