@@ -2,7 +2,6 @@ package connections
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,6 +9,7 @@ import (
 )
 
 func GetMongoConn() *mongo.Database {
+	return &mongo.Database{}
 	var (
 		ctx           = context.TODO()
 		clientOptions = options.Client().ApplyURI(os.Getenv("MONGO_URL"))

@@ -5,27 +5,32 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/manicar2093/expenses_api/pkg/versioning"
-	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
+)
+
+const (
+	connected      = "connected"
+	dbDisconnected = "disconnected"
 )
 
 type (
 	HealthCheckController struct {
-		dbClient *mongo.Client
-		group    *echo.Group
+		conn  *gorm.DB
+		group *echo.Group
 	}
 	HealthCheckOutput struct {
-		NoSQLDBStatus string `json:"no_sqldb_status,omitempty"`
-		Version       string `json:"version,omitempty"`
+		DBStatus string `json:"db_status,omitempty"`
+		Version  string `json:"version,omitempty"`
 	}
 )
 
 func NewHealthCheckController(
-	dbClient *mongo.Client,
+	conn *gorm.DB,
 	e *echo.Echo, //nolint:varnamelen
 ) *HealthCheckController {
 	return &HealthCheckController{
-		dbClient: dbClient,
-		group:    e.Group("/health_check"),
+		conn:  conn,
+		group: e.Group("/health_check"),
 	}
 }
 
@@ -43,14 +48,16 @@ func (c *HealthCheckController) Register() {
 // @Router      /health_check [get]
 func (c *HealthCheckController) health_check(ctx echo.Context) error {
 	var res = HealthCheckOutput{
-		NoSQLDBStatus: "connected",
-		Version:       versioning.Version,
+		DBStatus: connected,
+		Version:  versioning.Version,
 	}
-	if err := c.dbClient.Ping(
-		ctx.Request().Context(),
-		nil,
-	); err != nil {
-		res.NoSQLDBStatus = "disconnected"
+	db, err := c.conn.DB()
+	if err != nil {
+		res.DBStatus = dbDisconnected
+		return ctx.JSON(http.StatusFailedDependency, res)
+	}
+	if err := db.Ping(); err != nil {
+		res.DBStatus = dbDisconnected
 		return ctx.JSON(http.StatusFailedDependency, res)
 	}
 	return ctx.JSON(http.StatusOK, res)

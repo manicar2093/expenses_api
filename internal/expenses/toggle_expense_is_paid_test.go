@@ -3,12 +3,12 @@ package expenses_test
 import (
 	"context"
 
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
-	"github.com/manicar2093/expenses_api/internal/schemas"
 	"github.com/manicar2093/expenses_api/mocks"
 )
 
@@ -30,31 +30,30 @@ var _ = Describe("ToggleExpenseIsPaid", func() {
 
 	It("toggles expense IsPaid status", func() {
 		var (
-			expectedExpenseID         = primitive.NewObjectID()
-			expectedExpenseIDString   = expectedExpenseID.Hex()
-			expectedExpenseWithStatus = schemas.ExpenseIDWithIsPaidStatus{
+			expectedExpenseID         = uuid.New()
+			expectedExpenseWithStatus = entities.ExpenseIDWithIsPaidStatus{
 				ID:     expectedExpenseID,
 				IsPaid: true,
 			}
 			expectedIsPaidUpdateCall   = !expectedExpenseWithStatus.IsPaid
 			expectedToggleExpenseInput = expenses.ToggleExpenseIsPaidInput{
-				ID: expectedExpenseIDString,
+				ID: expectedExpenseID,
 			}
 		)
 		expensesRepoMock.EXPECT().GetExpenseStatusByID(
 			ctx,
-			expectedExpenseIDString,
+			expectedExpenseID,
 		).Return(&expectedExpenseWithStatus, nil)
 		expensesRepoMock.EXPECT().UpdateIsPaidByExpenseID(
 			ctx,
-			expectedExpenseIDString,
+			expectedExpenseID,
 			expectedIsPaidUpdateCall,
 		).Return(nil)
 
 		got, err := service.ToggleIsPaid(ctx, &expectedToggleExpenseInput)
 
 		Expect(err).ToNot(HaveOccurred())
-		Expect(got.ID).To(Equal(expectedExpenseIDString))
+		Expect(got.ID).To(Equal(expectedExpenseID))
 		Expect(got.CurrentIsPaidStatus).To(Equal(expectedIsPaidUpdateCall))
 
 	})

@@ -9,14 +9,14 @@ import (
 )
 
 type RecurrentExpensesController struct {
-	createRecurrentExpense         recurrentexpenses.CreateRecurrentExpense
+	createRecurrentExpense         recurrentexpenses.RecurrentExpenseCreatable
 	getAllRecurrentExpenses        recurrentexpenses.GetAllRecurrentExpenses
 	createMonthlyRecurrentExpenses recurrentexpenses.CreateMonthlyRecurrentExpenses
 	group                          *echo.Group
 }
 
 func NewRecurrentExpensesController(
-	createRecurrentExpense recurrentexpenses.CreateRecurrentExpense,
+	createRecurrentExpense recurrentexpenses.RecurrentExpenseCreatable,
 	getAllRecurrentExpenses recurrentexpenses.GetAllRecurrentExpenses,
 	createMonthlyRecurrentExpenses recurrentexpenses.CreateMonthlyRecurrentExpenses,
 	e *echo.Echo, //nolint:varnamelen
@@ -51,7 +51,7 @@ func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 	if err := ctx.Bind(&recurrentExpenseReq); err != nil {
 		return errors.CreateResponseFromError(ctx, err)
 	}
-	res, err := c.createRecurrentExpense.Create(ctx.Request().Context(), &recurrentExpenseReq)
+	res, err := c.createRecurrentExpense.CreateRecurrentExpense(ctx.Request().Context(), &recurrentExpenseReq)
 	if err != nil {
 		return errors.CreateResponseFromError(ctx, err)
 	}

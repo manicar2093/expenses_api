@@ -49,7 +49,7 @@ func (c *ExpensesController) create(ctx echo.Context) error {
 	if err := ctx.Bind(&expenseRequest); err != nil {
 		return errors.CreateResponseFromError(ctx, err)
 	}
-	newExpense, err := c.createExpense.Create(ctx.Request().Context(), &expenseRequest)
+	newExpense, err := c.createExpense.CreateExpense(ctx.Request().Context(), &expenseRequest)
 	if err != nil {
 		return errors.CreateResponseFromError(ctx, err)
 	}

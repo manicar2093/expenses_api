@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
+	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/mocks"
 )
@@ -29,12 +29,12 @@ var _ = Describe("GetAll", func() {
 
 	It("returns all registered recurrent expenses", func() {
 		var (
-			expectedRepoReturn = []mongoentities.RecurrentExpense{
+			expectedRepoReturn = []*entities.RecurrentExpense{
 				{}, {}, {},
 			}
 			expectedRecurrentExpensesCount = uint(len(expectedRepoReturn))
 		)
-		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(&expectedRepoReturn, nil)
+		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(expectedRepoReturn, nil)
 
 		got, err := api.GetAll(ctx)
 

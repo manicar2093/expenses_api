@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
+	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/incomes"
 	"github.com/manicar2093/expenses_api/mocks"
 )
@@ -40,7 +40,7 @@ var _ = Describe("CreateImpl", func() {
 				Amount:      expectedAmount,
 				Description: expectedDescription,
 			}
-			expextedIncomeEntity = mongoentities.Income{
+			expextedIncomeEntity = entities.Income{
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,

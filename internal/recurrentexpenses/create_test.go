@@ -5,14 +5,16 @@ import (
 	"time"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
+	"github.com/google/uuid"
+	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/mocks"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"gopkg.in/guregu/null.v4"
 )
 
-var _ = Describe("Create", func() {
+var _ = Describe("CreateRecurrentExpense", func() {
 
 	var (
 		expensesRepoMock         *mocks.ExpensesRepository
@@ -42,33 +44,43 @@ var _ = Describe("Create", func() {
 			expectedExpenseName        = faker.Name()
 			expectedExpenseAmount      = faker.Latitude()
 			expectedExpenseDescription = faker.Paragraph()
+			expectedRecurrentExpenseID = uuid.New()
 			expectedCreatedAt          = time.Date(2022, time.August, 1, 0, 0, 0, 0, time.Local)
 			request                    = recurrentexpenses.CreateRecurrentExpenseInput{
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,
 			}
-			expectedRecurrentExpenseSaved = mongoentities.RecurrentExpense{
+			expectedRecurrentExpenseSaved = entities.RecurrentExpense{
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
-				Description: expectedExpenseDescription,
+				Description: null.StringFrom(expectedExpenseDescription),
 			}
-			expectedExpenseSaved = mongoentities.Expense{
+			expectedRecurrentExpenseReturned = entities.RecurrentExpense{
+				ID:          expectedRecurrentExpenseID,
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
-				Description: expectedExpenseDescription,
-				IsRecurrent: true,
-				CreatedAt:   &expectedCreatedAt,
+				Description: null.StringFrom(expectedExpenseDescription),
+			}
+			expectedExpenseSaved = entities.Expense{
+				Amount: expectedExpenseAmount,
+				RecurrentExpenseID: uuid.NullUUID{
+					UUID:  expectedRecurrentExpenseID,
+					Valid: true,
+				},
+				CreatedAt: &expectedCreatedAt,
 			}
 		)
 		timeGetterMock.EXPECT().GetNextMonthAtFirtsDay().Return(expectedCreatedAt)
-		recurentExpensesRepoMock.EXPECT().Save(ctx, &expectedRecurrentExpenseSaved).Return(nil)
+		recurentExpensesRepoMock.EXPECT().Save(ctx, &expectedRecurrentExpenseSaved).Run(func(ctx context.Context, recExpense *entities.RecurrentExpense) {
+			recExpense.ID = expectedRecurrentExpenseID
+		}).Return(nil)
 		expensesRepoMock.EXPECT().Save(ctx, &expectedExpenseSaved).Return(nil)
 
-		got, err := api.Create(ctx, &request)
+		got, err := api.CreateRecurrentExpense(ctx, &request)
 
 		Expect(err).ToNot(HaveOccurred())
-		Expect(got.RecurrentExpense).To(Equal(&expectedRecurrentExpenseSaved))
+		Expect(got.RecurrentExpense).To(Equal(&expectedRecurrentExpenseReturned))
 		Expect(got.NextMonthExpense).To(Equal(&expectedExpenseSaved))
 	})
 

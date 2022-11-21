@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var _ = Describe("Mongo", func() {
+var _ = PDescribe("Mongo", func() {
 	var _ = Describe("MongoConnection", func() {
 		var (
 			ctx  context.Context

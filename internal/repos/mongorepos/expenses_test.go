@@ -138,7 +138,7 @@ var _ = Describe("ExpensesImpl", func() {
 			err := repo.UpdateIsPaidByExpenseID(ctx, expectedID.Hex(), expectedStatus)
 
 			var changed mongoentities.Expense
-			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedID}}).Decode(&changed)
+			coll.FindOne(ctx, bson.D{{Key: "_id", Value: expectedID}}).Decode(&changed) //nolint:errcheck
 			Expect(err).ToNot(HaveOccurred())
 			Expect(changed.Name).To(Equal(expectedName))
 			Expect(changed.IsPaid).To(Equal(expectedStatus))
