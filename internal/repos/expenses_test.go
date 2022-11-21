@@ -29,7 +29,7 @@ var _ = Describe("Expenses", func() {
 		It("saves an entities.Expense in database", func() {
 
 			var (
-				expectedName                   = faker.Name()
+				expectedName                   = null.StringFrom(faker.Name())
 				expectedAmount                 = faker.Latitude()
 				expectedDescription            = faker.Sentence()
 				expectedRecurrentExpenseID     = uuid.New()
@@ -74,7 +74,7 @@ var _ = Describe("Expenses", func() {
 	Describe("GetExpensesByMonth", func() {
 		It("returns all expenses by current month", func() {
 			var (
-				expectedName                   = faker.Name()
+				expectedName                   = null.StringFrom(faker.Name())
 				expectedAmount                 = faker.Latitude()
 				expectedDescription            = faker.Sentence()
 				expectedMonth                  = time.January
@@ -145,7 +145,7 @@ var _ = Describe("Expenses", func() {
 	Describe("UpdateIsPaidByExpenseID", func() {
 		It("change isPaid by given bool", func() {
 			var (
-				expectedName                   = faker.Name()
+				expectedName                   = null.StringFrom(faker.Name())
 				expectedAmount                 = faker.Latitude()
 				expectedDescription            = faker.Sentence()
 				expectedMonth                  = time.January
@@ -206,7 +206,7 @@ var _ = Describe("Expenses", func() {
 					Description: null.StringFrom(faker.Paragraph()),
 				}
 				expectedExpense = &entities.Expense{
-					Name:               expectedRecurrenteExpenseName,
+					Name:               null.StringFrom(expectedRecurrenteExpenseName),
 					RecurrentExpenseID: expectedRecurrentExpenseNullID,
 					Amount:             expectedAmount,
 					Day:                1,
@@ -245,7 +245,7 @@ var _ = Describe("Expenses", func() {
 	Describe("GetExpenseStatusByID", func() {
 		It("finds a expense by ID retriving just is_paid and its ID", func() {
 			var (
-				expectedName        = faker.Name()
+				expectedName        = null.StringFrom(faker.Name())
 				expectedAmount      = faker.Latitude()
 				expectedDescription = faker.Sentence()
 				expectedMonth       = time.January

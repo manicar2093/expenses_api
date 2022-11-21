@@ -6,6 +6,7 @@ import (
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	"github.com/manicar2093/expenses_api/pkg/nullsql"
 )
 
 type (
@@ -51,7 +52,7 @@ func (c *CreateMonthlyRecurrentExpensesImpl) CreateMonthlyRecurrentExpenses(ctx 
 			_, isNotFound := err.(*repos.NotFoundError)
 			if isNotFound {
 				expenseToSave := entities.Expense{
-					Name:        recurrentExpense.Name,
+					Name:        nullsql.ValidateStringSQLValid(recurrentExpense.Name),
 					Description: recurrentExpense.Description,
 					Amount:      recurrentExpense.Amount,
 					CreatedAt:   &nextMonthDate,

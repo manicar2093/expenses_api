@@ -1,7 +1,7 @@
 TAG=`git describe --always --tags | cut -c 2-`
 
 run:
-	@ dotenv -e example.env -- go run cmd/api/*.go
+	@ dotenv -e dev.env -- go run cmd/api/*.go
 
 mocking:
 	@ mockery --all --with-expecter

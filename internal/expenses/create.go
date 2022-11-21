@@ -23,7 +23,7 @@ func (c *ExpenseServiceImpl) expenseFromCreateExpenseInput(holder *CreateExpense
 	var (
 		today      = c.timeGetter.GetCurrentTime()
 		newExpense = &entities.Expense{
-			Name:        holder.Name,
+			Name:        nullsql.ValidateStringSQLValid(holder.Name),
 			Amount:      holder.Amount,
 			Description: nullsql.ValidateStringSQLValid(holder.Description),
 			IsPaid:      true,

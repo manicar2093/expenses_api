@@ -14,7 +14,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-var _ = Describe("Create", func() {
+var _ = Describe("CreateRecurrentExpense", func() {
 
 	var (
 		expensesRepoMock         *mocks.ExpensesRepository
@@ -44,6 +44,7 @@ var _ = Describe("Create", func() {
 			expectedExpenseName        = faker.Name()
 			expectedExpenseAmount      = faker.Latitude()
 			expectedExpenseDescription = faker.Paragraph()
+			expectedRecurrentExpenseID = uuid.New()
 			expectedCreatedAt          = time.Date(2022, time.August, 1, 0, 0, 0, 0, time.Local)
 			request                    = recurrentexpenses.CreateRecurrentExpenseInput{
 				Name:        expectedExpenseName,
@@ -55,25 +56,31 @@ var _ = Describe("Create", func() {
 				Amount:      expectedExpenseAmount,
 				Description: null.StringFrom(expectedExpenseDescription),
 			}
+			expectedRecurrentExpenseReturned = entities.RecurrentExpense{
+				ID:          expectedRecurrentExpenseID,
+				Name:        expectedExpenseName,
+				Amount:      expectedExpenseAmount,
+				Description: null.StringFrom(expectedExpenseDescription),
+			}
 			expectedExpenseSaved = entities.Expense{
-				Name:   expectedExpenseName,
 				Amount: expectedExpenseAmount,
 				RecurrentExpenseID: uuid.NullUUID{
-					UUID:  expectedRecurrentExpenseSaved.ID,
+					UUID:  expectedRecurrentExpenseID,
 					Valid: true,
 				},
-				Description: null.StringFrom(expectedExpenseDescription),
-				CreatedAt:   &expectedCreatedAt,
+				CreatedAt: &expectedCreatedAt,
 			}
 		)
 		timeGetterMock.EXPECT().GetNextMonthAtFirtsDay().Return(expectedCreatedAt)
-		recurentExpensesRepoMock.EXPECT().Save(ctx, &expectedRecurrentExpenseSaved).Return(nil)
+		recurentExpensesRepoMock.EXPECT().Save(ctx, &expectedRecurrentExpenseSaved).Run(func(ctx context.Context, recExpense *entities.RecurrentExpense) {
+			recExpense.ID = expectedRecurrentExpenseID
+		}).Return(nil)
 		expensesRepoMock.EXPECT().Save(ctx, &expectedExpenseSaved).Return(nil)
 
-		got, err := api.Create(ctx, &request)
+		got, err := api.CreateRecurrentExpense(ctx, &request)
 
 		Expect(err).ToNot(HaveOccurred())
-		Expect(got.RecurrentExpense).To(Equal(&expectedRecurrentExpenseSaved))
+		Expect(got.RecurrentExpense).To(Equal(&expectedRecurrentExpenseReturned))
 		Expect(got.NextMonthExpense).To(Equal(&expectedExpenseSaved))
 	})
 
