@@ -43,10 +43,10 @@ func (c *ExpensesGormRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseI
 func (c *ExpensesGormRepo) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
 	var found entities.Expense
 	if res := c.orm.WithContext(ctx).Where("month = ? AND name = ? AND recurrent_expense_id IS NOT null", month, expenseName).First(&found); res.Error != nil {
-		switch {
-		case errors.Is(res.Error, gorm.ErrRecordNotFound):
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return nil, &NotFoundError{Identifier: expenseName, Entity: "Expense", Message: res.Error.Error()}
 		}
+
 		return nil, res.Error
 	}
 

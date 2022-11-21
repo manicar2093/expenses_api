@@ -199,6 +199,7 @@ var _ = Describe("Expenses", func() {
 					UUID:  expectedRecurrentExpenseID,
 					Valid: true,
 				}
+				expectedExpenseName      = null.StringFrom(expectedRecurrenteExpenseName)
 				expectedRecurrentExpense = &entities.RecurrentExpense{
 					ID:          expectedRecurrentExpenseID,
 					Name:        expectedRecurrenteExpenseName,
@@ -206,7 +207,7 @@ var _ = Describe("Expenses", func() {
 					Description: null.StringFrom(faker.Paragraph()),
 				}
 				expectedExpense = &entities.Expense{
-					Name:               null.StringFrom(expectedRecurrenteExpenseName),
+					Name:               expectedExpenseName,
 					RecurrentExpenseID: expectedRecurrentExpenseNullID,
 					Amount:             expectedAmount,
 					Day:                1,
@@ -223,7 +224,7 @@ var _ = Describe("Expenses", func() {
 			got, err := repo.FindByNameAndMonthAndIsRecurrent(ctx, uint(expectedMonth), expectedRecurrenteExpenseName)
 
 			Expect(err).ToNot(HaveOccurred())
-			Expect(got.Name).To(Equal(expectedRecurrenteExpenseName))
+			Expect(got.Name).To(Equal(expectedExpenseName))
 			Expect(got.RecurrentExpenseID).ToNot(BeNil())
 		})
 

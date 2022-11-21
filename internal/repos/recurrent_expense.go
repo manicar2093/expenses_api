@@ -23,7 +23,7 @@ func NewRecurrentExpenseGormRepo(conn *gorm.DB) *RecurrentExpenseGormRepo {
 
 func (c *RecurrentExpenseGormRepo) Save(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error {
 	if res := c.orm.WithContext(ctx).Create(recurrentExpense); res.Error != nil {
-		switch err := res.Error.(type) {
+		switch err := res.Error.(type) { //nolint:gocritic
 		case *pgconn.PgError:
 			if strings.Contains(err.Detail, "already exists.") {
 				return &AlreadyExistsError{
@@ -31,7 +31,6 @@ func (c *RecurrentExpenseGormRepo) Save(ctx context.Context, recurrentExpense *e
 					Entity:     "Recurrent Expense",
 				}
 			}
-
 		}
 	}
 	return nil

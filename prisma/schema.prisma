@@ -14,7 +14,7 @@ model Expense {
   id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   recurrent_expense RecurrentExpense? @relation(fields: [recurrent_expense_id], references: [id])
   recurrent_expense_id String? @db.Uuid
-  name  String
+  name  String?
   amount Decimal @db.Decimal(15,2)
   description String?
   day Int
