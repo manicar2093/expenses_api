@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
-	"github.com/manicar2093/expenses_api/internal/schemas"
 )
 
 type (
@@ -15,7 +14,7 @@ type (
 		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID uuid.UUID, status bool) error
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
-		GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*schemas.ExpenseIDWithIsPaidStatus, error)
+		GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*entities.ExpenseIDWithIsPaidStatus, error)
 	}
 
 	IncomesRepository interface {

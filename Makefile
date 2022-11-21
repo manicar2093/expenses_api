@@ -21,7 +21,7 @@ build_image:
 	@ docker build . -t expenses_api:latest
 	@ docker build . -t "expenses_api:$(TAG)"
 
-push_postgres:
+migrate_postgres:
 ifdef ENV
 	@ dotenv -e $(ENV).env -- npx prisma migrate dev --skip-generate --skip-seed
 else

@@ -42,7 +42,7 @@ func NewExpense(name, description string, amount float64, recurrentExpense *Recu
 		Amount: amount,
 		Description: null.NewString(
 			description,
-			description == "",
+			description != "",
 		),
 		RecurrentExpenseID: recurrentExpenseID,
 		CreatedAt:          createAt,

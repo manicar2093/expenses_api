@@ -24,7 +24,7 @@ func NewRecurrentExpense(name, description string, amount float64) *RecurrentExp
 		Name: name,
 		Description: null.NewString(
 			description,
-			description == "",
+			description != "",
 		),
 		Amount: amount,
 	}

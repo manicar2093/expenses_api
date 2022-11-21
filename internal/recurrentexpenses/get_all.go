@@ -3,7 +3,7 @@ package recurrentexpenses
 import (
 	"context"
 
-	"github.com/manicar2093/expenses_api/internal/entities/mongoentities"
+	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 )
 
@@ -13,8 +13,8 @@ type (
 	}
 
 	GetAllRecurrentExpensesOutput struct {
-		RecurrentExpenses       []mongoentities.RecurrentExpense `json:"recurrent_expenses,omitempty"`
-		RecurrenteExpensesCount uint                             `json:"recurrente_expenses_count,omitempty"`
+		RecurrentExpenses       []*entities.RecurrentExpense `json:"recurrent_expenses,omitempty"`
+		RecurrenteExpensesCount uint                         `json:"recurrente_expenses_count,omitempty"`
 	}
 	GetAllRecurrentExpensesImpl struct {
 		recurrentExpensesRepo repos.RecurrentExpenseRepo
@@ -32,7 +32,7 @@ func (c *GetAllRecurrentExpensesImpl) GetAll(ctx context.Context) (*GetAllRecurr
 	}
 
 	return &GetAllRecurrentExpensesOutput{
-		RecurrentExpenses:       *recurrentExpenses,
-		RecurrenteExpensesCount: uint(len(*recurrentExpenses)),
+		RecurrentExpenses:       recurrentExpenses,
+		RecurrenteExpensesCount: uint(len(recurrentExpenses)),
 	}, nil
 }

@@ -10,21 +10,17 @@ import (
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
-	"github.com/manicar2093/expenses_api/internal/repos/mongorepos"
+	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 var (
-	mongoConn    = connections.GetMongoConn()
-	expensesRepo = mongorepos.NewExpensesMongoRepo(
-		mongoConn,
-	)
-	recurrentExpensesRepo = mongorepos.NewRecurrentExpenseMongoRepo(
-		mongoConn,
-	)
-	timeGetter     = &dates.TimeGetter{}
-	expenseService = expenses.NewExpenseServiceImpl(
+	conn                  = connections.GetGormConnection()
+	expensesRepo          = repos.NewExpensesGormRepo(conn)
+	recurrentExpensesRepo = repos.NewRecurrentExpenseGormRepo(conn)
+	timeGetter            = &dates.TimeGetter{}
+	expenseService        = expenses.NewExpenseServiceImpl(
 		expensesRepo,
 		timeGetter,
 	)
@@ -81,7 +77,7 @@ func registerControllers() {
 		e,
 	).Register()
 	controllers.NewHealthCheckController(
-		mongoConn.Client(),
+		conn,
 		e,
 	).Register()
 }

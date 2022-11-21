@@ -8,8 +8,6 @@ import (
 	entities "github.com/manicar2093/expenses_api/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 
-	schemas "github.com/manicar2093/expenses_api/internal/schemas"
-
 	time "time"
 
 	uuid "github.com/google/uuid"
@@ -77,15 +75,15 @@ func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *
 }
 
 // GetExpenseStatusByID provides a mock function with given fields: ctx, expenseID
-func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*schemas.ExpenseIDWithIsPaidStatus, error) {
+func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*entities.ExpenseIDWithIsPaidStatus, error) {
 	ret := _m.Called(ctx, expenseID)
 
-	var r0 *schemas.ExpenseIDWithIsPaidStatus
-	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) *schemas.ExpenseIDWithIsPaidStatus); ok {
+	var r0 *entities.ExpenseIDWithIsPaidStatus
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) *entities.ExpenseIDWithIsPaidStatus); ok {
 		r0 = rf(ctx, expenseID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*schemas.ExpenseIDWithIsPaidStatus)
+			r0 = ret.Get(0).(*entities.ExpenseIDWithIsPaidStatus)
 		}
 	}
 
@@ -118,7 +116,7 @@ func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Run(run func(ctx context
 	return _c
 }
 
-func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Return(_a0 *schemas.ExpenseIDWithIsPaidStatus, _a1 error) *ExpensesRepository_GetExpenseStatusByID_Call {
+func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Return(_a0 *entities.ExpenseIDWithIsPaidStatus, _a1 error) *ExpensesRepository_GetExpenseStatusByID_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
