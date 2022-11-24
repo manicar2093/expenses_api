@@ -3,7 +3,6 @@ package expenses_test
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/bxcodec/faker/v3"
@@ -14,7 +13,6 @@ import (
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/mocks"
-	"github.com/manicar2093/expenses_api/pkg/json"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 	"github.com/manicar2093/expenses_api/pkg/validator"
 )
@@ -123,7 +121,6 @@ var _ = Describe("CreateImpl", func() {
 
 			got, err := integrationTestApi.CreateExpense(ctx, &invalidRequest)
 
-			log.Println(json.MustMarshall(err))
 			Expect(got).To(BeNil())
 			Expect(err).To(HaveOccurred())
 		})

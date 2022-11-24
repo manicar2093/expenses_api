@@ -10,6 +10,8 @@ import (
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/mocks"
+	"github.com/manicar2093/expenses_api/pkg/testfunc"
+	"github.com/manicar2093/expenses_api/pkg/validator"
 )
 
 var _ = Describe("ToggleExpenseIsPaid", func() {
@@ -39,16 +41,18 @@ var _ = Describe("ToggleExpenseIsPaid", func() {
 
 	It("toggles expense IsPaid status", func() {
 		var (
-			expectedExpenseID         = uuid.New()
+			expectedExpenseIDAsString = uuid.New().String()
+			expectedExpenseID         = uuid.MustParse(expectedExpenseIDAsString)
 			expectedExpenseWithStatus = entities.ExpenseIDWithIsPaidStatus{
 				ID:     expectedExpenseID,
 				IsPaid: true,
 			}
 			expectedIsPaidUpdateCall   = !expectedExpenseWithStatus.IsPaid
 			expectedToggleExpenseInput = expenses.ToggleExpenseIsPaidInput{
-				ID: expectedExpenseID,
+				ID: expectedExpenseIDAsString,
 			}
 		)
+		validatorMock.EXPECT().ValidateStruct(&expectedToggleExpenseInput).Return(nil)
 		expensesRepoMock.EXPECT().GetExpenseStatusByID(
 			ctx,
 			expectedExpenseID,
@@ -65,6 +69,20 @@ var _ = Describe("ToggleExpenseIsPaid", func() {
 		Expect(got.ID).To(Equal(expectedExpenseID))
 		Expect(got.CurrentIsPaidStatus).To(Equal(expectedIsPaidUpdateCall))
 
+	})
+
+	When("request is not valid", Label(testfunc.IntegrationTest), func() {
+		It("return a validation error", func() {
+			var invalidRequest = expenses.ToggleExpenseIsPaidInput{
+				"not uuid",
+			}
+			integrationTestApi := expenses.NewExpenseServiceImpl(expensesRepoMock, timeGetableMock, validator.NewGooKitValidator())
+
+			got, err := integrationTestApi.ToggleIsPaid(ctx, &invalidRequest)
+
+			Expect(got).To(BeNil())
+			Expect(err).To(HaveOccurred())
+		})
 	})
 
 })
