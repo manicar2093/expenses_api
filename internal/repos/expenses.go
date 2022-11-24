@@ -27,7 +27,7 @@ func (c *ExpensesGormRepo) Save(ctx context.Context, expense *entities.Expense) 
 
 func (c *ExpensesGormRepo) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error) {
 	var expensesFound []*entities.Expense
-	if res := c.orm.WithContext(ctx).Where(&entities.Expense{Month: uint(month)}, month).Find(&expensesFound); res.Error != nil {
+	if res := c.orm.WithContext(ctx).Where(&entities.Expense{Month: uint(month)}, month).Preload("RecurrentExpense").Find(&expensesFound); res.Error != nil {
 		return []*entities.Expense{}, res.Error
 	}
 	return expensesFound, nil
