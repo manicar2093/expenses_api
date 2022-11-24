@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/bxcodec/faker/v3 v3.8.0
-	github.com/emvi/null v1.3.1
 	github.com/google/uuid v1.3.0
+	github.com/jackc/pgconn v1.13.0
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/lib/pq v1.10.6
 	github.com/onsi/ginkgo/v2 v2.1.4
@@ -31,7 +31,6 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.1 // indirect
