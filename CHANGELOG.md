@@ -1,3 +1,9 @@
+## v3.0.1 (2022-11-24)
+
+### Fix
+
+- add json expense return (#57)
+
 ## v3.0.0 (2022-11-21)
 
 ### BREAKING CHANGE
