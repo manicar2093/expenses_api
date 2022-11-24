@@ -18,6 +18,7 @@ var _ = Describe("ToggleExpenseIsPaid", func() {
 		expensesRepoMock *mocks.ExpensesRepository
 		timeGetableMock  *mocks.TimeGetable
 		ctx              context.Context
+		validatorMock    *mocks.StructValidable
 		service          *expenses.ExpenseServiceImpl
 	)
 
@@ -25,7 +26,15 @@ var _ = Describe("ToggleExpenseIsPaid", func() {
 		expensesRepoMock = &mocks.ExpensesRepository{}
 		timeGetableMock = &mocks.TimeGetable{}
 		ctx = context.Background()
-		service = expenses.NewExpenseServiceImpl(expensesRepoMock, timeGetableMock)
+		validatorMock = &mocks.StructValidable{}
+		service = expenses.NewExpenseServiceImpl(expensesRepoMock, timeGetableMock, validatorMock)
+	})
+
+	AfterEach(func() {
+		T := GinkgoT()
+		expensesRepoMock.AssertExpectations(T)
+		timeGetableMock.AssertExpectations(T)
+		validatorMock.AssertExpectations(T)
 	})
 
 	It("toggles expense IsPaid status", func() {

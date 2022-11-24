@@ -32,7 +32,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Expense to be created",
-                        "name": "create_expense",
+                        "name": "expense_to_create",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -42,13 +42,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Expense has been created",
                         "schema": {
                             "$ref": "#/definitions/entities.Expense"
                         }
                     },
+                    "400": {
+                        "description": "When a request does not fullfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": "Something unidentified has occurred"
                     }
                 }
             }
@@ -252,7 +258,7 @@ const docTemplate = `{
         "controllers.HealthCheckOutput": {
             "type": "object",
             "properties": {
-                "no_sqldb_status": {
+                "db_status": {
                     "type": "string"
                 },
                 "version": {
@@ -273,7 +279,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "description": {
-                    "type": "string"
+                    "$ref": "#/definitions/null.String"
                 },
                 "id": {
                     "type": "string"
@@ -281,14 +287,17 @@ const docTemplate = `{
                 "is_paid": {
                     "type": "boolean"
                 },
-                "is_recurrent": {
-                    "type": "boolean"
-                },
                 "month": {
                     "type": "integer"
                 },
                 "name": {
-                    "type": "string"
+                    "$ref": "#/definitions/null.String"
+                },
+                "recurrent_expense": {
+                    "$ref": "#/definitions/entities.RecurrentExpense"
+                },
+                "recurrent_expense_id": {
+                    "$ref": "#/definitions/uuid.NullUUID"
                 },
                 "updated_at": {
                     "type": "string"
@@ -298,8 +307,41 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.RecurrentExpense": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "$ref": "#/definitions/null.String"
+                },
+                "expenses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Expense"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "expenses.CreateExpenseInput": {
             "type": "object",
+            "required": [
+                "amount",
+                "name"
+            ],
             "properties": {
                 "amount": {
                     "type": "number"
@@ -342,6 +384,18 @@ const docTemplate = `{
                 }
             }
         },
+        "null.String": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if String is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
         "recurrentexpenses.CreateRecurrentExpenseInput": {
             "type": "object",
             "properties": {
@@ -354,6 +408,24 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 }
+            }
+        },
+        "uuid.NullUUID": {
+            "type": "object",
+            "properties": {
+                "uuid": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if UUID is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "validator.ValidationError": {
+            "type": "object",
+            "properties": {
+                "errors": {}
             }
         }
     }

@@ -4,18 +4,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	"github.com/manicar2093/expenses_api/pkg/validator"
 )
 
 type (
 	SetExpenseToPaidInput struct {
 		ID uuid.UUID `json:"id,omitempty"`
 	}
-	CreateExpenseInput struct {
-		Name         string  `json:"name,omitempty"`
-		Amount       float64 `json:"amount,omitempty"`
-		Description  string  `json:"description,omitempty"`
-		ForNextMonth bool    `json:"for_next_month,omitempty"`
-	}
+
 	ToggleExpenseIsPaidInput struct {
 		ID uuid.UUID `json:"id,omitempty"`
 	}
@@ -26,12 +22,14 @@ type (
 	ExpenseServiceImpl struct {
 		expensesRepo repos.ExpensesRepository
 		timeGetter   dates.TimeGetable
+		validator    validator.StructValidable
 	}
 )
 
-func NewExpenseServiceImpl(repo repos.ExpensesRepository, timeGetter dates.TimeGetable) *ExpenseServiceImpl {
+func NewExpenseServiceImpl(repo repos.ExpensesRepository, timeGetter dates.TimeGetable, validator validator.StructValidable) *ExpenseServiceImpl {
 	return &ExpenseServiceImpl{
 		expensesRepo: repo,
 		timeGetter:   timeGetter,
+		validator:    validator,
 	}
 }

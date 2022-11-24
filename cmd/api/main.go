@@ -11,6 +11,7 @@ import (
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/dates"
+	"github.com/manicar2093/expenses_api/pkg/validator"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
@@ -19,9 +20,11 @@ var (
 	expensesRepo          = repos.NewExpensesGormRepo(conn)
 	recurrentExpensesRepo = repos.NewRecurrentExpenseGormRepo(conn)
 	timeGetter            = &dates.TimeGetter{}
+	structValidator       = validator.NewGooKitValidator()
 	expenseService        = expenses.NewExpenseServiceImpl(
 		expensesRepo,
 		timeGetter,
+		structValidator,
 	)
 	getCurrentMonth = reports.NewCurrentMonthDetailsImpl(
 		expensesRepo,

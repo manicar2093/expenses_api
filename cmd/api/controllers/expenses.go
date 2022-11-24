@@ -40,9 +40,10 @@ func (c *ExpensesController) Register() {
 // @Tags        expenses
 // @Accept      json
 // @Produce     json
-// @Param       create_expense body     expenses.CreateExpenseInput true "Expense to be created"
-// @Success     201            {object} entities.Expense
-// @Failure     500
+// @Param       expense_to_create body     expenses.CreateExpenseInput true "Expense to be created"
+// @Success     201               {object} entities.Expense            "Expense has been created"
+// @Failure     400               {object} validator.ValidationError   "When a request does not fullfill need data"
+// @Failure     500               "Something unidentified has occurred"
 // @Router      /expenses [post]
 func (c *ExpensesController) create(ctx echo.Context) error {
 	var expenseRequest expenses.CreateExpenseInput

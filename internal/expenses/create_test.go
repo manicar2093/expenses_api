@@ -3,6 +3,7 @@ package expenses_test
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/bxcodec/faker/v3"
@@ -13,6 +14,9 @@ import (
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/mocks"
+	"github.com/manicar2093/expenses_api/pkg/json"
+	"github.com/manicar2093/expenses_api/pkg/testfunc"
+	"github.com/manicar2093/expenses_api/pkg/validator"
 )
 
 var _ = Describe("CreateImpl", func() {
@@ -21,6 +25,7 @@ var _ = Describe("CreateImpl", func() {
 		expenseRepoMock *mocks.ExpensesRepository
 		timeGetterMock  *mocks.TimeGetable
 		ctx             context.Context
+		validatorMock   *mocks.StructValidable
 		api             *expenses.ExpenseServiceImpl
 	)
 
@@ -28,13 +33,15 @@ var _ = Describe("CreateImpl", func() {
 		expenseRepoMock = &mocks.ExpensesRepository{}
 		timeGetterMock = &mocks.TimeGetable{}
 		ctx = context.TODO()
-		api = expenses.NewExpenseServiceImpl(expenseRepoMock, timeGetterMock)
+		validatorMock = &mocks.StructValidable{}
+		api = expenses.NewExpenseServiceImpl(expenseRepoMock, timeGetterMock, validatorMock)
 	})
 
 	AfterEach(func() {
 		T := GinkgoT()
 		expenseRepoMock.AssertExpectations(T)
 		timeGetterMock.AssertExpectations(T)
+		validatorMock.AssertExpectations(T)
 	})
 
 	It("creates a new expense from schema", func() {
@@ -59,6 +66,7 @@ var _ = Describe("CreateImpl", func() {
 				CreatedAt:   &expectedCurrentDateReturn,
 			}
 		)
+		validatorMock.EXPECT().ValidateStruct(&request).Return(nil)
 		timeGetterMock.EXPECT().GetCurrentTime().Return(expectedCurrentDateReturn)
 		expenseRepoMock.EXPECT().Save(ctx, &expectedExpenseToSave).Return(nil)
 
@@ -95,6 +103,7 @@ var _ = Describe("CreateImpl", func() {
 					CreatedAt:   &expectedNextMonthDateReturn,
 				}
 			)
+			validatorMock.EXPECT().ValidateStruct(&request).Return(nil)
 			expenseRepoMock.EXPECT().Save(ctx, &expectedExpenseToSave).Return(nil)
 			timeGetterMock.EXPECT().GetCurrentTime().Return(expectedNowDateReturn)
 			timeGetterMock.EXPECT().GetNextMonthAtFirtsDay().Return(expectedNextMonthDateReturn)
@@ -103,6 +112,20 @@ var _ = Describe("CreateImpl", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got).To(Equal(&expectedExpenseToSave))
+		})
+	})
+
+	When("request is not valid", Label(testfunc.IntegrationTest), func() {
+		It("return an error", func() {
+			var invalidRequest = expenses.CreateExpenseInput{}
+
+			integrationTestApi := expenses.NewExpenseServiceImpl(expenseRepoMock, timeGetterMock, validator.NewGooKitValidator())
+
+			got, err := integrationTestApi.CreateExpense(ctx, &invalidRequest)
+
+			log.Println(json.MustMarshall(err))
+			Expect(got).To(BeNil())
+			Expect(err).To(HaveOccurred())
 		})
 	})
 

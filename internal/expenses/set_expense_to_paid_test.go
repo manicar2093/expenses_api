@@ -15,6 +15,7 @@ var _ = Describe("SetExpenseToPaid", func() {
 		expensesRepoMock *mocks.ExpensesRepository
 		timeGetableMock  *mocks.TimeGetable
 		ctx              context.Context
+		validatorMock    *mocks.StructValidable
 		api              *expenses.ExpenseServiceImpl
 	)
 
@@ -22,11 +23,15 @@ var _ = Describe("SetExpenseToPaid", func() {
 		expensesRepoMock = &mocks.ExpensesRepository{}
 		timeGetableMock = &mocks.TimeGetable{}
 		ctx = context.Background()
-		api = expenses.NewExpenseServiceImpl(expensesRepoMock, timeGetableMock)
+		validatorMock = &mocks.StructValidable{}
+		api = expenses.NewExpenseServiceImpl(expensesRepoMock, timeGetableMock, validatorMock)
 	})
 
 	AfterEach(func() {
-		expensesRepoMock.AssertExpectations(GinkgoT())
+		T := GinkgoT()
+		expensesRepoMock.AssertExpectations(T)
+		timeGetableMock.AssertExpectations(T)
+		validatorMock.AssertExpectations(T)
 	})
 
 	It("change expense to paid", func() {

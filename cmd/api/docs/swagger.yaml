@@ -1,7 +1,7 @@
 definitions:
   controllers.HealthCheckOutput:
     properties:
-      no_sqldb_status:
+      db_status:
         type: string
       version:
         type: string
@@ -15,21 +15,42 @@ definitions:
       day:
         type: integer
       description:
-        type: string
+        $ref: '#/definitions/null.String'
       id:
         type: string
       is_paid:
         type: boolean
-      is_recurrent:
-        type: boolean
       month:
         type: integer
       name:
-        type: string
+        $ref: '#/definitions/null.String'
+      recurrent_expense:
+        $ref: '#/definitions/entities.RecurrentExpense'
+      recurrent_expense_id:
+        $ref: '#/definitions/uuid.NullUUID'
       updated_at:
         type: string
       year:
         type: integer
+    type: object
+  entities.RecurrentExpense:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      description:
+        $ref: '#/definitions/null.String'
+      expenses:
+        items:
+          $ref: '#/definitions/entities.Expense'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
     type: object
   expenses.CreateExpenseInput:
     properties:
@@ -41,6 +62,9 @@ definitions:
         type: boolean
       name:
         type: string
+    required:
+    - amount
+    - name
     type: object
   expenses.SetExpenseToPaidInput:
     properties:
@@ -59,6 +83,14 @@ definitions:
       id:
         type: string
     type: object
+  null.String:
+    properties:
+      string:
+        type: string
+      valid:
+        description: Valid is true if String is not NULL
+        type: boolean
+    type: object
   recurrentexpenses.CreateRecurrentExpenseInput:
     properties:
       amount:
@@ -67,6 +99,18 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  uuid.NullUUID:
+    properties:
+      uuid:
+        type: string
+      valid:
+        description: Valid is true if UUID is not NULL
+        type: boolean
+    type: object
+  validator.ValidationError:
+    properties:
+      errors: {}
     type: object
 info:
   contact: {}
@@ -81,7 +125,7 @@ paths:
       parameters:
       - description: Expense to be created
         in: body
-        name: create_expense
+        name: expense_to_create
         required: true
         schema:
           $ref: '#/definitions/expenses.CreateExpenseInput'
@@ -89,11 +133,15 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Expense has been created
           schema:
             $ref: '#/definitions/entities.Expense'
+        "400":
+          description: When a request does not fullfill need data
+          schema:
+            $ref: '#/definitions/validator.ValidationError'
         "500":
-          description: Internal Server Error
+          description: Something unidentified has occurred
       summary: Create an expense
       tags:
       - expenses
