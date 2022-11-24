@@ -27,7 +27,7 @@ func (c *GooKitValidator) ValidateStruct(toValidate interface{}) error {
 }
 
 func (c *GooKitValidator) configuratedValidator(toValidate interface{}) *validate.Validation {
-	v := validate.Struct(toValidate)
+	v := validate.Struct(toValidate) //nolint:varnamelen
 	v.StopOnError = c.StopOnError
 	v.AddMessages(map[string]string{
 		"uuid":   uuidNotValidError,

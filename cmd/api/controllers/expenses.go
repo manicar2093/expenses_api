@@ -42,7 +42,7 @@ func (c *ExpensesController) Register() {
 // @Produce     json
 // @Param       expense_to_create body     expenses.CreateExpenseInput true "Expense to be created"
 // @Success     201               {object} entities.Expense            "Expense has been created"
-// @Failure     400               {object} validator.ValidationError   "When a request does not fullfill need data"
+// @Failure     400               {object} validator.ValidationError   "When a request does not fulfill need data"
 // @Failure     500               "Something unidentified has occurred"
 // @Router      /expenses [post]
 func (c *ExpensesController) create(ctx echo.Context) error {
@@ -64,6 +64,7 @@ func (c *ExpensesController) create(ctx echo.Context) error {
 // @Produce     json
 // @Param       expense_id body expenses.SetExpenseToPaidInput true "ID to change to is paid"
 // @Success     200
+// @Failure     400 {object} validator.ValidationError "When a request does not fulfill need data"
 // @Failure     500
 // @Router      /expenses/to_paid [post]
 func (c *ExpensesController) toPaid(ctx echo.Context) error {
@@ -84,6 +85,7 @@ func (c *ExpensesController) toPaid(ctx echo.Context) error {
 // @Produce     json
 // @Param       expense_id body     expenses.ToggleExpenseIsPaidInput true "ID to toggle is paid status"
 // @Success     200        {object} expenses.ToggleExpenseIsPaidOutput
+// @Failure     400        {object} validator.ValidationError "When a request does not fulfill need data"
 // @Failure     500
 // @Router      /expenses/toggle_is_paid [post]
 func (c *ExpensesController) toggleIsPaid(ctx echo.Context) error {

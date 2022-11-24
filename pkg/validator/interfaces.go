@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -15,7 +14,7 @@ type (
 )
 
 func (c *ValidationError) Error() string {
-	return fmt.Sprint(c.Errors)
+	return "request is not valid. Some field does not fulfill requirements"
 }
 
 func (c *ValidationError) StatusCode() int {

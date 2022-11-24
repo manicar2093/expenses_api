@@ -48,7 +48,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "When a request does not fullfill need data",
+                        "description": "When a request does not fulfill need data",
                         "schema": {
                             "$ref": "#/definitions/validator.ValidationError"
                         }
@@ -87,6 +87,12 @@ const docTemplate = `{
                     "200": {
                         "description": "OK"
                     },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -122,6 +128,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/expenses.ToggleExpenseIsPaidOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
                         }
                     },
                     "500": {
@@ -186,6 +198,12 @@ const docTemplate = `{
                 "responses": {
                     "201": {
                         "description": "Created"
+                    },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -398,6 +416,10 @@ const docTemplate = `{
         },
         "recurrentexpenses.CreateRecurrentExpenseInput": {
             "type": "object",
+            "required": [
+                "amount",
+                "name"
+            ],
             "properties": {
                 "amount": {
                     "type": "number"

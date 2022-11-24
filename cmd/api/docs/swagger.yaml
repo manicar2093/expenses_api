@@ -99,6 +99,9 @@ definitions:
         type: string
       name:
         type: string
+    required:
+    - amount
+    - name
     type: object
   uuid.NullUUID:
     properties:
@@ -137,7 +140,7 @@ paths:
           schema:
             $ref: '#/definitions/entities.Expense'
         "400":
-          description: When a request does not fullfill need data
+          description: When a request does not fulfill need data
           schema:
             $ref: '#/definitions/validator.ValidationError'
         "500":
@@ -162,6 +165,10 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: When a request does not fulfill need data
+          schema:
+            $ref: '#/definitions/validator.ValidationError'
         "500":
           description: Internal Server Error
       summary: Set expense to paid
@@ -186,6 +193,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/expenses.ToggleExpenseIsPaidOutput'
+        "400":
+          description: When a request does not fulfill need data
+          schema:
+            $ref: '#/definitions/validator.ValidationError'
         "500":
           description: Internal Server Error
       summary: Toggle is paid status from an expense
@@ -227,6 +238,10 @@ paths:
       responses:
         "201":
           description: Created
+        "400":
+          description: When a request does not fulfill need data
+          schema:
+            $ref: '#/definitions/validator.ValidationError'
         "500":
           description: Internal Server Error
       summary: Create a recurrent expense

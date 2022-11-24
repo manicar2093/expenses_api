@@ -30,12 +30,13 @@ var (
 		expensesRepo,
 		timeGetter,
 	)
-	createRecurrentExpense = recurrentexpenses.NewCreateRecurrentExpenseImpl(
+	createRecurrentExpense = recurrentexpenses.NewCreateRecurrentExpense(
 		recurrentExpensesRepo,
 		expensesRepo,
 		timeGetter,
+		structValidator,
 	)
-	getAllRecurrentExpenses = recurrentexpenses.NewGetAllRecurrentExpensesImpl(
+	getAllRecurrentExpenses = recurrentexpenses.NewGetAllRecurrentExpenseServiceImpl(
 		recurrentExpensesRepo,
 	)
 	createMonthlyRecurrentExpenses = recurrentexpenses.NewCreateMonthlyRecurrentExpensesImpl(

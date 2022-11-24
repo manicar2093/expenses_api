@@ -10,15 +10,15 @@ import (
 
 type RecurrentExpensesController struct {
 	createRecurrentExpense         recurrentexpenses.RecurrentExpenseCreatable
-	getAllRecurrentExpenses        recurrentexpenses.GetAllRecurrentExpenses
-	createMonthlyRecurrentExpenses recurrentexpenses.CreateMonthlyRecurrentExpenses
+	getAllRecurrentExpenses        recurrentexpenses.RecurrentExpensesAllGettable
+	createMonthlyRecurrentExpenses recurrentexpenses.MonthlyRecurrentExpensesCreateable
 	group                          *echo.Group
 }
 
 func NewRecurrentExpensesController(
 	createRecurrentExpense recurrentexpenses.RecurrentExpenseCreatable,
-	getAllRecurrentExpenses recurrentexpenses.GetAllRecurrentExpenses,
-	createMonthlyRecurrentExpenses recurrentexpenses.CreateMonthlyRecurrentExpenses,
+	getAllRecurrentExpenses recurrentexpenses.RecurrentExpensesAllGettable,
+	createMonthlyRecurrentExpenses recurrentexpenses.MonthlyRecurrentExpensesCreateable,
 	e *echo.Echo, //nolint:varnamelen
 ) *RecurrentExpensesController {
 	return &RecurrentExpensesController{
@@ -44,6 +44,7 @@ func (c *RecurrentExpensesController) Register() {
 // @Produce     json
 // @Param       recurrent_expense body recurrentexpenses.CreateRecurrentExpenseInput true "Recurrent Expense"
 // @Success     201
+// @Failure     400 {object} validator.ValidationError "When a request does not fulfill need data"
 // @Failure     500
 // @Router      /recurrent_expenses [post]
 func (c *RecurrentExpensesController) create(ctx echo.Context) error {

@@ -38,7 +38,7 @@
                         }
                     },
                     "400": {
-                        "description": "When a request does not fullfill need data",
+                        "description": "When a request does not fulfill need data",
                         "schema": {
                             "$ref": "#/definitions/validator.ValidationError"
                         }
@@ -77,6 +77,12 @@
                     "200": {
                         "description": "OK"
                     },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -112,6 +118,12 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/expenses.ToggleExpenseIsPaidOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
                         }
                     },
                     "500": {
@@ -176,6 +188,12 @@
                 "responses": {
                     "201": {
                         "description": "Created"
+                    },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -388,6 +406,10 @@
         },
         "recurrentexpenses.CreateRecurrentExpenseInput": {
             "type": "object",
+            "required": [
+                "amount",
+                "name"
+            ],
             "properties": {
                 "amount": {
                     "type": "number"
