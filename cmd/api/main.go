@@ -6,7 +6,6 @@ import (
 	"github.com/manicar2093/expenses_api/cmd/api/controllers"
 	_ "github.com/manicar2093/expenses_api/cmd/api/docs"
 	"github.com/manicar2093/expenses_api/internal/connections"
-	_ "github.com/manicar2093/expenses_api/internal/entities/mongoentities"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"

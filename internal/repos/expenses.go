@@ -27,15 +27,21 @@ func (c *ExpensesGormRepo) Save(ctx context.Context, expense *entities.Expense) 
 
 func (c *ExpensesGormRepo) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error) {
 	var expensesFound []*entities.Expense
-	if res := c.orm.WithContext(ctx).Where(&entities.Expense{Month: uint(month)}, month).Find(&expensesFound); res.Error != nil {
+	if res := c.orm.WithContext(ctx).Where(&entities.Expense{Month: uint(month)}, month).Preload("RecurrentExpense").Find(&expensesFound); res.Error != nil {
 		return []*entities.Expense{}, res.Error
 	}
 	return expensesFound, nil
 }
 
 func (c *ExpensesGormRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseID uuid.UUID, status bool) error {
-	if res := c.orm.WithContext(ctx).Model(&entities.Expense{}).Where("id = ?", expenseID).Update("is_paid", status); res.Error != nil {
+	res := c.orm.WithContext(ctx).Model(&entities.Expense{}).Where("id = ?", expenseID).Update("is_paid", status)
+	switch {
+	case res.Error != nil:
 		return res.Error
+	case res.RowsAffected == 0:
+		err := &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "can´t be updated. It does not exist"}
+		log.Println(err)
+		return err
 	}
 	return nil
 }

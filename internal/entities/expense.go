@@ -19,7 +19,7 @@ type Expense struct {
 	Day                uint              `json:"day,omitempty"`
 	Month              uint              `json:"month,omitempty"`
 	Year               uint              `json:"year,omitempty"`
-	IsPaid             bool              `json:"is_paid,omitempty"`
+	IsPaid             bool              `json:"is_paid"`
 	CreatedAt          *time.Time        `json:"created_at,omitempty"`
 	UpdatedAt          *time.Time        `json:"updated_at,omitempty"`
 }
