@@ -185,6 +185,19 @@ var _ = Describe("Expenses", func() {
 			Expect(changed.Name).To(Equal(expectedName))
 			Expect(changed.IsPaid).To(Equal(expectedStatus))
 		})
+
+		When("expense is not found", func() {
+			It("returns a NotFound error", func() {
+				var (
+					expectedID = uuid.New()
+				)
+
+				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, true)
+
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+			})
+		})
 	})
 
 	Describe("FindByNameAndMonthAndIsRecurrent", func() {

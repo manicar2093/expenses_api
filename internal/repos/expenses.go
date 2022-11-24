@@ -34,8 +34,14 @@ func (c *ExpensesGormRepo) GetExpensesByMonth(ctx context.Context, month time.Mo
 }
 
 func (c *ExpensesGormRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseID uuid.UUID, status bool) error {
-	if res := c.orm.WithContext(ctx).Model(&entities.Expense{}).Where("id = ?", expenseID).Update("is_paid", status); res.Error != nil {
+	res := c.orm.WithContext(ctx).Model(&entities.Expense{}).Where("id = ?", expenseID).Update("is_paid", status)
+	switch {
+	case res.Error != nil:
 		return res.Error
+	case res.RowsAffected == 0:
+		err := &NotFoundError{Identifier: expenseID, Entity: "Expense", Message: "can´t be updated. It does not exist"}
+		log.Println(err)
+		return err
 	}
 	return nil
 }
