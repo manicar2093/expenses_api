@@ -8,10 +8,6 @@ import (
 )
 
 type (
-	SetExpenseToPaidInput struct {
-		ID uuid.UUID `json:"id,omitempty"`
-	}
-
 	ToggleExpenseIsPaidInput struct {
 		ID uuid.UUID `json:"id,omitempty"`
 	}

@@ -7,7 +7,7 @@ import (
 
 type (
 	ValidationError struct {
-		Errors interface{} `json:",inline"`
+		Errors interface{} `json:"errors,inline"`
 	}
 	StructValidable interface {
 		ValidateStruct(toValidate interface{}) error

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/gookit/validate"
 	"github.com/manicar2093/expenses_api/pkg/errors"
 	"github.com/manicar2093/expenses_api/pkg/validator"
 	. "github.com/onsi/ginkgo/v2"
@@ -43,6 +44,29 @@ var _ = Describe("Gookitvalidator", func() {
 				got := api.ValidateStruct(&expectedDataToValidate)
 
 				Expect(got).To(BeNil())
+			})
+		})
+
+		When("uuid is not valid", func() {
+			It("shows message for invalid uuid", func() {
+				var (
+					expectedSubstring      = "is not valid for UUID type"
+					expectedNotUUID        = "not a uuid"
+					expectedDataToValidate = struct {
+						Name     string `validate:"isUUID" json:"name,omitempty"`
+						LastName string `validate:"uuid" json:"last_name,omitempty"`
+					}{
+						Name:     expectedNotUUID,
+						LastName: expectedNotUUID,
+					}
+				)
+
+				got := api.ValidateStruct(&expectedDataToValidate)
+
+				err := got.(*validator.ValidationError)
+				errMap := err.Errors.(validate.Errors)
+				Expect(errMap["name"]["isUUID"]).To(ContainSubstring(expectedSubstring))
+				Expect(errMap["last_name"]["uuid"]).To(ContainSubstring(expectedSubstring))
 			})
 		})
 	})
