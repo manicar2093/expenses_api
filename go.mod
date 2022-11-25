@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/bxcodec/faker/v3 v3.8.0
 	github.com/google/uuid v1.3.0
+	github.com/gookit/validate v1.4.5
 	github.com/jackc/pgconn v1.13.0
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/lib/pq v1.10.6
@@ -30,6 +31,8 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/gookit/filter v1.1.4 // indirect
+	github.com/gookit/goutil v0.5.15 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

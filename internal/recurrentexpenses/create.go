@@ -5,48 +5,17 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
-	"github.com/manicar2093/expenses_api/internal/repos"
-	"github.com/manicar2093/expenses_api/pkg/dates"
 	"github.com/manicar2093/expenses_api/pkg/json"
 	"github.com/manicar2093/expenses_api/pkg/nullsql"
 )
 
-type (
-	RecurrentExpenseCreatable interface {
-		CreateRecurrentExpense(ctx context.Context, input *CreateRecurrentExpenseInput) (*CreateRecurrentExpenseOutput, error)
-	}
-	CreateRecurrentExpenseInput struct {
-		Name        string  `json:"name,omitempty"`
-		Amount      float64 `json:"amount,omitempty"`
-		Description string  `json:"description,omitempty"`
-	}
-	CreateRecurrentExpenseOutput struct {
-		RecurrentExpense *entities.RecurrentExpense `json:"recurrent_expense,omitempty"`
-		NextMonthExpense *entities.Expense          `json:"next_month_expense,omitempty"`
-	}
-	CreateRecurrentExpenseImpl struct {
-		recurentExpensesRepo repos.RecurrentExpenseRepo
-		expensesRepo         repos.ExpensesRepository
-		timeGetter           dates.TimeGetable
-	}
-)
-
-func NewCreateRecurrentExpenseImpl(
-	recurentExpensesRepo repos.RecurrentExpenseRepo,
-	expensesRepo repos.ExpensesRepository,
-	timeGetter dates.TimeGetable,
-) *CreateRecurrentExpenseImpl {
-	return &CreateRecurrentExpenseImpl{
-		recurentExpensesRepo: recurentExpensesRepo,
-		expensesRepo:         expensesRepo,
-		timeGetter:           timeGetter,
-	}
-}
-
-func (c *CreateRecurrentExpenseImpl) CreateRecurrentExpense(
+func (c *RecurrentExpenseServiceImpl) CreateRecurrentExpense(
 	ctx context.Context,
 	input *CreateRecurrentExpenseInput,
 ) (*CreateRecurrentExpenseOutput, error) {
+	if err := c.validator.ValidateStruct(input); err != nil {
+		return nil, err
+	}
 	log.Println("Request: ", json.MustMarshall(input))
 	var (
 		nextMontTime     = c.timeGetter.GetNextMonthAtFirtsDay()
@@ -60,7 +29,7 @@ func (c *CreateRecurrentExpenseImpl) CreateRecurrentExpense(
 			CreatedAt: &nextMontTime,
 		}
 	)
-	if err := c.recurentExpensesRepo.Save(ctx, &recurrentExpense); err != nil {
+	if err := c.recurrentExpensesRepo.Save(ctx, &recurrentExpense); err != nil {
 		return nil, err
 	}
 	expense.RecurrentExpenseID = uuid.NullUUID{

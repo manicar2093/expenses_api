@@ -15,12 +15,12 @@ var _ = Describe("GetAll", func() {
 	var (
 		recurrentExpensesRepoMock *mocks.RecurrentExpenseRepo
 		ctx                       context.Context
-		api                       *recurrentexpenses.GetAllRecurrentExpensesImpl
+		api                       *recurrentexpenses.RecurrentExpenseServiceImpl
 	)
 	BeforeEach(func() {
 		recurrentExpensesRepoMock = &mocks.RecurrentExpenseRepo{}
 		ctx = context.Background()
-		api = recurrentexpenses.NewGetAllRecurrentExpensesImpl(recurrentExpensesRepoMock)
+		api = recurrentexpenses.NewGetAllRecurrentExpenseServiceImpl(recurrentExpensesRepoMock)
 	})
 
 	AfterEach(func() {

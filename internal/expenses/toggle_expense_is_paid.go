@@ -3,6 +3,7 @@ package expenses
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/pkg/json"
 )
 
@@ -11,7 +12,16 @@ func (c *ExpenseServiceImpl) ToggleIsPaid(
 	input *ToggleExpenseIsPaidInput,
 ) (*ToggleExpenseIsPaidOutput, error) {
 	log.Println(json.MustMarshall(input))
-	var expenseID = input.ID
+	if err := c.validator.ValidateStruct(input); err != nil {
+		return nil, err
+	}
+	return c.toggle(ctx, uuid.MustParse(input.ID))
+}
+
+func (c *ExpenseServiceImpl) toggle(
+	ctx context.Context,
+	expenseID uuid.UUID,
+) (*ToggleExpenseIsPaidOutput, error) {
 	expenseStatus, err := c.expensesRepo.GetExpenseStatusByID(ctx, expenseID)
 	if err != nil {
 		return nil, err
