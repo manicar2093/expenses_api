@@ -7,7 +7,10 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-const ExpensesTableName = "expenses"
+const (
+	ExpensesTableName  = "expenses"
+	ExpensesEntityName = "expense"
+)
 
 type Expense struct {
 	ID                 uuid.UUID         `json:"id,omitempty" gorm:"primaryKey,->"`

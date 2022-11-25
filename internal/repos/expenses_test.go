@@ -2,6 +2,7 @@ package repos_test
 
 import (
 	"context"
+	"math"
 	"net/http"
 	"time"
 
@@ -296,6 +297,66 @@ var _ = Describe("Expenses", func() {
 				Expect(got).To(BeNil())
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+			})
+		})
+	})
+
+	Describe("Update", func() {
+		It("changes expense required saved data", func() {
+			var (
+				savedExpenseID = uuid.New()
+				savedExpense   = entities.Expense{
+					ID:          savedExpenseID,
+					Name:        null.StringFrom(faker.Name()),
+					Amount:      faker.Latitude(),
+					Description: null.StringFrom(faker.Paragraph()),
+					Day:         1,
+					Month:       2,
+					Year:        2022,
+					IsPaid:      true,
+				}
+				expectedNewName             = null.StringFrom(faker.Name())
+				expectedNewAmount           = math.Round(faker.Latitude())
+				expectedNewDescription      = null.StringFrom(faker.Name())
+				expectedExpenseDataToUpdate = repos.UpdateExpenseInput{
+					ID:          savedExpenseID,
+					Name:        expectedNewName,
+					Amount:      expectedNewAmount,
+					Description: expectedNewDescription,
+				}
+			)
+			conn.Create(&savedExpense)
+			defer conn.Delete(&savedExpense)
+
+			err := repo.Update(ctx, &expectedExpenseDataToUpdate)
+			var updated *entities.Expense
+			conn.Where("id = ?", savedExpense.ID).Find(&updated)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(updated.Name).To(Equal(expectedNewName))
+			Expect(updated.Amount).To(Equal(expectedNewAmount))
+			Expect(updated.Description).To(Equal(expectedNewDescription))
+			Expect(updated.Day).To(Equal(savedExpense.Day))
+			Expect(updated.Month).To(Equal(savedExpense.Month))
+			Expect(updated.Year).To(Equal(savedExpense.Year))
+			Expect(updated.IsPaid).To(Equal(savedExpense.IsPaid))
+		})
+
+		When("expense does not exists", func() {
+			It("return a notFoundError", func() {
+				var (
+					savedExpenseID              = uuid.New()
+					expectedExpenseDataToUpdate = repos.UpdateExpenseInput{
+						ID:          savedExpenseID,
+						Name:        null.StringFrom(faker.Name()),
+						Amount:      faker.Latitude(),
+						Description: null.StringFrom(faker.Paragraph()),
+					}
+				)
+
+				err := repo.Update(ctx, &expectedExpenseDataToUpdate)
+
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 			})
 		})
 	})

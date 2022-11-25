@@ -8,6 +8,8 @@ import (
 	entities "github.com/manicar2093/expenses_api/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 
+	repos "github.com/manicar2093/expenses_api/internal/repos"
+
 	time "time"
 
 	uuid "github.com/google/uuid"
@@ -202,6 +204,44 @@ func (_c *ExpensesRepository_Save_Call) Run(run func(ctx context.Context, expens
 }
 
 func (_c *ExpensesRepository_Save_Call) Return(_a0 error) *ExpensesRepository_Save_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+// Update provides a mock function with given fields: ctx, expenseUpdateInput
+func (_m *ExpensesRepository) Update(ctx context.Context, expenseUpdateInput *repos.UpdateExpenseInput) error {
+	ret := _m.Called(ctx, expenseUpdateInput)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *repos.UpdateExpenseInput) error); ok {
+		r0 = rf(ctx, expenseUpdateInput)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// ExpensesRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type ExpensesRepository_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenseUpdateInput *repos.UpdateExpenseInput
+func (_e *ExpensesRepository_Expecter) Update(ctx interface{}, expenseUpdateInput interface{}) *ExpensesRepository_Update_Call {
+	return &ExpensesRepository_Update_Call{Call: _e.mock.On("Update", ctx, expenseUpdateInput)}
+}
+
+func (_c *ExpensesRepository_Update_Call) Run(run func(ctx context.Context, expenseUpdateInput *repos.UpdateExpenseInput)) *ExpensesRepository_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*repos.UpdateExpenseInput))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_Update_Call) Return(_a0 error) *ExpensesRepository_Update_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
