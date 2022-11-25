@@ -360,4 +360,56 @@ var _ = Describe("Expenses", func() {
 			})
 		})
 	})
+
+	Describe("FindByID", func() {
+		It("returns an expense found by its ID", func() {
+			var (
+				expectedRecurrentExpenseID     = uuid.New()
+				expectedExpenseID              = uuid.New()
+				expectedRecurrentExpenseNullID = uuid.NullUUID{
+					UUID:  expectedRecurrentExpenseID,
+					Valid: true,
+				}
+				expectedRecurrentExpense = &entities.RecurrentExpense{
+					ID:          expectedRecurrentExpenseID,
+					Name:        faker.Name(),
+					Amount:      faker.Latitude(),
+					Description: null.StringFrom(faker.Paragraph()),
+				}
+				savedExpense = entities.Expense{
+					ID:                 expectedExpenseID,
+					Name:               null.StringFrom(faker.Name()),
+					RecurrentExpenseID: expectedRecurrentExpenseNullID,
+					Amount:             faker.Latitude(),
+					Day:                1,
+					Month:              1,
+					Year:               2022,
+				}
+			)
+			conn.Create(&expectedRecurrentExpense)
+			conn.Create(&savedExpense)
+			defer conn.Delete(&expectedRecurrentExpense)
+			defer conn.Delete(&savedExpense)
+
+			got, err := repo.FindByID(ctx, expectedExpenseID)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got.ID).To(Equal(expectedExpenseID))
+			Expect(got.RecurrentExpenseID).To(Equal(expectedRecurrentExpenseNullID))
+			Expect(got.RecurrentExpense.ID).To(Equal(expectedRecurrentExpenseID))
+		})
+
+		When("expense does not exists", func() {
+			It("return a notFoundError", func() {
+				var (
+					savedExpenseID = uuid.New()
+				)
+
+				got, err := repo.FindByID(ctx, savedExpenseID)
+
+				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(got).To(BeNil())
+			})
+		})
+	})
 })

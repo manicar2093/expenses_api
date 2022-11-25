@@ -28,6 +28,53 @@ func (_m *ExpensesRepository) EXPECT() *ExpensesRepository_Expecter {
 	return &ExpensesRepository_Expecter{mock: &_m.Mock}
 }
 
+// FindByID provides a mock function with given fields: ctx, expenseID
+func (_m *ExpensesRepository) FindByID(ctx context.Context, expenseID uuid.UUID) (*entities.Expense, error) {
+	ret := _m.Called(ctx, expenseID)
+
+	var r0 *entities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) *entities.Expense); ok {
+		r0 = rf(ctx, expenseID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.Expense)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, expenseID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExpensesRepository_FindByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByID'
+type ExpensesRepository_FindByID_Call struct {
+	*mock.Call
+}
+
+// FindByID is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenseID uuid.UUID
+func (_e *ExpensesRepository_Expecter) FindByID(ctx interface{}, expenseID interface{}) *ExpensesRepository_FindByID_Call {
+	return &ExpensesRepository_FindByID_Call{Call: _e.mock.On("FindByID", ctx, expenseID)}
+}
+
+func (_c *ExpensesRepository_FindByID_Call) Run(run func(ctx context.Context, expenseID uuid.UUID)) *ExpensesRepository_FindByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_FindByID_Call) Return(_a0 *entities.Expense, _a1 error) *ExpensesRepository_FindByID_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
 // FindByNameAndMonthAndIsRecurrent provides a mock function with given fields: ctx, month, expenseName
 func (_m *ExpensesRepository) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
 	ret := _m.Called(ctx, month, expenseName)

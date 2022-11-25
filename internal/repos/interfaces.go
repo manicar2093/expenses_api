@@ -16,6 +16,7 @@ type (
 		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
 		GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*entities.ExpenseIDWithIsPaidStatus, error)
 		Update(ctx context.Context, expenseUpdateInput *UpdateExpenseInput) error
+		FindByID(ctx context.Context, expenseID uuid.UUID) (*entities.Expense, error)
 	}
 
 	IncomesRepository interface {

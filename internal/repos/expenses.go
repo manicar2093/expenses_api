@@ -87,3 +87,14 @@ func (c *ExpensesGormRepo) Update(ctx context.Context, expenseUpdateInput *Updat
 	}
 	return nil
 }
+
+func (c *ExpensesGormRepo) FindByID(ctx context.Context, expenseID uuid.UUID) (*entities.Expense, error) {
+	var found entities.Expense
+	if res := c.orm.WithContext(ctx).Preload("RecurrentExpense").First(&found, "id = ?", expenseID); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, &NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: res.Error.Error()}
+		}
+		return nil, res.Error
+	}
+	return &found, nil
+}
