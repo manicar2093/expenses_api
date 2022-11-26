@@ -17,9 +17,13 @@ type (
 	ExpenseToPaidTogglable interface {
 		ToggleIsPaid(ctx context.Context, input *ToggleExpenseIsPaidInput) (*ToggleExpenseIsPaidOutput, error)
 	}
+	ExpenseUpdateable interface {
+		UpdateExpense(context.Context, *UpdateExpenseInput) error
+	}
 	ExpenseSevice interface {
 		ExpenseToPaidSetteable
 		ExpenseCreatable
 		ExpenseToPaidTogglable
+		ExpenseUpdateable
 	}
 )

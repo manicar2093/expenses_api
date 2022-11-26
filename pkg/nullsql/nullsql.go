@@ -10,6 +10,7 @@ func ValidateIntSQLValid(id int64) null.Int {
 	return null.IntFrom(id)
 }
 
+// ValidateStringSQLValid returns a null.String type, but distinguish an empty string as null value
 func ValidateStringSQLValid(value string) null.String {
 	if value == "" {
 		return null.NewString(value, false)

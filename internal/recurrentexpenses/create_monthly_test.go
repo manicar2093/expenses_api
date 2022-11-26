@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"gopkg.in/guregu/null.v4"
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
@@ -24,18 +24,18 @@ var _ = Describe("CreateMonthly", func() {
 		ctx                       context.Context
 		api                       *recurrentexpenses.RecurrentExpenseServiceImpl
 
-		expectedGetNextMonthAtFirtsDayReturn time.Time
-		expectedMonth                        uint
-		expectedName1                        string
-		expectedName2                        string
-		expectedName3                        string
-		expectedName4                        string
-		expectedAmount1                      float64
-		expectedAmount2                      float64
-		expectedAmount3                      float64
-		expectedAmount4                      float64
-		expectedRecurrenteExpensesFound      []*entities.RecurrentExpense
-		expectedExpensesToCreate             []*entities.Expense
+		expectedGetNextMonthAtFirtsDayReturn     time.Time
+		expectedDay, expectedMonth, expectedYear uint
+		expectedName1                            string
+		expectedName2                            string
+		expectedName3                            string
+		expectedName4                            string
+		expectedAmount1                          float64
+		expectedAmount2                          float64
+		expectedAmount3                          float64
+		expectedAmount4                          float64
+		expectedRecurrenteExpensesFound          []*entities.RecurrentExpense
+		expectedExpensesToCreate                 []*entities.Expense
 	)
 
 	BeforeEach(func() {
@@ -46,7 +46,9 @@ var _ = Describe("CreateMonthly", func() {
 		api = recurrentexpenses.NewCreateMonthlyRecurrentExpensesImpl(recurrentExpensesRepoMock, expensesRepoMock, timeGetableMock)
 
 		expectedGetNextMonthAtFirtsDayReturn = time.Date(2022, time.September, 1, 0, 0, 0, 0, time.Local)
+		expectedDay = uint(expectedGetNextMonthAtFirtsDayReturn.Day())
 		expectedMonth = uint(expectedGetNextMonthAtFirtsDayReturn.Month())
+		expectedYear = uint(expectedGetNextMonthAtFirtsDayReturn.Year())
 		expectedName1 = faker.Name()
 		expectedName2 = faker.Name()
 		expectedName3 = faker.Name()
@@ -56,16 +58,16 @@ var _ = Describe("CreateMonthly", func() {
 		expectedAmount3 = faker.Latitude()
 		expectedAmount4 = faker.Latitude()
 		expectedRecurrenteExpensesFound = []*entities.RecurrentExpense{
-			{Name: expectedName1, Amount: expectedAmount1},
-			{Name: expectedName2, Amount: expectedAmount2},
-			{Name: expectedName3, Amount: expectedAmount3},
-			{Name: expectedName4, Amount: expectedAmount4},
+			{ID: uuid.New(), Name: expectedName1, Amount: expectedAmount1},
+			{ID: uuid.New(), Name: expectedName2, Amount: expectedAmount2},
+			{ID: uuid.New(), Name: expectedName3, Amount: expectedAmount3},
+			{ID: uuid.New(), Name: expectedName4, Amount: expectedAmount4},
 		}
 		expectedExpensesToCreate = []*entities.Expense{
-			{Name: null.StringFrom(expectedName1), Amount: expectedAmount1, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
-			{Name: null.StringFrom(expectedName2), Amount: expectedAmount2, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
-			{Name: null.StringFrom(expectedName3), Amount: expectedAmount3, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
-			{Name: null.StringFrom(expectedName4), Amount: expectedAmount4, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Amount: expectedAmount1, Day: expectedDay, Month: expectedMonth, Year: expectedYear, RecurrentExpenseID: uuid.NullUUID{UUID: expectedRecurrenteExpensesFound[0].ID, Valid: true}, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Amount: expectedAmount2, Day: expectedDay, Month: expectedMonth, Year: expectedYear, RecurrentExpenseID: uuid.NullUUID{UUID: expectedRecurrenteExpensesFound[1].ID, Valid: true}, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Amount: expectedAmount3, Day: expectedDay, Month: expectedMonth, Year: expectedYear, RecurrentExpenseID: uuid.NullUUID{UUID: expectedRecurrenteExpensesFound[2].ID, Valid: true}, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
+			{Amount: expectedAmount4, Day: expectedDay, Month: expectedMonth, Year: expectedYear, RecurrentExpenseID: uuid.NullUUID{UUID: expectedRecurrenteExpensesFound[3].ID, Valid: true}, CreatedAt: &expectedGetNextMonthAtFirtsDayReturn},
 		}
 	})
 

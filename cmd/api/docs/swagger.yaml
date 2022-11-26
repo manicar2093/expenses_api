@@ -83,6 +83,17 @@ definitions:
       id:
         type: string
     type: object
+  expenses.UpdateExpenseInput:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   null.String:
     properties:
       string:
@@ -200,6 +211,32 @@ paths:
         "500":
           description: Internal Server Error
       summary: Toggle is paid status from an expense
+      tags:
+      - expenses
+  /expenses/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates an expense data depending if it is recurrent or not
+      parameters:
+      - description: ID to toggle is paid status
+        in: body
+        name: expense_update_data
+        required: true
+        schema:
+          $ref: '#/definitions/expenses.UpdateExpenseInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Expense was updated
+        "400":
+          description: When a request does not fulfill need data
+          schema:
+            $ref: '#/definitions/validator.ValidationError'
+        "500":
+          description: Internal Server Error
+      summary: Updates an expense
       tags:
       - expenses
   /health_check:

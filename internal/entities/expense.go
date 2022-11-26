@@ -7,7 +7,10 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-const ExpensesTableName = "expenses"
+const (
+	ExpensesTableName  = "expenses"
+	ExpensesEntityName = "expense"
+)
 
 type Expense struct {
 	ID                 uuid.UUID         `json:"id,omitempty" gorm:"primaryKey,->"`
@@ -27,4 +30,8 @@ type Expense struct {
 type ExpenseIDWithIsPaidStatus struct {
 	ID     uuid.UUID `json:"id,omitempty"`
 	IsPaid bool      `json:"is_paid"`
+}
+
+func (c *Expense) IsRecurrent() bool {
+	return c.RecurrentExpenseID.Valid
 }

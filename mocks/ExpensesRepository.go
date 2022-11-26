@@ -8,6 +8,8 @@ import (
 	entities "github.com/manicar2093/expenses_api/internal/entities"
 	mock "github.com/stretchr/testify/mock"
 
+	repos "github.com/manicar2093/expenses_api/internal/repos"
+
 	time "time"
 
 	uuid "github.com/google/uuid"
@@ -24,6 +26,53 @@ type ExpensesRepository_Expecter struct {
 
 func (_m *ExpensesRepository) EXPECT() *ExpensesRepository_Expecter {
 	return &ExpensesRepository_Expecter{mock: &_m.Mock}
+}
+
+// FindByID provides a mock function with given fields: ctx, expenseID
+func (_m *ExpensesRepository) FindByID(ctx context.Context, expenseID uuid.UUID) (*entities.Expense, error) {
+	ret := _m.Called(ctx, expenseID)
+
+	var r0 *entities.Expense
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) *entities.Expense); ok {
+		r0 = rf(ctx, expenseID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entities.Expense)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, expenseID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ExpensesRepository_FindByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByID'
+type ExpensesRepository_FindByID_Call struct {
+	*mock.Call
+}
+
+// FindByID is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenseID uuid.UUID
+func (_e *ExpensesRepository_Expecter) FindByID(ctx interface{}, expenseID interface{}) *ExpensesRepository_FindByID_Call {
+	return &ExpensesRepository_FindByID_Call{Call: _e.mock.On("FindByID", ctx, expenseID)}
+}
+
+func (_c *ExpensesRepository_FindByID_Call) Run(run func(ctx context.Context, expenseID uuid.UUID)) *ExpensesRepository_FindByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_FindByID_Call) Return(_a0 *entities.Expense, _a1 error) *ExpensesRepository_FindByID_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
 }
 
 // FindByNameAndMonthAndIsRecurrent provides a mock function with given fields: ctx, month, expenseName
@@ -202,6 +251,44 @@ func (_c *ExpensesRepository_Save_Call) Run(run func(ctx context.Context, expens
 }
 
 func (_c *ExpensesRepository_Save_Call) Return(_a0 error) *ExpensesRepository_Save_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+// Update provides a mock function with given fields: ctx, expenseUpdateInput
+func (_m *ExpensesRepository) Update(ctx context.Context, expenseUpdateInput *repos.UpdateExpenseInput) error {
+	ret := _m.Called(ctx, expenseUpdateInput)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *repos.UpdateExpenseInput) error); ok {
+		r0 = rf(ctx, expenseUpdateInput)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// ExpensesRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type ExpensesRepository_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//  - ctx context.Context
+//  - expenseUpdateInput *repos.UpdateExpenseInput
+func (_e *ExpensesRepository_Expecter) Update(ctx interface{}, expenseUpdateInput interface{}) *ExpensesRepository_Update_Call {
+	return &ExpensesRepository_Update_Call{Call: _e.mock.On("Update", ctx, expenseUpdateInput)}
+}
+
+func (_c *ExpensesRepository_Update_Call) Run(run func(ctx context.Context, expenseUpdateInput *repos.UpdateExpenseInput)) *ExpensesRepository_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*repos.UpdateExpenseInput))
+	})
+	return _c
+}
+
+func (_c *ExpensesRepository_Update_Call) Return(_a0 error) *ExpensesRepository_Update_Call {
 	_c.Call.Return(_a0)
 	return _c
 }

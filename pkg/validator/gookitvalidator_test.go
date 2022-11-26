@@ -69,6 +69,23 @@ var _ = Describe("Gookitvalidator", func() {
 				Expect(errMap["last_name"]["uuid"]).To(ContainSubstring(expectedSubstring))
 			})
 		})
+
+		When("filed is required", func() {
+			It("shows message for required data", func() {
+				var (
+					expectedSubstring      = "needs to be on request"
+					expectedDataToValidate = struct {
+						Name string `validate:"required" json:"name,omitempty"`
+					}{}
+				)
+
+				got := api.ValidateStruct(&expectedDataToValidate)
+
+				err := got.(*validator.ValidationError)
+				errMap := err.Errors.(validate.Errors)
+				Expect(errMap["name"]["required"]).To(ContainSubstring(expectedSubstring))
+			})
+		})
 	})
 
 })
