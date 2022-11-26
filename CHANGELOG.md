@@ -1,3 +1,9 @@
+## v3.2.0 (2022-11-26)
+
+### Feat
+
+- add update expense functionality (#60)
+
 ## v3.1.0 (2022-11-25)
 
 ### Feat
