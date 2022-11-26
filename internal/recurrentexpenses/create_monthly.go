@@ -3,9 +3,9 @@ package recurrentexpenses
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
-	"github.com/manicar2093/expenses_api/pkg/nullsql"
 )
 
 type (
@@ -30,10 +30,15 @@ func (c *RecurrentExpenseServiceImpl) CreateMonthlyRecurrentExpenses(ctx context
 			_, isNotFound := err.(*repos.NotFoundError)
 			if isNotFound {
 				expenseToSave := entities.Expense{
-					Name:        nullsql.ValidateStringSQLValid(recurrentExpense.Name),
-					Description: recurrentExpense.Description,
-					Amount:      recurrentExpense.Amount,
-					CreatedAt:   &nextMonthDate,
+					Amount: recurrentExpense.Amount,
+					Day:    uint(nextMonthDate.Day()),
+					Month:  uint(nextMonthDate.Month()),
+					Year:   uint(nextMonthDate.Year()),
+					RecurrentExpenseID: uuid.NullUUID{
+						UUID:  recurrentExpense.ID,
+						Valid: true,
+					},
+					CreatedAt: &nextMonthDate,
 				}
 				if err := c.expensesRepo.Save(ctx, &expenseToSave); err != nil {
 					return nil, err

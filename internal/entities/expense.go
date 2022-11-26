@@ -31,3 +31,7 @@ type ExpenseIDWithIsPaidStatus struct {
 	ID     uuid.UUID `json:"id,omitempty"`
 	IsPaid bool      `json:"is_paid"`
 }
+
+func (c *Expense) IsRecurrent() bool {
+	return c.RecurrentExpenseID.Valid
+}
