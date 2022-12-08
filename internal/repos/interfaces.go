@@ -28,4 +28,9 @@ type (
 		FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error)
 		FindAll(ctx context.Context) ([]*entities.RecurrentExpense, error)
 	}
+
+	UserRepo interface {
+		Save(ctx context.Context, user *entities.User) error
+		FindUserByEmail(ctx context.Context, email string) (*entities.User, error)
+	}
 )
