@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	. "github.com/onsi/ginkgo/v2"
@@ -15,20 +16,34 @@ import (
 var _ = Describe("RecurrentExpense", func() {
 
 	var (
-		ctx  context.Context
-		repo *repos.RecurrentExpenseGormRepo
+		ctx            context.Context
+		repo           *repos.RecurrentExpenseGormRepo
+		expectedUserID uuid.UUID
+		expectedUser   entities.User
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		repo = repos.NewRecurrentExpenseGormRepo(conn)
+		expectedUserID = uuid.New()
+		expectedUser = entities.User{
+			ID:       expectedUserID,
+			Name:     null.NewString(faker.Name(), true),
+			Lastname: null.NewString(faker.LastName(), true),
+			Email:    faker.Email(),
+		}
+		conn.Create(&expectedUser)
+	})
 
+	AfterEach(func() {
+		conn.Delete(&expectedUser)
 	})
 
 	Describe("Save", func() {
 		It("saves an instance", func() {
 			var (
 				toSave = entities.RecurrentExpense{
+					UserID: expectedUserID,
 					Name:   faker.Name(),
 					Amount: faker.Latitude(),
 					Description: null.StringFrom(
@@ -36,9 +51,9 @@ var _ = Describe("RecurrentExpense", func() {
 					),
 				}
 			)
+			defer conn.Delete(&toSave)
 
 			err := repo.Save(ctx, &toSave)
-			defer conn.Delete(&toSave)
 
 			log.Println(toSave.ID)
 
@@ -54,6 +69,7 @@ var _ = Describe("RecurrentExpense", func() {
 				var (
 					expectedName = "testing"
 					saved        = entities.RecurrentExpense{
+						UserID: expectedUserID,
 						Name:   expectedName,
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -61,6 +77,7 @@ var _ = Describe("RecurrentExpense", func() {
 						),
 					}
 					toSave = entities.RecurrentExpense{
+						UserID: expectedUserID,
 						Name:   expectedName,
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -86,6 +103,7 @@ var _ = Describe("RecurrentExpense", func() {
 			var (
 				expectedName = "testing"
 				saved        = entities.RecurrentExpense{
+					UserID: expectedUserID,
 					Name:   expectedName,
 					Amount: faker.Latitude(),
 					Description: null.StringFrom(
@@ -108,6 +126,7 @@ var _ = Describe("RecurrentExpense", func() {
 			var (
 				dataSaved = []*entities.RecurrentExpense{
 					{
+						UserID: expectedUserID,
 						Name:   faker.Name(),
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -115,6 +134,7 @@ var _ = Describe("RecurrentExpense", func() {
 						),
 					},
 					{
+						UserID: expectedUserID,
 						Name:   faker.Name(),
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -122,6 +142,7 @@ var _ = Describe("RecurrentExpense", func() {
 						),
 					},
 					{
+						UserID: expectedUserID,
 						Name:   faker.Name(),
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
