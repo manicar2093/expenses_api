@@ -18,7 +18,7 @@ import (
 var _ = Describe("Expenses", func() {
 	var (
 		ctx                            context.Context
-		repo                           *repos.ExpensesGormRepo
+		repo                           repos.ExpensesRepository
 		expectedUserID                 uuid.UUID
 		expectedUser                   entities.User
 		expectedRecurrentExpenseID     uuid.UUID
@@ -135,7 +135,7 @@ var _ = Describe("Expenses", func() {
 			conn.Create(&expectedExpenses)
 			defer conn.Delete(&expectedExpenses)
 
-			got, err := repo.GetExpensesByMonth(ctx, expectedMonth)
+			got, err := repo.GetExpensesByMonth(ctx, expectedMonth, expectedUserID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got).To(HaveLen(3))
@@ -144,7 +144,7 @@ var _ = Describe("Expenses", func() {
 
 		When("There is no data saved", func() {
 			It("returns an empty slice", func() {
-				got, err := repo.GetExpensesByMonth(ctx, time.July)
+				got, err := repo.GetExpensesByMonth(ctx, time.July, expectedUserID)
 
 				Expect(err).ToNot(HaveOccurred())
 				Expect(got).To(HaveLen(0))
@@ -220,7 +220,12 @@ var _ = Describe("Expenses", func() {
 			conn.Create(&expectedExpense)
 			defer conn.Delete(&expectedExpense)
 
-			got, err := repo.FindByNameAndMonthAndIsRecurrent(ctx, uint(expectedMonth), expectedRecurrenteExpenseName)
+			got, err := repo.FindByNameAndMonthAndIsRecurrent(
+				ctx,
+				uint(expectedMonth),
+				expectedRecurrenteExpenseName,
+				expectedUserID,
+			)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Name).To(Equal(expectedExpenseName))
@@ -234,7 +239,12 @@ var _ = Describe("Expenses", func() {
 					expectedMonth                 = time.January
 				)
 
-				got, err := repo.FindByNameAndMonthAndIsRecurrent(ctx, uint(expectedMonth), expectedRecurrenteExpenseName)
+				got, err := repo.FindByNameAndMonthAndIsRecurrent(
+					ctx,
+					uint(expectedMonth),
+					expectedRecurrenteExpenseName,
+					expectedUserID,
+				)
 
 				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
 				Expect(got).To(BeNil())

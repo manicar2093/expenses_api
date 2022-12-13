@@ -3,6 +3,7 @@ package incomes
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/json"
@@ -14,9 +15,10 @@ type (
 		Create(ctx context.Context, incomeInput *CreateIncomeInput) (*entities.Income, error)
 	}
 	CreateIncomeInput struct {
-		Name        string  `json:"name,omitempty" validate:"required"`
-		Amount      float64 `json:"amount,omitempty" validate:"required"`
-		Description string  `json:"description,omitempty" validate:"-"`
+		Name        string    `json:"name,omitempty" validate:"required"`
+		Amount      float64   `json:"amount,omitempty" validate:"required"`
+		Description string    `json:"description,omitempty" validate:"-"`
+		UserID      uuid.UUID `json:"user_uuid" validate:"required"`
 	}
 	IncomeServiceImpl struct {
 		incomesRepo repos.IncomesRepository
@@ -40,6 +42,7 @@ func (c *IncomeServiceImpl) Create(ctx context.Context, incomeInput *CreateIncom
 		Name:        incomeInput.Name,
 		Amount:      incomeInput.Amount,
 		Description: incomeInput.Description,
+		UserID:      incomeInput.UserID,
 	}
 	if err := c.incomesRepo.Save(ctx, &newIncome); err != nil {
 		return nil, err

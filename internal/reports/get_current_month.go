@@ -3,6 +3,7 @@ package reports
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/converters"
@@ -21,7 +22,7 @@ type (
 		UnpaidExpenses      []*entities.Expense `json:"unpaid_expenses"`
 	}
 	CurrentMonthDetailsGettable interface {
-		GetExpenses(ctx context.Context) (*CurrentMonthDetailsOutput, error)
+		GetExpenses(ctx context.Context, userID uuid.UUID) (*CurrentMonthDetailsOutput, error)
 	}
 	CurrentMonthDetails struct {
 		repo       repos.ExpensesRepository
@@ -33,8 +34,8 @@ func NewCurrentMonthDetailsImpl(repo repos.ExpensesRepository, timeGetter dates.
 	return &CurrentMonthDetails{repo: repo, timeGetter: timeGetter}
 }
 
-func (c *CurrentMonthDetails) GetExpenses(ctx context.Context) (*CurrentMonthDetailsOutput, error) {
-	monthExpenses, err := c.repo.GetExpensesByMonth(ctx, c.timeGetter.GetCurrentTime().Month())
+func (c *CurrentMonthDetails) GetExpenses(ctx context.Context, userID uuid.UUID) (*CurrentMonthDetailsOutput, error) {
+	monthExpenses, err := c.repo.GetExpensesByMonth(ctx, c.timeGetter.GetCurrentTime().Month(), userID)
 	if err != nil {
 		return nil, err
 	}

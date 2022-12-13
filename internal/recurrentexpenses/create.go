@@ -18,15 +18,18 @@ func (c *RecurrentExpenseServiceImpl) CreateRecurrentExpense(
 	}
 	log.Println("Request: ", json.MustMarshall(input))
 	var (
+		userIDParsed     = uuid.MustParse(input.UserID)
 		nextMontTime     = c.timeGetter.GetNextMonthAtFirtsDay()
 		recurrentExpense = entities.RecurrentExpense{
 			Name:        input.Name,
 			Description: nullsql.ValidateStringSQLValid(input.Description),
 			Amount:      input.Amount,
+			UserID:      userIDParsed,
 		}
 		expense = entities.Expense{
 			Amount:    input.Amount,
 			CreatedAt: &nextMontTime,
+			UserID:    userIDParsed,
 		}
 	)
 	if err := c.recurrentExpensesRepo.Save(ctx, &recurrentExpense); err != nil {

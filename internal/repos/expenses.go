@@ -25,9 +25,9 @@ func (c *ExpensesGormRepo) Save(ctx context.Context, expense *entities.Expense) 
 	return nil
 }
 
-func (c *ExpensesGormRepo) GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error) {
+func (c *ExpensesGormRepo) GetExpensesByMonth(ctx context.Context, month time.Month, userID uuid.UUID) ([]*entities.Expense, error) {
 	var expensesFound []*entities.Expense
-	if res := c.orm.WithContext(ctx).Where(&entities.Expense{Month: uint(month)}, month).Preload("RecurrentExpense").Find(&expensesFound); res.Error != nil {
+	if res := c.orm.WithContext(ctx).Where(&entities.Expense{Month: uint(month), UserID: userID}, month).Preload("RecurrentExpense").Find(&expensesFound); res.Error != nil {
 		return []*entities.Expense{}, res.Error
 	}
 	return expensesFound, nil
@@ -46,9 +46,14 @@ func (c *ExpensesGormRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseI
 	return nil
 }
 
-func (c *ExpensesGormRepo) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error) {
+func (c *ExpensesGormRepo) FindByNameAndMonthAndIsRecurrent(
+	ctx context.Context,
+	month uint,
+	expenseName string,
+	userID uuid.UUID,
+) (*entities.Expense, error) {
 	var found entities.Expense
-	if res := c.orm.WithContext(ctx).Where("month = ? AND name = ? AND recurrent_expense_id IS NOT null", month, expenseName).First(&found); res.Error != nil {
+	if res := c.orm.WithContext(ctx).Where("user_id = ? AND month = ? AND name = ? AND recurrent_expense_id IS NOT null", userID, month, expenseName).First(&found); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return nil, &NotFoundError{Identifier: expenseName, Entity: entities.ExpensesEntityName, Message: res.Error.Error()}
 		}

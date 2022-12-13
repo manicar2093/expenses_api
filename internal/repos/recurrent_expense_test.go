@@ -114,7 +114,7 @@ var _ = Describe("RecurrentExpense", func() {
 			conn.Create(&saved)
 			defer conn.Delete(&saved)
 
-			got, err := repo.FindByName(ctx, expectedName)
+			got, err := repo.FindByName(ctx, expectedName, expectedUserID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Name).To(Equal(expectedName))
@@ -154,7 +154,7 @@ var _ = Describe("RecurrentExpense", func() {
 			conn.Create(&dataSaved)
 			defer conn.Delete(&dataSaved)
 
-			got, err := repo.FindAll(ctx)
+			got, err := repo.FindAll(ctx, expectedUserID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got).To(HaveLen(len(dataSaved)))

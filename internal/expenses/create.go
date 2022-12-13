@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/pkg/json"
 	"github.com/manicar2093/expenses_api/pkg/nullsql"
@@ -31,6 +32,7 @@ func (c *ExpenseServiceImpl) expenseFromCreateExpenseInput(holder *CreateExpense
 			Description: nullsql.ValidateStringSQLValid(holder.Description),
 			IsPaid:      true,
 			CreatedAt:   &today,
+			UserID:      uuid.MustParse(holder.UserID),
 		}
 	)
 	if holder.ForNextMonth {

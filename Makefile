@@ -25,7 +25,7 @@ migrate_postgres:
 ifdef ENV
 	@ dotenv -e $(ENV).env -- npx prisma migrate dev --skip-generate --skip-seed
 else
-	@ dotenv -e example.env -- npx prisma migrate dev --skip-generate --skip-seed
+	@ dotenv -e dev.env -- npx prisma migrate dev --skip-generate --skip-seed
 endif
 
 gen_swag:
