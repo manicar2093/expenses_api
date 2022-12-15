@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = FDescribe("GetCurrentMonth", func() {
+var _ = Describe("GetCurrentMonth", func() {
 
 	var (
 		expensesRepoMock *mocks.ExpensesRepository

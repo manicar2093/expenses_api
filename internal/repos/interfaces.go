@@ -33,4 +33,10 @@ type (
 		Save(ctx context.Context, user *entities.User) error
 		FindUserByEmail(ctx context.Context, email string) (*entities.User, error)
 	}
+
+	SessionsRepo interface {
+		Save(ctx context.Context, session *entities.Session) error
+		FindByID(ctx context.Context, id uuid.UUID) (*entities.Session, error)
+		Delete(ctx context.Context, id uuid.UUID) error
+	}
 )
