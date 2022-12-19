@@ -8,7 +8,6 @@ import (
 
 type (
 	LoginOutput struct {
-		SessionID             uuid.UUID `json:"session_id,omitempty"`
 		AccessToken           string    `json:"access_token,omitempty"`
 		AccessTokenExpiresAt  time.Time `json:"access_token_expires_at,omitempty"`
 		RefreshToken          string    `json:"refresh_token,omitempty"`
@@ -38,11 +37,11 @@ type (
 		ValidateToken(token string) error
 	}
 
-	GoogleLoginable interface {
-		Login(googleSignInToken string) (*LoginOutput, error)
+	LoginableByToken interface {
+		Login(token string) (*LoginOutput, error)
 	}
 
 	TokenRefreshable interface {
-		RefreshToken(refreshToken string) (string, error)
+		RefreshToken(sessionID uuid.UUID) (string, error)
 	}
 )
