@@ -40,7 +40,7 @@ var _ = Describe("Paseto", func() {
 	})
 
 	Describe("Validate", func() {
-		FIt("accepts a no expired token", func() {
+		It("accepts a no expired token", func() {
 			var tokenDetails = auth.AccessToken{
 				Expiration: time.Duration(1 * time.Hour),
 				UserID:     uuid.New(),

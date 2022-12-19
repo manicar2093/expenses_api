@@ -64,7 +64,6 @@ model User {
   expenses Expense[]
   incomes Incomes[]
   recurrent_expenses RecurrentExpense[]
-  sessions Session[]
   name String?
   lastname String?
   email String @unique
@@ -73,19 +72,4 @@ model User {
   updated_at DateTime? @updatedAt 
 
   @@map("users")
-}
-
-
-model Session {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user User @relation(fields: [user_id], references: [id])
-  user_id String @db.Uuid
-  refresh_token String @unique
-  user_agent String
-  client_ip String
-  expires_at DateTime
-  created_at DateTime @default(now())
-
-  @@map("sessions")
-
 }
