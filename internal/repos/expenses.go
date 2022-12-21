@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"gorm.io/gorm"
 )
 
@@ -39,7 +40,7 @@ func (c *ExpensesGormRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseI
 	case res.Error != nil:
 		return res.Error
 	case res.RowsAffected == 0:
-		err := &NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: "can´t be updated. It does not exist"}
+		err := &apperrors.NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: "can´t be updated. It does not exist"}
 		log.Println(err)
 		return err
 	}
@@ -55,7 +56,7 @@ func (c *ExpensesGormRepo) FindByNameAndMonthAndIsRecurrent(
 	var found entities.Expense
 	if res := c.orm.WithContext(ctx).Where("user_id = ? AND month = ? AND name = ? AND recurrent_expense_id IS NOT null", userID, month, expenseName).First(&found); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return nil, &NotFoundError{Identifier: expenseName, Entity: entities.ExpensesEntityName, Message: res.Error.Error()}
+			return nil, &apperrors.NotFoundError{Identifier: expenseName, Entity: entities.ExpensesEntityName, Message: res.Error.Error()}
 		}
 
 		return nil, res.Error
@@ -75,7 +76,7 @@ func (c *ExpensesGormRepo) GetExpenseStatusByID(ctx context.Context, expenseID u
 	case res.Error != nil:
 		return nil, res.Error
 	case res.RowsAffected == 0:
-		return nil, &NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: "Any row found with data"}
+		return nil, &apperrors.NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: "Any row found with data"}
 	}
 	return &found, nil
 }
@@ -88,7 +89,7 @@ func (c *ExpensesGormRepo) Update(ctx context.Context, expenseUpdateInput *Updat
 	case res.Error != nil:
 		return res.Error
 	case res.RowsAffected == 0:
-		return &NotFoundError{Identifier: expenseUpdateInput.ID, Entity: entities.ExpensesEntityName, Message: "can't update. It is not in db"}
+		return &apperrors.NotFoundError{Identifier: expenseUpdateInput.ID, Entity: entities.ExpensesEntityName, Message: "can't update. It is not in db"}
 	}
 	return nil
 }
@@ -97,7 +98,7 @@ func (c *ExpensesGormRepo) FindByID(ctx context.Context, expenseID uuid.UUID) (*
 	var found entities.Expense
 	if res := c.orm.WithContext(ctx).Preload("RecurrentExpense").First(&found, "id = ?", expenseID); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return nil, &NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: res.Error.Error()}
+			return nil, &apperrors.NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: res.Error.Error()}
 		}
 		return nil, res.Error
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -192,8 +193,8 @@ var _ = Describe("Expenses", func() {
 
 				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, true)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
-				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
+				Expect(err.(*apperrors.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
 			})
 		})
 	})
@@ -233,7 +234,7 @@ var _ = Describe("Expenses", func() {
 		})
 
 		When("expense does not exist", func() {
-			It("return an repos.NotFoundError", func() {
+			It("return an apperrors.NotFoundError", func() {
 				var (
 					expectedRecurrenteExpenseName = faker.Name()
 					expectedMonth                 = time.January
@@ -246,7 +247,7 @@ var _ = Describe("Expenses", func() {
 					expectedUserID,
 				)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
 				Expect(got).To(BeNil())
 			})
 		})
@@ -291,8 +292,8 @@ var _ = Describe("Expenses", func() {
 				got, err := repo.GetExpenseStatusByID(ctx, expectedID)
 
 				Expect(got).To(BeNil())
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
-				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
+				Expect(err.(*apperrors.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
 			})
 		})
 	})
@@ -353,7 +354,7 @@ var _ = Describe("Expenses", func() {
 
 				err := repo.Update(ctx, &expectedExpenseDataToUpdate)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
 			})
 		})
 	})
@@ -392,7 +393,7 @@ var _ = Describe("Expenses", func() {
 
 				got, err := repo.FindByID(ctx, savedExpenseID)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
 				Expect(got).To(BeNil())
 			})
 		})

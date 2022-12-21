@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/manicar2093/expenses_api/internal/expenses"
-	"github.com/manicar2093/expenses_api/pkg/errors"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 type ExpensesController struct {
@@ -52,11 +52,11 @@ func (c *ExpensesController) Register() {
 func (c *ExpensesController) create(ctx echo.Context) error {
 	var expenseRequest expenses.CreateExpenseInput
 	if err := ctx.Bind(&expenseRequest); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	newExpense, err := c.createExpense.CreateExpense(ctx.Request().Context(), &expenseRequest)
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusCreated, newExpense)
 }
@@ -74,10 +74,10 @@ func (c *ExpensesController) create(ctx echo.Context) error {
 func (c *ExpensesController) toPaid(ctx echo.Context) error {
 	var request expenses.SetExpenseToPaidInput
 	if err := ctx.Bind(&request); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil { //nolint: staticcheck
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.NoContent(http.StatusOK)
 }
@@ -95,11 +95,11 @@ func (c *ExpensesController) toPaid(ctx echo.Context) error {
 func (c *ExpensesController) toggleIsPaid(ctx echo.Context) error {
 	var request expenses.ToggleExpenseIsPaidInput
 	if err := ctx.Bind(&request); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	got, err := c.togglableIsPaid.ToggleIsPaid(ctx.Request().Context(), &request)
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusOK, got)
 }
@@ -117,11 +117,11 @@ func (c *ExpensesController) toggleIsPaid(ctx echo.Context) error {
 func (c *ExpensesController) update(ctx echo.Context) error {
 	var request expenses.UpdateExpenseInput
 	if err := ctx.Bind(&request); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	err := c.updateExpense.UpdateExpense(ctx.Request().Context(), &request)
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.NoContent(http.StatusOK)
 }

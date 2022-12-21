@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
-	"github.com/manicar2093/expenses_api/pkg/errors"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 type RecurrentExpensesController struct {
@@ -50,11 +50,11 @@ func (c *RecurrentExpensesController) Register() {
 func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 	var recurrentExpenseReq recurrentexpenses.CreateRecurrentExpenseInput
 	if err := ctx.Bind(&recurrentExpenseReq); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	res, err := c.createRecurrentExpense.CreateRecurrentExpense(ctx.Request().Context(), &recurrentExpenseReq)
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusCreated, res)
 }
@@ -69,7 +69,7 @@ func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
 	res, err := c.getAllRecurrentExpenses.GetAll(ctx.Request().Context())
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusOK, res)
 }
@@ -84,7 +84,7 @@ func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
 func (c *RecurrentExpensesController) createMonthly(ctx echo.Context) error {
 	got, err := c.createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context())
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusOK, got)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"gorm.io/gorm"
 )
 
@@ -27,7 +28,7 @@ func (c *RecurrentExpenseGormRepo) Save(ctx context.Context, recurrentExpense *e
 		switch err := res.Error.(type) { //nolint:gocritic
 		case *pgconn.PgError:
 			if strings.Contains(err.Detail, "already exists.") {
-				return &AlreadyExistsError{
+				return &apperrors.AlreadyExistsError{
 					Identifier: recurrentExpense.Name,
 					Entity:     "Recurrent Expense",
 				}

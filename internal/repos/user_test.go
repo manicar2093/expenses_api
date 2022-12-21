@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/manicar2093/expenses_api/internal/auth"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -23,19 +25,18 @@ var _ = Describe("User", func() {
 		repo = repos.NewUserGormRepo(conn)
 	})
 
-	Describe("Save", func() {
+	Describe("CreateUser", func() {
 		It("store in db a new user", func() {
 			var (
-				expectedUserToSave = entities.User{
-					Name:     null.StringFrom(faker.Name()),
-					Lastname: null.StringFrom(faker.LastName()),
-					Email:    faker.Email(),
-					Avatar:   null.StringFrom(faker.URL()),
+				expectedUserToSave = auth.UserData{
+					Name:   faker.Name(),
+					Email:  faker.Email(),
+					Avatar: faker.URL(),
 				}
 			)
 			defer conn.Delete(&expectedUserToSave)
 
-			err := repo.Save(ctx, &expectedUserToSave)
+			err := repo.CreateUser(ctx, &expectedUserToSave)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(expectedUserToSave.ID.String()).ToNot(BeEmpty())
@@ -59,7 +60,8 @@ var _ = Describe("User", func() {
 			got, err := repo.FindUserByEmail(ctx, expectedEmail)
 
 			Expect(err).ToNot(HaveOccurred())
-			Expect(got).To(BeAssignableToTypeOf(&entities.User{}))
+			Expect(got).To(BeAssignableToTypeOf(&auth.UserData{}))
+			Expect(got.ID).To(Equal(expectedUserSaved.ID))
 			Expect(got.Email).To(Equal(expectedEmail))
 		})
 
@@ -72,7 +74,7 @@ var _ = Describe("User", func() {
 				got, err := repo.FindUserByEmail(ctx, expectedEmail)
 
 				Expect(got).To(BeNil())
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
 			})
 		})
 	})

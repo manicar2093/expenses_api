@@ -27,29 +27,46 @@ func NewPaseto(symmetricKey string) *Paseto {
 	}
 }
 
-func (c *Paseto) CreateAccessToken(tokenDetails *auth.AccessToken) (string, error) {
-	return c.createTokenWithClaims(tokenDetails.Expiration, map[string]interface{}{
+func (c *Paseto) CreateAccessToken(tokenDetails *auth.AccessToken) (*auth.TokenInfo, error) {
+	token, expiresAt, err := c.createTokenWithClaims(tokenDetails.Expiration, map[string]interface{}{
 		"user_id": tokenDetails.UserID,
 	})
+	if err != nil {
+		return nil, err
+	}
+	return &auth.TokenInfo{
+		Token:     token,
+		ExpiresAt: expiresAt,
+	}, nil
 }
 
-func (c *Paseto) CreateRefreshToken(tokenDetails *auth.RefreshToken) (string, error) {
-	return c.createTokenWithClaims(tokenDetails.Expiration, map[string]interface{}{
+func (c *Paseto) CreateRefreshToken(tokenDetails *auth.RefreshToken) (*auth.TokenInfo, error) {
+	token, expiresAt, err := c.createTokenWithClaims(tokenDetails.Expiration, map[string]interface{}{
 		"session_id": tokenDetails.SessionID,
 	})
+	if err != nil {
+		return nil, err
+	}
+	return &auth.TokenInfo{
+		Token:     token,
+		ExpiresAt: expiresAt,
+	}, nil
 }
 
-func (c *Paseto) createTokenWithClaims(expiration time.Duration, claims map[string]interface{}) (string, error) {
+func (c *Paseto) createTokenWithClaims(expiration time.Duration, claims map[string]interface{}) (string, time.Time, error) {
 
-	token := paseto.NewToken()
-	now := time.Now()
+	var (
+		token     = paseto.NewToken()
+		now       = time.Now()
+		expiresAt = now.Add(expiration)
+	)
 	token.SetIssuedAt(now)
-	token.SetExpiration(now.Add(expiration))
+	token.SetExpiration(expiresAt)
 	for k, v := range claims {
 		token.Set(k, v)
 	}
 
-	return token.V4Encrypt(c.symmetricKey, nil), nil
+	return token.V4Encrypt(c.symmetricKey, nil), expiresAt, nil
 }
 
 func (c *Paseto) ValidateToken(token string) error {

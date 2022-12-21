@@ -1,7 +1,6 @@
 package tokens_test
 
 import (
-	"log"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
@@ -27,15 +26,35 @@ var _ = Describe("Paseto", func() {
 
 	Describe("CreateAccessToken", func() {
 		It("creates an access token", func() {
-			var tokenDetails = auth.AccessToken{
-				Expiration: time.Duration(1 * time.Second),
-				UserID:     uuid.New(),
-			}
+			var (
+				tokenDetails = auth.AccessToken{
+					Expiration: time.Duration(1 * time.Second),
+					UserID:     uuid.New(),
+				}
+			)
 
 			token, err := api.CreateAccessToken(&tokenDetails)
 
 			Expect(err).ToNot(HaveOccurred())
-			log.Println(token)
+			Expect(token.Token).ToNot(BeEmpty())
+			Expect(token.ExpiresAt).ToNot(BeZero())
+		})
+	})
+
+	Describe("CreateRefreshToken", func() {
+		It("creates a refresh token", func() {
+			var (
+				tokenDetails = auth.RefreshToken{
+					Expiration: time.Duration(1 * time.Second),
+					SessionID:  uuid.New(),
+				}
+			)
+
+			token, err := api.CreateRefreshToken(&tokenDetails)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(token.Token).ToNot(BeEmpty())
+			Expect(token.ExpiresAt).ToNot(BeZero())
 		})
 	})
 
@@ -46,7 +65,7 @@ var _ = Describe("Paseto", func() {
 				UserID:     uuid.New(),
 			}
 			token, _ := api.CreateAccessToken(&tokenDetails)
-			Expect(api.ValidateToken(token)).To(Succeed())
+			Expect(api.ValidateToken(token.Token)).To(Succeed())
 		})
 
 		When("token is expired", func() {

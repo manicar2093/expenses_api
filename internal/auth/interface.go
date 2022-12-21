@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,9 +17,10 @@ type (
 	}
 
 	UserData struct {
-		Name   string `json:"name,omitempty"`
-		Email  string `json:"email,omitempty"`
-		Avatar string `json:"avatar,omitempty"`
+		ID     uuid.UUID `json:"-,omitempty"`
+		Name   string    `json:"name,omitempty"`
+		Email  string    `json:"email,omitempty"`
+		Avatar string    `json:"avatar,omitempty"`
 	}
 
 	AccessToken struct {
@@ -31,17 +33,31 @@ type (
 		SessionID  uuid.UUID     `json:"user_id,omitempty"`
 	}
 
+	TokenInfo struct {
+		Token     string
+		ExpiresAt time.Time
+	}
+
+	UserAuthenticable interface {
+		FindUserByEmail(ctx context.Context, email string) (*UserData, error)
+		CreateUser(ctx context.Context, user *UserData) error
+	}
+
 	Tokenizable interface {
-		CreateAccessToken(tokenDetails *AccessToken) (string, error)
-		CreateRefreshToken(tokenDetails *RefreshToken) (string, error)
+		CreateAccessToken(tokenDetails *AccessToken) (*TokenInfo, error)
+		CreateRefreshToken(tokenDetails *RefreshToken) (*TokenInfo, error)
 		ValidateToken(token string) error
 	}
 
 	LoginableByToken interface {
-		Login(token string) (*LoginOutput, error)
+		Login(ctx context.Context, token string) (*LoginOutput, error)
 	}
 
 	TokenRefreshable interface {
 		RefreshToken(sessionID uuid.UUID) (string, error)
+	}
+
+	OpenIDTokenValidable[T any] interface {
+		ValidateOpenIDToken(ctx context.Context, token string) (*T, error)
 	}
 )

@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -91,9 +92,9 @@ var _ = Describe("RecurrentExpense", func() {
 				err := repo.Save(ctx, &toSave)
 				defer conn.Delete(&toSave)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.AlreadyExistsError{}))
-				Expect(err.(*repos.AlreadyExistsError).Entity).To(Equal("Recurrent Expense"))
-				Expect(err.(*repos.AlreadyExistsError).Identifier).To(Equal(saved.Name))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.AlreadyExistsError{}))
+				Expect(err.(*apperrors.AlreadyExistsError).Entity).To(Equal("Recurrent Expense"))
+				Expect(err.(*apperrors.AlreadyExistsError).Identifier).To(Equal(saved.Name))
 			})
 		})
 	})

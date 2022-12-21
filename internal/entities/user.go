@@ -7,6 +7,8 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+const UserTable = "users"
+
 type User struct {
 	ID        uuid.UUID   `json:"id,omitempty" gorm:"primaryKey,->"`
 	Name      null.String `json:"name,omitempty"`

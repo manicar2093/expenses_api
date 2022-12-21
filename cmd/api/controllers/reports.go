@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/manicar2093/expenses_api/internal/reports"
-	"github.com/manicar2093/expenses_api/pkg/errors"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 type ReportsController struct {
@@ -31,7 +31,7 @@ func (c *ReportsController) Register() {
 func (c *ReportsController) currentMonth(ctx echo.Context) error {
 	currentMonthDetails, err := c.getCurrentMonth.GetExpenses(ctx.Request().Context())
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusOK, currentMonthDetails)
 }
