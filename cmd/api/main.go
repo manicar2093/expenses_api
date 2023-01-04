@@ -6,6 +6,7 @@ import (
 	"github.com/manicar2093/expenses_api/cmd/api/controllers"
 	_ "github.com/manicar2093/expenses_api/cmd/api/docs"
 	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
+	"github.com/manicar2093/expenses_api/internal/auth"
 	"github.com/manicar2093/expenses_api/internal/config"
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
@@ -90,6 +91,15 @@ func registerControllers() {
 	).Register()
 	controllers.NewHealthCheckController(
 		conn,
+		e,
+	).Register()
+	controllers.NewLoginController(
+		auth.NewGoogleTokenAuth(
+			repos.NewUserGormRepo(conn),
+			tokens.NewPaseto(config.Instance.TokenSymmetricKey),
+			validator.NewGoogleTokenValidator(),
+			config.Instance.AccessTokenDuration,
+		),
 		e,
 	).Register()
 }

@@ -57,6 +57,7 @@ func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 	if err := ctx.Bind(&recurrentExpenseReq); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
+	recurrentExpenseReq.UserID = ctx.Get("user_id").(string)
 	res, err := c.createRecurrentExpense.CreateRecurrentExpense(ctx.Request().Context(), &recurrentExpenseReq)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
@@ -72,7 +73,7 @@ func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 // @Failure     500
 // @Router      /recurrent_expenses/all [get]
 func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
-	res, err := c.getAllRecurrentExpenses.GetAll(ctx.Request().Context(), ctx.Get("user_id").(uuid.UUID))
+	res, err := c.getAllRecurrentExpenses.GetAll(ctx.Request().Context(), uuid.MustParse(ctx.Get("user_id").(string)))
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
@@ -87,7 +88,7 @@ func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
 // @Failure     500
 // @Router      /recurrent_expenses/monthly_expenses [post]
 func (c *RecurrentExpensesController) createMonthly(ctx echo.Context) error {
-	got, err := c.createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context(), ctx.Get("user_id").(uuid.UUID))
+	got, err := c.createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context(), uuid.MustParse(ctx.Get("user_id").(string)))
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}

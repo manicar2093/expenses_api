@@ -58,6 +58,7 @@ func (c *ExpensesController) create(ctx echo.Context) error {
 	if err := ctx.Bind(&expenseRequest); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
+	expenseRequest.UserID = ctx.Get("user_id").(string)
 	newExpense, err := c.createExpense.CreateExpense(ctx.Request().Context(), &expenseRequest)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
@@ -80,6 +81,7 @@ func (c *ExpensesController) toPaid(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
+
 	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil { //nolint: staticcheck
 		return apperrors.CreateResponseFromError(ctx, err)
 	}

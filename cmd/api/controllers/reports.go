@@ -35,7 +35,7 @@ func (c *ReportsController) Register() {
 // @Failure     500
 // @Router      /reports/current_month [get]
 func (c *ReportsController) currentMonth(ctx echo.Context) error {
-	currentMonthDetails, err := c.getCurrentMonth.GetExpenses(ctx.Request().Context(), ctx.Get("user_id").(uuid.UUID))
+	currentMonthDetails, err := c.getCurrentMonth.GetExpenses(ctx.Request().Context(), uuid.MustParse(ctx.Get("user_id").(string)))
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}

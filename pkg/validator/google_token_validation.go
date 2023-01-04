@@ -3,11 +3,16 @@ package validator
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	gohttpclient "github.com/bozd4g/go-http-client"
 )
 
 const googleValidationURL = "https://oauth2.googleapis.com/tokeninfo?id_token="
+
+var (
+	ErrGoogleLogin = fmt.Errorf("google does not validate this token")
+)
 
 type (
 	GoogleTokenClaims struct {
@@ -40,6 +45,10 @@ func (c *GoogleTokenValidator[GoogleTokenClaims]) ValidateOpenIDToken(ctx contex
 	res, err := client.Get(ctx, "")
 	if err != nil {
 		return nil, err
+	}
+
+	if res.Status() != http.StatusOK {
+		return nil, ErrGoogleLogin
 	}
 
 	var tokenClaims GoogleTokenClaims

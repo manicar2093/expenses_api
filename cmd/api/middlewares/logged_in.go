@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
@@ -16,14 +15,14 @@ func (c *EchoMiddlewares) LoggedIn(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		authorization := ctx.Request().Header.Get("Authorization")
 		if authorization == "" {
-			return ctx.JSON(http.StatusBadRequest, errors.New("no token in request"))
+			return ctx.JSON(http.StatusBadRequest, map[string]interface{}{"message": "no token in request"})
 		}
 		var accessToken auth.AccessToken
 		err := c.tokenValidable.ValidateToken(ctx.Request().Context(), strings.Split(authorization, " ")[1], &accessToken)
 		if err != nil {
 			return apperrors.CreateResponseFromError(ctx, err)
 		}
-		ctx.Set("user_id", accessToken.UserID)
-		return nil
+		ctx.Set("user_id", accessToken.UserID.String())
+		return next(ctx)
 	}
 }
