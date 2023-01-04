@@ -1,6 +1,8 @@
 package tokens
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -69,7 +71,7 @@ func (c *Paseto) createTokenWithClaims(expiration time.Duration, claims map[stri
 	return token.V4Encrypt(c.symmetricKey, nil), expiresAt, nil
 }
 
-func (c *Paseto) ValidateToken(token string) error {
+func (c *Paseto) ValidateToken(ctx context.Context, token string, output interface{}) error {
 	parser := paseto.NewParser()
 
 	validatedToken, err := parser.ParseV4Local(c.symmetricKey, token, nil)
@@ -84,6 +86,10 @@ func (c *Paseto) ValidateToken(token string) error {
 
 	if time.Now().After(expirateAt) {
 		return ErrTokenExpired
+	}
+
+	if err := json.Unmarshal(validatedToken.ClaimsJSON(), &output); err != nil {
+		return err
 	}
 
 	return nil

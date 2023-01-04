@@ -3,12 +3,15 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 type RecurrentExpensesController struct {
+	*middlewares.EchoMiddlewares
 	createRecurrentExpense         recurrentexpenses.RecurrentExpenseCreatable
 	getAllRecurrentExpenses        recurrentexpenses.RecurrentExpensesAllGettable
 	createMonthlyRecurrentExpenses recurrentexpenses.MonthlyRecurrentExpensesCreateable
@@ -19,9 +22,11 @@ func NewRecurrentExpensesController(
 	createRecurrentExpense recurrentexpenses.RecurrentExpenseCreatable,
 	getAllRecurrentExpenses recurrentexpenses.RecurrentExpensesAllGettable,
 	createMonthlyRecurrentExpenses recurrentexpenses.MonthlyRecurrentExpensesCreateable,
+	middlewares *middlewares.EchoMiddlewares,
 	e *echo.Echo, //nolint:varnamelen
 ) *RecurrentExpensesController {
 	return &RecurrentExpensesController{
+		EchoMiddlewares:                middlewares,
 		createRecurrentExpense:         createRecurrentExpense,
 		getAllRecurrentExpenses:        getAllRecurrentExpenses,
 		createMonthlyRecurrentExpenses: createMonthlyRecurrentExpenses,
@@ -30,11 +35,11 @@ func NewRecurrentExpensesController(
 }
 
 func (c *RecurrentExpensesController) Register() {
-	c.group.POST("", c.create)
+	c.group.POST("", c.create, c.LoggedIn)
 
-	c.group.GET("/all", c.getAll)
+	c.group.GET("/all", c.getAll, c.LoggedIn)
 
-	c.group.POST("/monthly_expenses", c.createMonthly)
+	c.group.POST("/monthly_expenses", c.createMonthly, c.LoggedIn)
 }
 
 // @Summary     Create a recurrent expense
@@ -67,7 +72,7 @@ func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 // @Failure     500
 // @Router      /recurrent_expenses/all [get]
 func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
-	res, err := c.getAllRecurrentExpenses.GetAll(ctx.Request().Context())
+	res, err := c.getAllRecurrentExpenses.GetAll(ctx.Request().Context(), ctx.Get("user_id").(uuid.UUID))
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
@@ -82,7 +87,7 @@ func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
 // @Failure     500
 // @Router      /recurrent_expenses/monthly_expenses [post]
 func (c *RecurrentExpensesController) createMonthly(ctx echo.Context) error {
-	got, err := c.createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context())
+	got, err := c.createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context(), ctx.Get("user_id").(uuid.UUID))
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}

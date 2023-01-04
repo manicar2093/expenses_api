@@ -4,11 +4,13 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 type ExpensesController struct {
+	*middlewares.EchoMiddlewares
 	createExpense   expenses.ExpenseCreatable
 	setToPaid       expenses.ExpenseToPaidSetteable
 	togglableIsPaid expenses.ExpenseToPaidTogglable
@@ -21,9 +23,11 @@ func NewExpensesController(
 	setToPaid expenses.ExpenseToPaidSetteable,
 	togglableIsPaid expenses.ExpenseToPaidTogglable,
 	updateExpense expenses.ExpenseUpdateable,
+	middlewares *middlewares.EchoMiddlewares,
 	e *echo.Echo, //nolint:varnamelen
 ) *ExpensesController {
 	return &ExpensesController{
+		EchoMiddlewares: middlewares,
 		createExpense:   createExpense,
 		setToPaid:       setToPaid,
 		togglableIsPaid: togglableIsPaid,
@@ -33,10 +37,10 @@ func NewExpensesController(
 }
 
 func (c *ExpensesController) Register() {
-	c.group.POST("", c.create)
-	c.group.POST("/to_paid", c.toPaid)
-	c.group.POST("/toggle_is_paid", c.toggleIsPaid)
-	c.group.PUT("/update", c.update)
+	c.group.POST("", c.create, c.LoggedIn)
+	c.group.POST("/to_paid", c.toPaid, c.LoggedIn)
+	c.group.POST("/toggle_is_paid", c.toggleIsPaid, c.LoggedIn)
+	c.group.PUT("/update", c.update, c.LoggedIn)
 }
 
 // @Summary     Create an expense

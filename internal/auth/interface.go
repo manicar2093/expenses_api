@@ -46,7 +46,9 @@ type (
 	Tokenizable interface {
 		CreateAccessToken(tokenDetails *AccessToken) (*TokenInfo, error)
 		CreateRefreshToken(tokenDetails *RefreshToken) (*TokenInfo, error)
-		ValidateToken(token string) error
+	}
+	TokenValidable interface {
+		ValidateToken(ctx context.Context, token string, output interface{}) error
 	}
 
 	LoginableByToken interface {

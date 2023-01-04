@@ -5,11 +5,14 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/manicar2093/expenses_api/cmd/api/controllers"
 	_ "github.com/manicar2093/expenses_api/cmd/api/docs"
+	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
+	"github.com/manicar2093/expenses_api/internal/config"
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/internal/tokens"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"github.com/manicar2093/expenses_api/pkg/validator"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -21,6 +24,7 @@ var (
 	recurrentExpensesRepo = repos.NewRecurrentExpenseGormRepo(conn)
 	timeGetter            = &dates.TimeGetter{}
 	structValidator       = validator.NewGooKitValidator()
+	customMiddlewares     = middlewares.NewEchoMiddlewares(tokens.NewPaseto(config.Instance.TokenSymmetricKey))
 	expenseService        = expenses.NewExpenseServiceImpl(
 		expensesRepo,
 		timeGetter,
@@ -60,6 +64,7 @@ func configEcho() {
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
+	e.Validator = structValidator
 }
 
 func registerControllers() {
@@ -68,16 +73,19 @@ func registerControllers() {
 		expenseService,
 		expenseService,
 		expenseService,
+		customMiddlewares,
 		e,
 	).Register()
 	controllers.NewRecurrentExpensesController(
 		createRecurrentExpense,
 		getAllRecurrentExpenses,
 		createMonthlyRecurrentExpenses,
+		customMiddlewares,
 		e,
 	).Register()
 	controllers.NewReportsController(
 		getCurrentMonth,
+		customMiddlewares,
 		e,
 	).Register()
 	controllers.NewHealthCheckController(
