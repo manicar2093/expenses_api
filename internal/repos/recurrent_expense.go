@@ -4,8 +4,10 @@ import (
 	"context"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +28,7 @@ func (c *RecurrentExpenseGormRepo) Save(ctx context.Context, recurrentExpense *e
 		switch err := res.Error.(type) { //nolint:gocritic
 		case *pgconn.PgError:
 			if strings.Contains(err.Detail, "already exists.") {
-				return &AlreadyExistsError{
+				return &apperrors.AlreadyExistsError{
 					Identifier: recurrentExpense.Name,
 					Entity:     "Recurrent Expense",
 				}
@@ -36,17 +38,17 @@ func (c *RecurrentExpenseGormRepo) Save(ctx context.Context, recurrentExpense *e
 	return nil
 }
 
-func (c *RecurrentExpenseGormRepo) FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error) {
+func (c *RecurrentExpenseGormRepo) FindByName(ctx context.Context, name string, userID uuid.UUID) (*entities.RecurrentExpense, error) {
 	var found entities.RecurrentExpense
-	if res := c.orm.WithContext(ctx).Where("name = ?", name).First(&found); res.Error != nil {
+	if res := c.orm.WithContext(ctx).Where("user_id = ? AND name = ?", userID, name).First(&found); res.Error != nil {
 		return nil, res.Error
 	}
 	return &found, nil
 }
 
-func (c *RecurrentExpenseGormRepo) FindAll(ctx context.Context) ([]*entities.RecurrentExpense, error) {
+func (c *RecurrentExpenseGormRepo) FindAll(ctx context.Context, userID uuid.UUID) ([]*entities.RecurrentExpense, error) {
 	var found []*entities.RecurrentExpense
-	if res := c.orm.Find(&found); res.Error != nil {
+	if res := c.orm.WithContext(ctx).Where("user_id = ?", userID).Find(&found); res.Error != nil {
 		return []*entities.RecurrentExpense{}, res.Error
 	}
 	return found, nil

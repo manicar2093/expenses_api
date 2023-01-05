@@ -14,6 +14,8 @@ model Expense {
   id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   recurrent_expense RecurrentExpense? @relation(fields: [recurrent_expense_id], references: [id])
   recurrent_expense_id String? @db.Uuid
+  user User? @relation(fields: [user_id], references: [id])
+  user_id String?  @db.Uuid
   name  String?
   amount Decimal @db.Decimal(15,2)
   description String?
@@ -29,6 +31,8 @@ model Expense {
 
 model Incomes {
   id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user User? @relation(fields: [user_id], references: [id])
+  user_id String?  @db.Uuid
   name  String
   amount Decimal @db.Decimal(15,2)
   description String?
@@ -43,6 +47,8 @@ model Incomes {
 
 model RecurrentExpense {
   id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user User? @relation(fields: [user_id], references: [id])
+  user_id String?  @db.Uuid
   expenses Expense[]
   name  String @unique
   amount Decimal @db.Decimal(15,2)
@@ -51,4 +57,19 @@ model RecurrentExpense {
   updated_at DateTime? @updatedAt
 
   @@map("recurrent_expenses")
+}
+
+model User {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  expenses Expense[]
+  incomes Incomes[]
+  recurrent_expenses RecurrentExpense[]
+  name String?
+  lastname String?
+  email String @unique
+  avatar String?
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt 
+
+  @@map("users")
 }

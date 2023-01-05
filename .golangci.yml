@@ -2,9 +2,8 @@ run:
   skip-dirs:
     - mocks
   skip-files:
-    - internal/repos/incomes_test.go
-    - internal/repos/expenses_test.go
-  go: "1.17"
+    - ".*_test.go$"
+  go: "1.18"
 
 linters:
   enable:

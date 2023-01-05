@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/mocks"
@@ -18,6 +19,7 @@ var _ = Describe("GetCurrentMonth", func() {
 		timeGetterMock   *mocks.TimeGetable
 		timeGetterReturn time.Time
 		ctx              context.Context
+		userID           uuid.UUID
 		service          *reports.CurrentMonthDetails
 	)
 
@@ -27,6 +29,7 @@ var _ = Describe("GetCurrentMonth", func() {
 		timeGetterReturn = time.Date(2022, time.July, 1, 0, 0, 0, 0, time.Local)
 		timeGetterMock.EXPECT().GetCurrentTime().Return(timeGetterReturn)
 		ctx = context.Background()
+		userID = uuid.New()
 		service = reports.NewCurrentMonthDetailsImpl(expensesRepoMock, timeGetterMock)
 	})
 
@@ -59,9 +62,9 @@ var _ = Describe("GetCurrentMonth", func() {
 			expectedPaidExpensesCount   = uint(len(expectedPaidExpenses))
 			expectedUnpaidExpensesCount = uint(len(expectedUnpaidExpenses))
 		)
-		expensesRepoMock.EXPECT().GetExpensesByMonth(ctx, time.July).Return(expectedRepoReturn, nil)
+		expensesRepoMock.EXPECT().GetExpensesByMonth(ctx, time.July, userID).Return(expectedRepoReturn, nil)
 
-		got, err := service.GetExpenses(ctx)
+		got, err := service.GetExpenses(ctx, userID)
 
 		Expect(err).ToNot(HaveOccurred())
 		Expect(got.TotalPaidAmount).To(Equal(expectedTotalPaidAmount))

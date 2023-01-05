@@ -2,10 +2,12 @@ package recurrentexpenses
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
-func (c *RecurrentExpenseServiceImpl) GetAll(ctx context.Context) (*GetAllRecurrentExpensesOutput, error) {
-	recurrentExpenses, err := c.recurrentExpensesRepo.FindAll(ctx)
+func (c *RecurrentExpenseServiceImpl) GetAll(ctx context.Context, userID uuid.UUID) (*GetAllRecurrentExpensesOutput, error) {
+	recurrentExpenses, err := c.recurrentExpensesRepo.FindAll(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

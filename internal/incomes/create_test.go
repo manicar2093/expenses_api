@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -20,6 +21,7 @@ var _ = Describe("CreateImpl", func() {
 		ctx             context.Context
 		incomesRepoMock *mocks.IncomesRepository
 		validatorMock   *mocks.StructValidable
+		userID          uuid.UUID
 		api             *incomes.IncomeServiceImpl
 	)
 
@@ -27,6 +29,7 @@ var _ = Describe("CreateImpl", func() {
 		ctx = context.TODO()
 		incomesRepoMock = &mocks.IncomesRepository{}
 		validatorMock = &mocks.StructValidable{}
+		userID = uuid.New()
 		api = incomes.NewIncomeServiceImpl(incomesRepoMock, validatorMock)
 	})
 
@@ -45,11 +48,13 @@ var _ = Describe("CreateImpl", func() {
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,
+				UserID:      userID,
 			}
 			expextedIncomeEntity = entities.Income{
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,
+				UserID:      userID,
 			}
 		)
 		validatorMock.EXPECT().ValidateStruct(&incomeInput).Return(nil)

@@ -11,9 +11,9 @@ import (
 type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
-		GetExpensesByMonth(ctx context.Context, month time.Month) ([]*entities.Expense, error)
+		GetExpensesByMonth(ctx context.Context, month time.Month, userID uuid.UUID) ([]*entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID uuid.UUID, status bool) error
-		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string) (*entities.Expense, error)
+		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string, userID uuid.UUID) (*entities.Expense, error)
 		GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*entities.ExpenseIDWithIsPaidStatus, error)
 		Update(ctx context.Context, expenseUpdateInput *UpdateExpenseInput) error
 		FindByID(ctx context.Context, expenseID uuid.UUID) (*entities.Expense, error)
@@ -25,7 +25,12 @@ type (
 
 	RecurrentExpenseRepo interface {
 		Save(ctx context.Context, recExpense *entities.RecurrentExpense) error
-		FindByName(ctx context.Context, name string) (*entities.RecurrentExpense, error)
-		FindAll(ctx context.Context) ([]*entities.RecurrentExpense, error)
+		FindByName(ctx context.Context, name string, userID uuid.UUID) (*entities.RecurrentExpense, error)
+		FindAll(ctx context.Context, userID uuid.UUID) ([]*entities.RecurrentExpense, error)
+	}
+
+	UserRepo interface {
+		Save(ctx context.Context, user *entities.User) error
+		FindUserByEmail(ctx context.Context, email string) (*entities.User, error)
 	}
 )

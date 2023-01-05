@@ -3,6 +3,7 @@ package recurrentexpenses_test
 import (
 	"context"
 
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -15,11 +16,13 @@ var _ = Describe("GetAll", func() {
 	var (
 		recurrentExpensesRepoMock *mocks.RecurrentExpenseRepo
 		ctx                       context.Context
+		userID                    uuid.UUID
 		api                       *recurrentexpenses.RecurrentExpenseServiceImpl
 	)
 	BeforeEach(func() {
 		recurrentExpensesRepoMock = &mocks.RecurrentExpenseRepo{}
 		ctx = context.Background()
+		userID = uuid.New()
 		api = recurrentexpenses.NewGetAllRecurrentExpenseServiceImpl(recurrentExpensesRepoMock)
 	})
 
@@ -34,9 +37,9 @@ var _ = Describe("GetAll", func() {
 			}
 			expectedRecurrentExpensesCount = uint(len(expectedRepoReturn))
 		)
-		recurrentExpensesRepoMock.EXPECT().FindAll(ctx).Return(expectedRepoReturn, nil)
+		recurrentExpensesRepoMock.EXPECT().FindAll(ctx, userID).Return(expectedRepoReturn, nil)
 
-		got, err := api.GetAll(ctx)
+		got, err := api.GetAll(ctx, userID)
 
 		Expect(err).ToNot(HaveOccurred())
 		Expect(got.RecurrenteExpensesCount).To(Equal(expectedRecurrentExpensesCount))

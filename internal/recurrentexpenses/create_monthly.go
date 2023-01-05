@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
-	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 type (
@@ -14,8 +14,8 @@ type (
 	}
 )
 
-func (c *RecurrentExpenseServiceImpl) CreateMonthlyRecurrentExpenses(ctx context.Context) (*CreateMonthlyRecurrentExpensesOutput, error) {
-	allRecurrentExpensesRegistered, err := c.recurrentExpensesRepo.FindAll(ctx)
+func (c *RecurrentExpenseServiceImpl) CreateMonthlyRecurrentExpenses(ctx context.Context, userID uuid.UUID) (*CreateMonthlyRecurrentExpensesOutput, error) {
+	allRecurrentExpensesRegistered, err := c.recurrentExpensesRepo.FindAll(ctx, userID)
 	log.Printf("%v+", allRecurrentExpensesRegistered)
 	if err != nil {
 		return nil, err
@@ -25,9 +25,9 @@ func (c *RecurrentExpenseServiceImpl) CreateMonthlyRecurrentExpenses(ctx context
 	nextMonthAsUint := uint(nextMonthDate.Month())
 	var expensesCreated []*entities.Expense
 	for _, recurrentExpense := range allRecurrentExpensesRegistered {
-		_, err := c.expensesRepo.FindByNameAndMonthAndIsRecurrent(ctx, nextMonthAsUint, recurrentExpense.Name)
+		_, err := c.expensesRepo.FindByNameAndMonthAndIsRecurrent(ctx, nextMonthAsUint, recurrentExpense.Name, userID)
 		if err != nil {
-			_, isNotFound := err.(*repos.NotFoundError)
+			_, isNotFound := err.(*apperrors.NotFoundError)
 			if isNotFound {
 				expenseToSave := entities.Expense{
 					Amount: recurrentExpense.Amount,

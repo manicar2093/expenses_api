@@ -5,4 +5,5 @@ type CreateExpenseInput struct {
 	Amount       float64 `json:"amount,omitempty" validate:"required"`
 	Description  string  `json:"description,omitempty" validate:"-"`
 	ForNextMonth bool    `json:"for_next_month,omitempty" validate:"-"`
+	UserID       string  `json:"user_id" validate:"required|isUUID"`
 }

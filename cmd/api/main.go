@@ -3,13 +3,18 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"github.com/manicar2093/expenses_api/cmd/api/controllers"
 	_ "github.com/manicar2093/expenses_api/cmd/api/docs"
+	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
+	"github.com/manicar2093/expenses_api/internal/auth"
+	"github.com/manicar2093/expenses_api/internal/config"
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/internal/tokens"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"github.com/manicar2093/expenses_api/pkg/validator"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -21,6 +26,7 @@ var (
 	recurrentExpensesRepo = repos.NewRecurrentExpenseGormRepo(conn)
 	timeGetter            = &dates.TimeGetter{}
 	structValidator       = validator.NewGooKitValidator()
+	customMiddlewares     = middlewares.NewEchoMiddlewares(tokens.NewPaseto(config.Instance.TokenSymmetricKey))
 	expenseService        = expenses.NewExpenseServiceImpl(
 		expensesRepo,
 		timeGetter,
@@ -47,8 +53,13 @@ var (
 	e = echo.New() //nolint:varnamelen
 )
 
-// @title   Expenses API
-// @version 1.0
+// @title                      Expenses API
+// @version                    1.0
+// @securityDefinitions.apikey ApiKeyAuth
+// @name                       Authorization
+// @in                         header
+// @authorizationurl           /auth/login/google
+// @description                Type "Bearer" and then your API Token
 func main() {
 	configEcho()
 	registerControllers()
@@ -60,6 +71,11 @@ func configEcho() {
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
+		LogLevel:  log.ERROR,
+	}))
+	e.Validator = structValidator
 }
 
 func registerControllers() {
@@ -68,20 +84,32 @@ func registerControllers() {
 		expenseService,
 		expenseService,
 		expenseService,
+		customMiddlewares,
 		e,
-	).Register()
+	)
 	controllers.NewRecurrentExpensesController(
 		createRecurrentExpense,
 		getAllRecurrentExpenses,
 		createMonthlyRecurrentExpenses,
+		customMiddlewares,
 		e,
-	).Register()
+	)
 	controllers.NewReportsController(
 		getCurrentMonth,
+		customMiddlewares,
 		e,
-	).Register()
+	)
 	controllers.NewHealthCheckController(
 		conn,
 		e,
-	).Register()
+	)
+	controllers.NewLoginController(
+		auth.NewGoogleTokenAuth(
+			repos.NewUserGormRepo(conn),
+			tokens.NewPaseto(config.Instance.TokenSymmetricKey),
+			validator.NewGoogleTokenValidator(),
+			config.Instance.AccessTokenDuration,
+		),
+		e,
+	)
 }

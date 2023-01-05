@@ -28,13 +28,15 @@ func NewHealthCheckController(
 	conn *gorm.DB,
 	e *echo.Echo, //nolint:varnamelen
 ) *HealthCheckController {
-	return &HealthCheckController{
+	controller := &HealthCheckController{
 		conn:  conn,
 		group: e.Group("/health_check"),
 	}
+	controller.register()
+	return controller
 }
 
-func (c *HealthCheckController) Register() {
+func (c *HealthCheckController) register() {
 	c.group.GET("", c.health_check)
 }
 

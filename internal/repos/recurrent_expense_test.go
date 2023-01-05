@@ -5,8 +5,10 @@ import (
 	"log"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -15,20 +17,34 @@ import (
 var _ = Describe("RecurrentExpense", func() {
 
 	var (
-		ctx  context.Context
-		repo *repos.RecurrentExpenseGormRepo
+		ctx            context.Context
+		repo           *repos.RecurrentExpenseGormRepo
+		expectedUserID uuid.UUID
+		expectedUser   entities.User
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		repo = repos.NewRecurrentExpenseGormRepo(conn)
+		expectedUserID = uuid.New()
+		expectedUser = entities.User{
+			ID:       expectedUserID,
+			Name:     null.NewString(faker.Name(), true),
+			Lastname: null.NewString(faker.LastName(), true),
+			Email:    faker.Email(),
+		}
+		conn.Create(&expectedUser)
+	})
 
+	AfterEach(func() {
+		conn.Delete(&expectedUser)
 	})
 
 	Describe("Save", func() {
 		It("saves an instance", func() {
 			var (
 				toSave = entities.RecurrentExpense{
+					UserID: expectedUserID,
 					Name:   faker.Name(),
 					Amount: faker.Latitude(),
 					Description: null.StringFrom(
@@ -36,9 +52,9 @@ var _ = Describe("RecurrentExpense", func() {
 					),
 				}
 			)
+			defer conn.Delete(&toSave)
 
 			err := repo.Save(ctx, &toSave)
-			defer conn.Delete(&toSave)
 
 			log.Println(toSave.ID)
 
@@ -54,6 +70,7 @@ var _ = Describe("RecurrentExpense", func() {
 				var (
 					expectedName = "testing"
 					saved        = entities.RecurrentExpense{
+						UserID: expectedUserID,
 						Name:   expectedName,
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -61,6 +78,7 @@ var _ = Describe("RecurrentExpense", func() {
 						),
 					}
 					toSave = entities.RecurrentExpense{
+						UserID: expectedUserID,
 						Name:   expectedName,
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -74,9 +92,9 @@ var _ = Describe("RecurrentExpense", func() {
 				err := repo.Save(ctx, &toSave)
 				defer conn.Delete(&toSave)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.AlreadyExistsError{}))
-				Expect(err.(*repos.AlreadyExistsError).Entity).To(Equal("Recurrent Expense"))
-				Expect(err.(*repos.AlreadyExistsError).Identifier).To(Equal(saved.Name))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.AlreadyExistsError{}))
+				Expect(err.(*apperrors.AlreadyExistsError).Entity).To(Equal("Recurrent Expense"))
+				Expect(err.(*apperrors.AlreadyExistsError).Identifier).To(Equal(saved.Name))
 			})
 		})
 	})
@@ -86,6 +104,7 @@ var _ = Describe("RecurrentExpense", func() {
 			var (
 				expectedName = "testing"
 				saved        = entities.RecurrentExpense{
+					UserID: expectedUserID,
 					Name:   expectedName,
 					Amount: faker.Latitude(),
 					Description: null.StringFrom(
@@ -96,7 +115,7 @@ var _ = Describe("RecurrentExpense", func() {
 			conn.Create(&saved)
 			defer conn.Delete(&saved)
 
-			got, err := repo.FindByName(ctx, expectedName)
+			got, err := repo.FindByName(ctx, expectedName, expectedUserID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Name).To(Equal(expectedName))
@@ -108,6 +127,7 @@ var _ = Describe("RecurrentExpense", func() {
 			var (
 				dataSaved = []*entities.RecurrentExpense{
 					{
+						UserID: expectedUserID,
 						Name:   faker.Name(),
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -115,6 +135,7 @@ var _ = Describe("RecurrentExpense", func() {
 						),
 					},
 					{
+						UserID: expectedUserID,
 						Name:   faker.Name(),
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -122,6 +143,7 @@ var _ = Describe("RecurrentExpense", func() {
 						),
 					},
 					{
+						UserID: expectedUserID,
 						Name:   faker.Name(),
 						Amount: faker.Latitude(),
 						Description: null.StringFrom(
@@ -133,7 +155,7 @@ var _ = Describe("RecurrentExpense", func() {
 			conn.Create(&dataSaved)
 			defer conn.Delete(&dataSaved)
 
-			got, err := repo.FindAll(ctx)
+			got, err := repo.FindAll(ctx, expectedUserID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got).To(HaveLen(len(dataSaved)))

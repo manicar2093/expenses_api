@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -17,35 +18,56 @@ import (
 
 var _ = Describe("Expenses", func() {
 	var (
-		ctx  context.Context
-		repo *repos.ExpensesGormRepo
+		ctx                            context.Context
+		repo                           repos.ExpensesRepository
+		expectedUserID                 uuid.UUID
+		expectedUser                   entities.User
+		expectedRecurrentExpenseID     uuid.UUID
+		expectedRecurrentExpenseNullID uuid.NullUUID
+		expectedRecurrentExpense       entities.RecurrentExpense
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		repo = repos.NewExpensesGormRepo(conn)
-
+		expectedUserID = uuid.New()
+		expectedUser = entities.User{
+			ID:       expectedUserID,
+			Name:     null.NewString(faker.Name(), true),
+			Lastname: null.NewString(faker.LastName(), true),
+			Email:    faker.Email(),
+		}
+		expectedRecurrentExpenseID = uuid.New()
+		expectedRecurrentExpense = entities.RecurrentExpense{
+			ID:          expectedRecurrentExpenseID,
+			UserID:      expectedUserID,
+			Name:        faker.Name(),
+			Amount:      faker.Latitude(),
+			Description: null.StringFrom(faker.Paragraph()),
+		}
+		expectedRecurrentExpenseNullID = uuid.NullUUID{
+			UUID:  expectedRecurrentExpenseID,
+			Valid: true,
+		}
+		conn.Create(&expectedUser)
+		conn.Create(&expectedRecurrentExpense)
 	})
+
+	AfterEach(func() {
+		conn.Delete(&expectedRecurrentExpense)
+		conn.Delete(&expectedUser)
+	})
+
 	Describe("Save", func() {
 		It("saves an entities.Expense in database", func() {
 
 			var (
-				expectedName                   = null.StringFrom(faker.Name())
-				expectedAmount                 = faker.Latitude()
-				expectedDescription            = faker.Sentence()
-				expectedRecurrentExpenseID     = uuid.New()
-				expectedRecurrentExpenseNullID = uuid.NullUUID{
-					UUID:  expectedRecurrentExpenseID,
-					Valid: true,
-				}
-				expectedRecurrentExpense = &entities.RecurrentExpense{
-					ID:          expectedRecurrentExpenseID,
-					Name:        faker.Name(),
-					Amount:      faker.Latitude(),
-					Description: null.StringFrom(faker.Paragraph()),
-				}
-				expectedExpense = entities.Expense{
+				expectedName        = null.StringFrom(faker.Name())
+				expectedAmount      = faker.Latitude()
+				expectedDescription = faker.Sentence()
+				expectedExpense     = entities.Expense{
 					Name:               expectedName,
+					UserID:             expectedUserID,
 					RecurrentExpenseID: expectedRecurrentExpenseNullID,
 					Amount:             expectedAmount,
 					Day:                1,
@@ -54,8 +76,6 @@ var _ = Describe("Expenses", func() {
 					Description:        null.StringFrom(expectedDescription),
 				}
 			)
-			conn.Save(&expectedRecurrentExpense)
-			defer conn.Delete(&expectedRecurrentExpense)
 			defer conn.Delete(&expectedExpense)
 
 			err := repo.Save(ctx, &expectedExpense)
@@ -75,24 +95,14 @@ var _ = Describe("Expenses", func() {
 	Describe("GetExpensesByMonth", func() {
 		It("returns all expenses by current month", func() {
 			var (
-				expectedName                   = null.StringFrom(faker.Name())
-				expectedAmount                 = faker.Latitude()
-				expectedDescription            = faker.Sentence()
-				expectedMonth                  = time.January
-				expectedRecurrentExpenseID     = uuid.New()
-				expectedRecurrentExpenseNullID = uuid.NullUUID{
-					UUID:  expectedRecurrentExpenseID,
-					Valid: true,
-				}
-				expectedRecurrentExpense = &entities.RecurrentExpense{
-					ID:          expectedRecurrentExpenseID,
-					Name:        faker.Name(),
-					Amount:      faker.Latitude(),
-					Description: null.StringFrom(faker.Paragraph()),
-				}
-				expectedExpenses = []*entities.Expense{
+				expectedName        = null.StringFrom(faker.Name())
+				expectedAmount      = faker.Latitude()
+				expectedDescription = faker.Sentence()
+				expectedMonth       = time.January
+				expectedExpenses    = []*entities.Expense{
 					{
 						Name:               expectedName,
+						UserID:             expectedUserID,
 						RecurrentExpenseID: expectedRecurrentExpenseNullID,
 						Amount:             expectedAmount,
 						Day:                1,
@@ -102,6 +112,7 @@ var _ = Describe("Expenses", func() {
 					},
 					{
 						Name:               expectedName,
+						UserID:             expectedUserID,
 						RecurrentExpenseID: expectedRecurrentExpenseNullID,
 						Amount:             expectedAmount,
 						Day:                1,
@@ -111,6 +122,7 @@ var _ = Describe("Expenses", func() {
 					},
 					{
 						Name:               expectedName,
+						UserID:             expectedUserID,
 						RecurrentExpenseID: expectedRecurrentExpenseNullID,
 						Amount:             expectedAmount,
 						Day:                1,
@@ -121,12 +133,10 @@ var _ = Describe("Expenses", func() {
 				}
 			)
 
-			conn.Save(&expectedRecurrentExpense)
 			conn.Create(&expectedExpenses)
-			defer conn.Delete(&expectedRecurrentExpense)
 			defer conn.Delete(&expectedExpenses)
 
-			got, err := repo.GetExpensesByMonth(ctx, expectedMonth)
+			got, err := repo.GetExpensesByMonth(ctx, expectedMonth, expectedUserID)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got).To(HaveLen(3))
@@ -135,7 +145,7 @@ var _ = Describe("Expenses", func() {
 
 		When("There is no data saved", func() {
 			It("returns an empty slice", func() {
-				got, err := repo.GetExpensesByMonth(ctx, time.July)
+				got, err := repo.GetExpensesByMonth(ctx, time.July, expectedUserID)
 
 				Expect(err).ToNot(HaveOccurred())
 				Expect(got).To(HaveLen(0))
@@ -146,24 +156,14 @@ var _ = Describe("Expenses", func() {
 	Describe("UpdateIsPaidByExpenseID", func() {
 		It("change isPaid by given bool", func() {
 			var (
-				expectedName                   = null.StringFrom(faker.Name())
-				expectedAmount                 = faker.Latitude()
-				expectedDescription            = faker.Sentence()
-				expectedMonth                  = time.January
-				expectedStatus                 = true
-				expectedRecurrentExpenseID     = uuid.New()
-				expectedRecurrentExpenseNullID = uuid.NullUUID{
-					UUID:  expectedRecurrentExpenseID,
-					Valid: true,
-				}
-				expectedRecurrentExpense = &entities.RecurrentExpense{
-					ID:          expectedRecurrentExpenseID,
-					Name:        faker.Name(),
-					Amount:      faker.Latitude(),
-					Description: null.StringFrom(faker.Paragraph()),
-				}
-				expectedExpense = &entities.Expense{
+				expectedName        = null.StringFrom(faker.Name())
+				expectedAmount      = faker.Latitude()
+				expectedDescription = faker.Sentence()
+				expectedMonth       = time.January
+				expectedStatus      = true
+				expectedExpense     = &entities.Expense{
 					Name:               expectedName,
+					UserID:             expectedUserID,
 					RecurrentExpenseID: expectedRecurrentExpenseNullID,
 					Amount:             expectedAmount,
 					Day:                1,
@@ -172,9 +172,7 @@ var _ = Describe("Expenses", func() {
 					Description:        null.StringFrom(expectedDescription),
 				}
 			)
-			conn.Save(&expectedRecurrentExpense)
 			conn.Create(&expectedExpense)
-			defer conn.Delete(&expectedRecurrentExpense)
 			defer conn.Delete(&expectedExpense)
 
 			err := repo.UpdateIsPaidByExpenseID(ctx, expectedExpense.ID, expectedStatus)
@@ -195,8 +193,8 @@ var _ = Describe("Expenses", func() {
 
 				err := repo.UpdateIsPaidByExpenseID(ctx, expectedID, true)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
-				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
+				Expect(err.(*apperrors.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
 			})
 		})
 	})
@@ -204,24 +202,14 @@ var _ = Describe("Expenses", func() {
 	Describe("FindByNameAndMonthAndIsRecurrent", func() {
 		It("finds a expense that is recurrent by its name", func() {
 			var (
-				expectedRecurrenteExpenseName  = faker.Name()
-				expectedAmount                 = faker.Latitude()
-				expectedDescription            = faker.Sentence()
-				expectedMonth                  = time.January
-				expectedRecurrentExpenseID     = uuid.New()
-				expectedRecurrentExpenseNullID = uuid.NullUUID{
-					UUID:  expectedRecurrentExpenseID,
-					Valid: true,
-				}
-				expectedExpenseName      = null.StringFrom(expectedRecurrenteExpenseName)
-				expectedRecurrentExpense = &entities.RecurrentExpense{
-					ID:          expectedRecurrentExpenseID,
-					Name:        expectedRecurrenteExpenseName,
-					Amount:      faker.Latitude(),
-					Description: null.StringFrom(faker.Paragraph()),
-				}
-				expectedExpense = &entities.Expense{
+				expectedRecurrenteExpenseName = faker.Name()
+				expectedAmount                = faker.Latitude()
+				expectedDescription           = faker.Sentence()
+				expectedMonth                 = time.January
+				expectedExpenseName           = null.StringFrom(expectedRecurrenteExpenseName)
+				expectedExpense               = &entities.Expense{
 					Name:               expectedExpenseName,
+					UserID:             expectedUserID,
 					RecurrentExpenseID: expectedRecurrentExpenseNullID,
 					Amount:             expectedAmount,
 					Day:                1,
@@ -230,12 +218,15 @@ var _ = Describe("Expenses", func() {
 					Description:        null.StringFrom(expectedDescription),
 				}
 			)
-			conn.Save(&expectedRecurrentExpense)
 			conn.Create(&expectedExpense)
-			defer conn.Delete(&expectedRecurrentExpense)
 			defer conn.Delete(&expectedExpense)
 
-			got, err := repo.FindByNameAndMonthAndIsRecurrent(ctx, uint(expectedMonth), expectedRecurrenteExpenseName)
+			got, err := repo.FindByNameAndMonthAndIsRecurrent(
+				ctx,
+				uint(expectedMonth),
+				expectedRecurrenteExpenseName,
+				expectedUserID,
+			)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got.Name).To(Equal(expectedExpenseName))
@@ -243,15 +234,20 @@ var _ = Describe("Expenses", func() {
 		})
 
 		When("expense does not exist", func() {
-			It("return an repos.NotFoundError", func() {
+			It("return an apperrors.NotFoundError", func() {
 				var (
 					expectedRecurrenteExpenseName = faker.Name()
 					expectedMonth                 = time.January
 				)
 
-				got, err := repo.FindByNameAndMonthAndIsRecurrent(ctx, uint(expectedMonth), expectedRecurrenteExpenseName)
+				got, err := repo.FindByNameAndMonthAndIsRecurrent(
+					ctx,
+					uint(expectedMonth),
+					expectedRecurrenteExpenseName,
+					expectedUserID,
+				)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
 				Expect(got).To(BeNil())
 			})
 		})
@@ -267,6 +263,7 @@ var _ = Describe("Expenses", func() {
 				expectedStatus      = true
 				expectedExpense     = &entities.Expense{
 					Name:        expectedName,
+					UserID:      expectedUserID,
 					Amount:      expectedAmount,
 					Day:         1,
 					Month:       uint(expectedMonth),
@@ -295,8 +292,8 @@ var _ = Describe("Expenses", func() {
 				got, err := repo.GetExpenseStatusByID(ctx, expectedID)
 
 				Expect(got).To(BeNil())
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
-				Expect(err.(*repos.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
+				Expect(err.(*apperrors.NotFoundError).StatusCode()).To(Equal(http.StatusNotFound))
 			})
 		})
 	})
@@ -307,6 +304,7 @@ var _ = Describe("Expenses", func() {
 				savedExpenseID = uuid.New()
 				savedExpense   = entities.Expense{
 					ID:          savedExpenseID,
+					UserID:      expectedUserID,
 					Name:        null.StringFrom(faker.Name()),
 					Amount:      faker.Latitude(),
 					Description: null.StringFrom(faker.Paragraph()),
@@ -356,7 +354,7 @@ var _ = Describe("Expenses", func() {
 
 				err := repo.Update(ctx, &expectedExpenseDataToUpdate)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
 			})
 		})
 	})
@@ -364,31 +362,19 @@ var _ = Describe("Expenses", func() {
 	Describe("FindByID", func() {
 		It("returns an expense found by its ID", func() {
 			var (
-				expectedRecurrentExpenseID     = uuid.New()
-				expectedExpenseID              = uuid.New()
-				expectedRecurrentExpenseNullID = uuid.NullUUID{
-					UUID:  expectedRecurrentExpenseID,
-					Valid: true,
-				}
-				expectedRecurrentExpense = &entities.RecurrentExpense{
-					ID:          expectedRecurrentExpenseID,
-					Name:        faker.Name(),
-					Amount:      faker.Latitude(),
-					Description: null.StringFrom(faker.Paragraph()),
-				}
-				savedExpense = entities.Expense{
+				expectedExpenseID = uuid.New()
+				savedExpense      = entities.Expense{
 					ID:                 expectedExpenseID,
-					Name:               null.StringFrom(faker.Name()),
+					UserID:             expectedUserID,
 					RecurrentExpenseID: expectedRecurrentExpenseNullID,
+					Name:               null.StringFrom(faker.Name()),
 					Amount:             faker.Latitude(),
 					Day:                1,
 					Month:              1,
 					Year:               2022,
 				}
 			)
-			conn.Create(&expectedRecurrentExpense)
 			conn.Create(&savedExpense)
-			defer conn.Delete(&expectedRecurrentExpense)
 			defer conn.Delete(&savedExpense)
 
 			got, err := repo.FindByID(ctx, expectedExpenseID)
@@ -407,7 +393,7 @@ var _ = Describe("Expenses", func() {
 
 				got, err := repo.FindByID(ctx, savedExpenseID)
 
-				Expect(err).To(BeAssignableToTypeOf(&repos.NotFoundError{}))
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
 				Expect(got).To(BeNil())
 			})
 		})

@@ -24,6 +24,8 @@ var _ = Describe("CreateRecurrentExpense", func() {
 		timeGetterMock           *mocks.TimeGetable
 		validatorMock            *mocks.StructValidable
 		ctx                      context.Context
+		expectedUserID           string
+		expectedUserIDAsUUID     uuid.UUID
 		api                      *recurrentexpenses.RecurrentExpenseServiceImpl
 	)
 
@@ -33,6 +35,8 @@ var _ = Describe("CreateRecurrentExpense", func() {
 		timeGetterMock = &mocks.TimeGetable{}
 		validatorMock = &mocks.StructValidable{}
 		ctx = context.Background()
+		expectedUserIDAsUUID = uuid.New()
+		expectedUserID = expectedUserIDAsUUID.String()
 		api = recurrentexpenses.NewCreateRecurrentExpense(recurentExpensesRepoMock, expensesRepoMock, timeGetterMock, validatorMock)
 	})
 
@@ -54,17 +58,20 @@ var _ = Describe("CreateRecurrentExpense", func() {
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: expectedExpenseDescription,
+				UserID:      expectedUserID,
 			}
 			expectedRecurrentExpenseSaved = entities.RecurrentExpense{
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: null.StringFrom(expectedExpenseDescription),
+				UserID:      expectedUserIDAsUUID,
 			}
 			expectedRecurrentExpenseReturned = entities.RecurrentExpense{
 				ID:          expectedRecurrentExpenseID,
 				Name:        expectedExpenseName,
 				Amount:      expectedExpenseAmount,
 				Description: null.StringFrom(expectedExpenseDescription),
+				UserID:      expectedUserIDAsUUID,
 			}
 			expectedExpenseSaved = entities.Expense{
 				Amount: expectedExpenseAmount,
@@ -73,6 +80,7 @@ var _ = Describe("CreateRecurrentExpense", func() {
 					Valid: true,
 				},
 				CreatedAt: &expectedCreatedAt,
+				UserID:    expectedUserIDAsUUID,
 			}
 		)
 		validatorMock.EXPECT().ValidateStruct(&request).Return(nil)

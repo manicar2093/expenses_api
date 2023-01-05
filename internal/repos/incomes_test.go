@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -13,14 +14,25 @@ import (
 
 var _ = Describe("IncomesRepo", func() {
 	var (
-		ctx  context.Context
-		repo *repos.IncomesGormRepo
+		ctx            context.Context
+		repo           *repos.IncomesGormRepo
+		expectedUserID uuid.UUID
+		expectedUser   entities.User
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		repo = repos.NewIncomesGormRepo(conn)
+		expectedUserID = uuid.New()
+		expectedUser = entities.User{
+			ID:    expectedUserID,
+			Email: faker.Email(),
+		}
+		conn.Create(&expectedUser)
+	})
 
+	AfterEach(func() {
+		conn.Delete(&expectedUser)
 	})
 
 	Describe("Save", func() {
@@ -31,6 +43,7 @@ var _ = Describe("IncomesRepo", func() {
 				expectedAmount      = faker.Latitude()
 				expectedDescription = faker.Sentence()
 				expectedIncome      = entities.Income{
+					UserID:      expectedUserID,
 					Name:        expectedName,
 					Amount:      expectedAmount,
 					Day:         1,

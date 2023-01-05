@@ -4,11 +4,13 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
 	"github.com/manicar2093/expenses_api/internal/expenses"
-	"github.com/manicar2093/expenses_api/pkg/errors"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 type ExpensesController struct {
+	middlewares.Middlewares
 	createExpense   expenses.ExpenseCreatable
 	setToPaid       expenses.ExpenseToPaidSetteable
 	togglableIsPaid expenses.ExpenseToPaidTogglable
@@ -21,22 +23,26 @@ func NewExpensesController(
 	setToPaid expenses.ExpenseToPaidSetteable,
 	togglableIsPaid expenses.ExpenseToPaidTogglable,
 	updateExpense expenses.ExpenseUpdateable,
+	middlewares middlewares.Middlewares,
 	e *echo.Echo, //nolint:varnamelen
 ) *ExpensesController {
-	return &ExpensesController{
+	controller := &ExpensesController{
+		Middlewares:     middlewares,
 		createExpense:   createExpense,
 		setToPaid:       setToPaid,
 		togglableIsPaid: togglableIsPaid,
 		updateExpense:   updateExpense,
 		group:           e.Group("/expenses"),
 	}
+	controller.register()
+	return controller
 }
 
-func (c *ExpensesController) Register() {
-	c.group.POST("", c.create)
-	c.group.POST("/to_paid", c.toPaid)
-	c.group.POST("/toggle_is_paid", c.toggleIsPaid)
-	c.group.PUT("/update", c.update)
+func (c *ExpensesController) register() {
+	c.group.POST("", c.Create, c.LoggedIn)
+	c.group.PUT("/to_paid", c.ToPaid, c.LoggedIn)
+	c.group.PUT("/toggle_is_paid", c.ToggleIsPaid, c.LoggedIn)
+	c.group.PUT("/update", c.Update, c.LoggedIn)
 }
 
 // @Summary     Create an expense
@@ -48,15 +54,17 @@ func (c *ExpensesController) Register() {
 // @Success     201               {object} entities.Expense            "Expense has been created"
 // @Failure     400               {object} validator.ValidationError   "When a request does not fulfill need data"
 // @Failure     500               "Something unidentified has occurred"
+// @Security    ApiKeyAuth
 // @Router      /expenses [post]
-func (c *ExpensesController) create(ctx echo.Context) error {
+func (c *ExpensesController) Create(ctx echo.Context) error {
 	var expenseRequest expenses.CreateExpenseInput
 	if err := ctx.Bind(&expenseRequest); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
+	expenseRequest.UserID = ctx.Get("user_id").(string)
 	newExpense, err := c.createExpense.CreateExpense(ctx.Request().Context(), &expenseRequest)
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusCreated, newExpense)
 }
@@ -70,14 +78,16 @@ func (c *ExpensesController) create(ctx echo.Context) error {
 // @Success     200
 // @Failure     400 {object} validator.ValidationError "When a request does not fulfill need data"
 // @Failure     500
-// @Router      /expenses/to_paid [post]
-func (c *ExpensesController) toPaid(ctx echo.Context) error {
+// @Security    ApiKeyAuth
+// @Router      /expenses/to_paid [put]
+func (c *ExpensesController) ToPaid(ctx echo.Context) error {
 	var request expenses.SetExpenseToPaidInput
 	if err := ctx.Bind(&request); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
+
 	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil { //nolint: staticcheck
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.NoContent(http.StatusOK)
 }
@@ -91,15 +101,16 @@ func (c *ExpensesController) toPaid(ctx echo.Context) error {
 // @Success     200        {object} expenses.ToggleExpenseIsPaidOutput
 // @Failure     400        {object} validator.ValidationError "When a request does not fulfill need data"
 // @Failure     500
-// @Router      /expenses/toggle_is_paid [post]
-func (c *ExpensesController) toggleIsPaid(ctx echo.Context) error {
+// @Security    ApiKeyAuth
+// @Router      /expenses/toggle_is_paid [put]
+func (c *ExpensesController) ToggleIsPaid(ctx echo.Context) error {
 	var request expenses.ToggleExpenseIsPaidInput
 	if err := ctx.Bind(&request); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	got, err := c.togglableIsPaid.ToggleIsPaid(ctx.Request().Context(), &request)
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.JSON(http.StatusOK, got)
 }
@@ -113,15 +124,16 @@ func (c *ExpensesController) toggleIsPaid(ctx echo.Context) error {
 // @Success     200                 "Expense was updated"
 // @Failure     400                 {object} validator.ValidationError "When a request does not fulfill need data"
 // @Failure     500
+// @Security    ApiKeyAuth
 // @Router      /expenses/update [put]
-func (c *ExpensesController) update(ctx echo.Context) error {
+func (c *ExpensesController) Update(ctx echo.Context) error {
 	var request expenses.UpdateExpenseInput
 	if err := ctx.Bind(&request); err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	err := c.updateExpense.UpdateExpense(ctx.Request().Context(), &request)
 	if err != nil {
-		return errors.CreateResponseFromError(ctx, err)
+		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	return ctx.NoContent(http.StatusOK)
 }

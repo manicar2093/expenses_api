@@ -11,6 +11,8 @@ const RecurrentExpenseCollectonName = "recurrent_expenses"
 
 type RecurrentExpense struct {
 	ID          uuid.UUID   `json:"id,omitempty" gorm:"primaryKey,->"`
+	User        *User       `json:"user,omitempty"`
+	UserID      uuid.UUID   `json:"user_id,omitempty"`
 	Expenses    []*Expense  `json:"expenses,omitempty"`
 	Name        string      `json:"name,omitempty"`
 	Amount      float64     `json:"amount,omitempty"`

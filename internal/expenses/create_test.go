@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -20,11 +21,13 @@ import (
 var _ = Describe("CreateImpl", func() {
 
 	var (
-		expenseRepoMock *mocks.ExpensesRepository
-		timeGetterMock  *mocks.TimeGetable
-		ctx             context.Context
-		validatorMock   *mocks.StructValidable
-		api             *expenses.ExpenseServiceImpl
+		expenseRepoMock      *mocks.ExpensesRepository
+		timeGetterMock       *mocks.TimeGetable
+		ctx                  context.Context
+		validatorMock        *mocks.StructValidable
+		expectedUserID       string
+		expectedUserIDAsUUID uuid.UUID
+		api                  *expenses.ExpenseServiceImpl
 	)
 
 	BeforeEach(func() {
@@ -32,6 +35,8 @@ var _ = Describe("CreateImpl", func() {
 		timeGetterMock = &mocks.TimeGetable{}
 		ctx = context.TODO()
 		validatorMock = &mocks.StructValidable{}
+		expectedUserIDAsUUID = uuid.New()
+		expectedUserID = expectedUserIDAsUUID.String()
 		api = expenses.NewExpenseServiceImpl(expenseRepoMock, timeGetterMock, validatorMock)
 	})
 
@@ -52,6 +57,7 @@ var _ = Describe("CreateImpl", func() {
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,
+				UserID:      expectedUserID,
 			}
 			expectedExpenseToSave = entities.Expense{
 				Name:        null.StringFrom(expectedName),
@@ -62,6 +68,7 @@ var _ = Describe("CreateImpl", func() {
 				Description: null.StringFrom(expectedDescription),
 				IsPaid:      true,
 				CreatedAt:   &expectedCurrentDateReturn,
+				UserID:      expectedUserIDAsUUID,
 			}
 		)
 		validatorMock.EXPECT().ValidateStruct(&request).Return(nil)
@@ -88,6 +95,7 @@ var _ = Describe("CreateImpl", func() {
 					Name:         expectedName,
 					Amount:       expectedAmount,
 					Description:  expectedDescription,
+					UserID:       expectedUserID,
 					ForNextMonth: true,
 				}
 				expectedExpenseToSave = entities.Expense{
@@ -99,6 +107,7 @@ var _ = Describe("CreateImpl", func() {
 					Description: null.StringFrom(expectedExpenseDescription),
 					IsPaid:      true,
 					CreatedAt:   &expectedNextMonthDateReturn,
+					UserID:      expectedUserIDAsUUID,
 				}
 			)
 			validatorMock.EXPECT().ValidateStruct(&request).Return(nil)

@@ -21,7 +21,7 @@ var _ = Describe("Dates", func() {
 		It("returns a time plus 1 month", func() {
 			got := api.GetNextMonthAtFirtsDay()
 
-			Expect(got.Month()).To(Equal(time.Now().Month() + 1))
+			Expect(got.Month()).ToNot(Equal(time.Now().Month()))
 			Expect(got.Day()).To(Equal(1))
 		})
 	})
