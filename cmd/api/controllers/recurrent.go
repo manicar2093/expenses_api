@@ -11,7 +11,7 @@ import (
 )
 
 type RecurrentExpensesController struct {
-	*middlewares.EchoMiddlewares
+	middlewares.Middlewares
 	createRecurrentExpense         recurrentexpenses.RecurrentExpenseCreatable
 	getAllRecurrentExpenses        recurrentexpenses.RecurrentExpensesAllGettable
 	createMonthlyRecurrentExpenses recurrentexpenses.MonthlyRecurrentExpensesCreateable
@@ -22,24 +22,24 @@ func NewRecurrentExpensesController(
 	createRecurrentExpense recurrentexpenses.RecurrentExpenseCreatable,
 	getAllRecurrentExpenses recurrentexpenses.RecurrentExpensesAllGettable,
 	createMonthlyRecurrentExpenses recurrentexpenses.MonthlyRecurrentExpensesCreateable,
-	middlewares *middlewares.EchoMiddlewares,
+	middlewares middlewares.Middlewares,
 	e *echo.Echo, //nolint:varnamelen
 ) *RecurrentExpensesController {
-	return &RecurrentExpensesController{
-		EchoMiddlewares:                middlewares,
+	controller := &RecurrentExpensesController{
+		Middlewares:                    middlewares,
 		createRecurrentExpense:         createRecurrentExpense,
 		getAllRecurrentExpenses:        getAllRecurrentExpenses,
 		createMonthlyRecurrentExpenses: createMonthlyRecurrentExpenses,
 		group:                          e.Group("/recurrent_expenses"),
 	}
+	controller.register()
+	return controller
 }
 
-func (c *RecurrentExpensesController) Register() {
-	c.group.POST("", c.create, c.LoggedIn)
-
-	c.group.GET("/all", c.getAll, c.LoggedIn)
-
-	c.group.POST("/monthly_expenses", c.createMonthly, c.LoggedIn)
+func (c *RecurrentExpensesController) register() {
+	c.group.POST("", c.Create, c.LoggedIn)
+	c.group.GET("/all", c.GetAll, c.LoggedIn)
+	c.group.POST("/monthly_expenses", c.CreateMonthly, c.LoggedIn)
 }
 
 // @Summary     Create a recurrent expense
@@ -51,8 +51,9 @@ func (c *RecurrentExpensesController) Register() {
 // @Success     201
 // @Failure     400 {object} validator.ValidationError "When a request does not fulfill need data"
 // @Failure     500
+// @Security    ApiKeyAuth
 // @Router      /recurrent_expenses [post]
-func (c *RecurrentExpensesController) create(ctx echo.Context) error {
+func (c *RecurrentExpensesController) Create(ctx echo.Context) error {
 	var recurrentExpenseReq recurrentexpenses.CreateRecurrentExpenseInput
 	if err := ctx.Bind(&recurrentExpenseReq); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
@@ -71,8 +72,9 @@ func (c *RecurrentExpensesController) create(ctx echo.Context) error {
 // @Produce     json
 // @Success     200
 // @Failure     500
+// @Security    ApiKeyAuth
 // @Router      /recurrent_expenses/all [get]
-func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
+func (c *RecurrentExpensesController) GetAll(ctx echo.Context) error {
 	res, err := c.getAllRecurrentExpenses.GetAll(ctx.Request().Context(), uuid.MustParse(ctx.Get("user_id").(string)))
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
@@ -86,8 +88,9 @@ func (c *RecurrentExpensesController) getAll(ctx echo.Context) error {
 // @Produce     json
 // @Success     200
 // @Failure     500
+// @Security    ApiKeyAuth
 // @Router      /recurrent_expenses/monthly_expenses [post]
-func (c *RecurrentExpensesController) createMonthly(ctx echo.Context) error {
+func (c *RecurrentExpensesController) CreateMonthly(ctx echo.Context) error {
 	got, err := c.createMonthlyRecurrentExpenses.CreateMonthlyRecurrentExpenses(ctx.Request().Context(), uuid.MustParse(ctx.Get("user_id").(string)))
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)

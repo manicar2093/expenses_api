@@ -19,10 +19,12 @@ type (
 )
 
 func NewLoginController(googleAuth auth.LoginableByToken, e *echo.Echo) *LoginController {
-	return &LoginController{googleAuth: googleAuth, group: e.Group("/auth")}
+	controller := &LoginController{googleAuth: googleAuth, group: e.Group("/auth")}
+	controller.register()
+	return controller
 }
 
-func (c *LoginController) Register() {
+func (c *LoginController) register() {
 	c.group.POST("/login/google", c.loginWGoogle)
 }
 

@@ -7,7 +7,7 @@ type (
 		Name        string  `json:"name,omitempty" validate:"required"`
 		Amount      float64 `json:"amount,omitempty" validate:"required"`
 		Description string  `json:"description,omitempty" validate:"-"`
-		UserID      string  `json:"user_id,omitempty" validate:"required|isUUID"`
+		UserID      string  `json:"-"`
 	}
 	CreateRecurrentExpenseOutput struct {
 		RecurrentExpense *entities.RecurrentExpense `json:"recurrent_expense,omitempty"`

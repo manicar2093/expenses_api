@@ -112,43 +112,6 @@ func (_c *Tokenizable_CreateRefreshToken_Call) Return(_a0 *auth.TokenInfo, _a1 e
 	return _c
 }
 
-// ValidateToken provides a mock function with given fields: token
-func (_m *Tokenizable) ValidateToken(token string) error {
-	ret := _m.Called(token)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(token)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// Tokenizable_ValidateToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ValidateToken'
-type Tokenizable_ValidateToken_Call struct {
-	*mock.Call
-}
-
-// ValidateToken is a helper method to define mock.On call
-//   - token string
-func (_e *Tokenizable_Expecter) ValidateToken(token interface{}) *Tokenizable_ValidateToken_Call {
-	return &Tokenizable_ValidateToken_Call{Call: _e.mock.On("ValidateToken", token)}
-}
-
-func (_c *Tokenizable_ValidateToken_Call) Run(run func(token string)) *Tokenizable_ValidateToken_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string))
-	})
-	return _c
-}
-
-func (_c *Tokenizable_ValidateToken_Call) Return(_a0 error) *Tokenizable_ValidateToken_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
 type mockConstructorTestingTNewTokenizable interface {
 	mock.TestingT
 	Cleanup(func())

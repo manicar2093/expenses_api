@@ -5,7 +5,7 @@ import (
 
 	"github.com/bxcodec/faker/v3"
 	"github.com/gookit/validate"
-	"github.com/manicar2093/expenses_api/pkg/errors"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"github.com/manicar2093/expenses_api/pkg/validator"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -30,7 +30,7 @@ var _ = Describe("Gookitvalidator", func() {
 			got := api.ValidateStruct(&expectedDataToValidate)
 
 			Expect(got).ToNot(BeNil())
-			Expect(got.(errors.HandleableError).StatusCode()).To(Equal(http.StatusBadRequest))
+			Expect(got.(apperrors.HandleableError).StatusCode()).To(Equal(http.StatusBadRequest))
 		})
 
 		When("there is any error", func() {

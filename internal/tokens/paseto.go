@@ -56,7 +56,6 @@ func (c *Paseto) CreateRefreshToken(tokenDetails *auth.RefreshToken) (*auth.Toke
 }
 
 func (c *Paseto) createTokenWithClaims(expiration time.Duration, claims map[string]interface{}) (string, time.Time, error) {
-
 	var (
 		token     = paseto.NewToken()
 		now       = time.Now()
@@ -65,7 +64,9 @@ func (c *Paseto) createTokenWithClaims(expiration time.Duration, claims map[stri
 	token.SetIssuedAt(now)
 	token.SetExpiration(expiresAt)
 	for k, v := range claims {
-		token.Set(k, v)
+		if err := token.Set(k, v); err != nil {
+			return "", time.Time{}, err
+		}
 	}
 
 	return token.V4Encrypt(c.symmetricKey, nil), expiresAt, nil

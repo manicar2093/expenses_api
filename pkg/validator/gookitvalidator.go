@@ -26,6 +26,10 @@ func (c *GooKitValidator) ValidateStruct(toValidate interface{}) error {
 	return &ValidationError{Errors: v.Errors}
 }
 
+func (c *GooKitValidator) Validate(i interface{}) error {
+	return c.ValidateStruct(i)
+}
+
 func (c *GooKitValidator) configuratedValidator(toValidate interface{}) *validate.Validation {
 	v := validate.Struct(toValidate) //nolint:varnamelen
 	v.StopOnError = c.StopOnError

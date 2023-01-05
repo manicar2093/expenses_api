@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"github.com/manicar2093/expenses_api/cmd/api/controllers"
 	_ "github.com/manicar2093/expenses_api/cmd/api/docs"
 	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
@@ -52,8 +53,13 @@ var (
 	e = echo.New() //nolint:varnamelen
 )
 
-// @title   Expenses API
-// @version 1.0
+// @title                      Expenses API
+// @version                    1.0
+// @securityDefinitions.apikey ApiKeyAuth
+// @name                       Authorization
+// @in                         header
+// @authorizationurl           /auth/login/google
+// @description                Type "Bearer" and then your API Token
 func main() {
 	configEcho()
 	registerControllers()
@@ -64,6 +70,10 @@ func configEcho() {
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
+	}))
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
+		LogLevel:  log.ERROR,
 	}))
 	e.Validator = structValidator
 }
@@ -76,23 +86,23 @@ func registerControllers() {
 		expenseService,
 		customMiddlewares,
 		e,
-	).Register()
+	)
 	controllers.NewRecurrentExpensesController(
 		createRecurrentExpense,
 		getAllRecurrentExpenses,
 		createMonthlyRecurrentExpenses,
 		customMiddlewares,
 		e,
-	).Register()
+	)
 	controllers.NewReportsController(
 		getCurrentMonth,
 		customMiddlewares,
 		e,
-	).Register()
+	)
 	controllers.NewHealthCheckController(
 		conn,
 		e,
-	).Register()
+	)
 	controllers.NewLoginController(
 		auth.NewGoogleTokenAuth(
 			repos.NewUserGormRepo(conn),
@@ -101,5 +111,5 @@ func registerControllers() {
 			config.Instance.AccessTokenDuration,
 		),
 		e,
-	).Register()
+	)
 }

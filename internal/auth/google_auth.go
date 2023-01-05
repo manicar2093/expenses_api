@@ -54,7 +54,6 @@ func (c *GoogleTokenAuth) Login(ctx context.Context, token string) (*LoginOutput
 		AccessTokenExpiresAt: tokenInfo.ExpiresAt,
 		User:                 userFound,
 	}, nil
-
 }
 
 func (c *GoogleTokenAuth) findUserOrCreate(ctx context.Context, googleClaims *validator.GoogleTokenClaims) (*UserData, error) {
