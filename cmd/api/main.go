@@ -109,6 +109,7 @@ func registerControllers() {
 			tokens.NewPaseto(config.Instance.TokenSymmetricKey),
 			validator.NewGoogleTokenValidator(),
 			config.Instance.AccessTokenDuration,
+			repos.NewSessionGormRepo(conn),
 		),
 		e,
 	)

@@ -22,11 +22,12 @@ type (
 	}
 
 	LoginableByToken interface {
-		Login(ctx context.Context, token string) (*LoginOutput, error)
+		Login(ctx context.Context, loginInput *LoginInput) (*LoginOutput, error)
 	}
 
 	TokenRefreshable interface {
-		RefreshToken(sessionID uuid.UUID) (string, error)
+		RefreshToken(sessionID uuid.UUID) (*LoginOutput, error)
+	}
 
 	SessionCreateable interface {
 		Create(ctx context.Context, session *entities.Session) error

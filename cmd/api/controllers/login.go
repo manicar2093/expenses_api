@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/manicar2093/expenses_api/internal/auth"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
+	"github.com/manicar2093/goption"
 )
 
 type (
@@ -25,7 +26,7 @@ func NewLoginController(googleAuth auth.LoginableByToken, e *echo.Echo) *LoginCo
 }
 
 func (c *LoginController) register() {
-	c.group.POST("/login/google", c.loginWGoogle)
+	c.group.POST("/login/google", c.LoginWGoogle)
 }
 
 // @Summary     Creates a new session by token
@@ -37,15 +38,25 @@ func (c *LoginController) register() {
 // @Success     201          {object} auth.LoginOutput "Access information"
 // @Failure     500          "Something unidentified has occurred"
 // @Router      /auth/login/google [post]
-func (c *LoginController) loginWGoogle(ctx echo.Context) error {
-	var token LoginToken
+func (c *LoginController) LoginWGoogle(ctx echo.Context) error {
+	var token auth.LoginInput
 	if err := ctx.Bind(&token); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
-	loginRes, err := c.googleAuth.Login(ctx.Request().Context(), token.Token)
+	token.ClientIP = getIP(ctx.Request())
+	token.UserAgent = ctx.Request().UserAgent()
+	loginRes, err := c.googleAuth.Login(ctx.Request().Context(), &token)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
 
 	return ctx.JSON(http.StatusOK, loginRes)
+}
+
+func getIP(r *http.Request) string {
+	forwarded := goption.Of(r.Header.Get("X-FORWARDED-FOR"))
+	if forwarded.IsPresent() {
+		return forwarded.MustGet()
+	}
+	return r.RemoteAddr
 }
