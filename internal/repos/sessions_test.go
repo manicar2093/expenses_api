@@ -63,4 +63,26 @@ var _ = Describe("Sessions", func() {
 		})
 	})
 
+	Describe("Create", func() {
+		It("saves a session in db", func() {
+			var (
+				expectedUser = entities.User{
+					ID:    uuid.New(),
+					Email: faker.Email(),
+				}
+				expectedSession = entities.Session{
+					UserID:    expectedUser.ID,
+					UserAgent: faker.Name(),
+					ClientIP:  faker.IPv4(),
+				}
+			)
+			conn.Create(&expectedUser)
+			defer conn.Delete(&expectedUser)
+			defer conn.Delete(&expectedSession)
+
+			Expect(repo.Create(ctx, &expectedSession)).To(Succeed())
+			Expect(expectedSession.ID.String()).ToNot(BeEmpty())
+			Expect(expectedSession.CreatedAt).ToNot(BeZero())
+		})
+	})
 })

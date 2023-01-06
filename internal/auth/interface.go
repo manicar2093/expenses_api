@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/manicar2093/expenses_api/internal/entities"
 )
 
 type (
@@ -26,6 +27,9 @@ type (
 
 	TokenRefreshable interface {
 		RefreshToken(sessionID uuid.UUID) (string, error)
+
+	SessionCreateable interface {
+		Create(ctx context.Context, session *entities.Session) error
 	}
 
 	OpenIDTokenValidable[T any] interface {

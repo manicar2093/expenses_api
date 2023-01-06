@@ -27,3 +27,10 @@ func (c *SessionsGormRepo) FindByID(ctx context.Context, id uuid.UUID) (*entitie
 	}
 	return &found, nil
 }
+
+func (c *SessionsGormRepo) Create(ctx context.Context, session *entities.Session) error {
+	if res := c.orm.WithContext(ctx).Create(session); res.Error != nil {
+		return res.Error
+	}
+	return nil
+}
