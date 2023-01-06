@@ -2,7 +2,6 @@ package repos
 
 import (
 	"context"
-	"errors"
 
 	"github.com/manicar2093/expenses_api/internal/auth"
 	"github.com/manicar2093/expenses_api/internal/entities"
@@ -35,7 +34,7 @@ func (c *UserGormRepo) CreateUser(ctx context.Context, user *auth.UserData) erro
 func (c *UserGormRepo) FindUserByEmail(ctx context.Context, email string) (*auth.UserData, error) {
 	var found auth.UserData
 	if res := c.orm.WithContext(ctx).Table(entities.UserTable).Where("email = ?", email).First(&found); res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+		if isNotFoundError(res.Error) {
 			return nil, &apperrors.NotFoundError{Identifier: email, Entity: "User", Message: res.Error.Error()}
 		}
 		return nil, res.Error
