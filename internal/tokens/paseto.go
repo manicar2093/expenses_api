@@ -3,16 +3,23 @@ package tokens
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"net/http"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
 	"github.com/manicar2093/expenses_api/internal/auth"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 var (
-	ErrNotValidEncryptionKey = errors.New("encription key has no correct data to be used")
-	ErrTokenExpired          = errors.New("token has expired")
+	ErrNotValidEncryptionKey = &apperrors.MessagedError{
+		Message: "encription key has no correct data to be used",
+		Code:    http.StatusBadRequest,
+	}
+	ErrTokenExpired = &apperrors.MessagedError{
+		Message: "token has expired",
+		Code:    http.StatusBadRequest,
+	}
 )
 
 type Paseto struct {

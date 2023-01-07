@@ -6,12 +6,16 @@ import (
 	"net/http"
 
 	gohttpclient "github.com/bozd4g/go-http-client"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 const googleValidationURL = "https://oauth2.googleapis.com/tokeninfo?id_token="
 
 var (
-	ErrGoogleLogin = fmt.Errorf("google does not validate this token")
+	ErrGoogleLogin = &apperrors.MessagedError{
+		Message: "google does not validate this token",
+		Code:    http.StatusUnauthorized,
+	}
 )
 
 type (
