@@ -15,6 +15,11 @@ type (
 		Message    string
 		Entity     string
 	}
+
+	MessagedError struct {
+		Message string `json:"message,omitempty"`
+		Code    int    `json:"-"`
+	}
 )
 
 func (c AlreadyExistsError) Error() string {
@@ -36,4 +41,12 @@ func (c NotFoundError) Error() string {
 
 func (c NotFoundError) StatusCode() int {
 	return http.StatusNotFound
+}
+
+func (c *MessagedError) Error() string {
+	return c.Message
+}
+
+func (c *MessagedError) StatusCode() int {
+	return c.Code
 }

@@ -5,16 +5,22 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/sessions"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"github.com/manicar2093/expenses_api/pkg/validator"
 )
 
 type (
 	GoogleTokenAuth struct {
-		userAuthenticable    UserAuthenticable
-		tokenizable          Tokenizable
-		openIDTokenValidable OpenIDTokenValidable[validator.GoogleTokenClaims]
-		accessTokenDuration  time.Duration
+		SessionCreateable
+		sessions.SessionValidable
+		UserFindable
+		userAuthenticable                         UserAuthenticable
+		tokenizable                               Tokenizable
+		openIDTokenValidable                      OpenIDTokenValidable[validator.GoogleTokenClaims]
+		accessTokenDuration, refreshTokenDuration time.Duration
 	}
 )
 
@@ -22,18 +28,25 @@ func NewGoogleTokenAuth(
 	userAuthenticable UserAuthenticable,
 	tokenizable Tokenizable,
 	openIDTokenValidable OpenIDTokenValidable[validator.GoogleTokenClaims],
-	accessTokenDuration time.Duration,
+	sessionCreateable SessionCreateable,
+	sessionValidable sessions.SessionValidable,
+	userFindable UserFindable,
+	accessTokenDuration, refreshTokenDuration time.Duration,
 ) *GoogleTokenAuth {
 	return &GoogleTokenAuth{
+		SessionCreateable:    sessionCreateable,
 		userAuthenticable:    userAuthenticable,
 		tokenizable:          tokenizable,
 		openIDTokenValidable: openIDTokenValidable,
+		SessionValidable:     sessionValidable,
+		UserFindable:         userFindable,
 		accessTokenDuration:  accessTokenDuration,
+		refreshTokenDuration: refreshTokenDuration,
 	}
 }
 
-func (c *GoogleTokenAuth) Login(ctx context.Context, token string) (*LoginOutput, error) {
-	googleClaims, err := c.openIDTokenValidable.ValidateOpenIDToken(ctx, token)
+func (c *GoogleTokenAuth) Login(ctx context.Context, loginInput *LoginInput) (*LoginOutput, error) {
+	googleClaims, err := c.openIDTokenValidable.ValidateOpenIDToken(ctx, loginInput.Token)
 	if err != nil {
 		return nil, err
 	}
@@ -48,11 +61,45 @@ func (c *GoogleTokenAuth) Login(ctx context.Context, token string) (*LoginOutput
 	if err != nil {
 		return nil, err
 	}
+	sessionToCreate := entities.Session{
+		UserID:    userFound.ID,
+		UserAgent: loginInput.UserAgent,
+		ClientIP:  loginInput.ClientIP,
+	}
+	if err := c.SessionCreateable.Create(ctx, &sessionToCreate); err != nil {
+		return nil, err
+	}
+	return &LoginOutput{
+		AccessToken:          tokenInfo.Token,
+		AccessTokenExpiresAt: tokenInfo.ExpiresAt,
+		RefreshToken:         sessionToCreate.ID,
+		User:                 userFound,
+	}, nil
+}
+
+func (c *GoogleTokenAuth) RefreshToken(ctx context.Context, refreshTokenInput *RefreshTokenInput) (*LoginOutput, error) {
+	sessionIDAsUUID := uuid.MustParse(refreshTokenInput.SessionID)
+	sessionInfo, err := c.ValidateSession(ctx, &sessions.SessionValidationInput{
+		SessionID:     sessionIDAsUUID,
+		FromUserAgent: refreshTokenInput.UserAgent,
+		FromClientIP:  refreshTokenInput.ClientIP,
+	})
+	if err != nil {
+		return nil, err
+	}
+	userFound, err := c.FindUserByID(ctx, sessionInfo.UserID)
+	if err != nil {
+		return nil, err
+	}
+	tokenInfo, err := c.tokenizable.CreateAccessToken(&AccessToken{UserID: userFound.ID, Expiration: c.refreshTokenDuration})
+	if err != nil {
+		return nil, err
+	}
 
 	return &LoginOutput{
 		AccessToken:          tokenInfo.Token,
 		AccessTokenExpiresAt: tokenInfo.ExpiresAt,
-		User:                 userFound,
+		RefreshToken:         sessionIDAsUUID,
 	}, nil
 }
 

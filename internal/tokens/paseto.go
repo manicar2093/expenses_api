@@ -3,16 +3,23 @@ package tokens
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"net/http"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
 	"github.com/manicar2093/expenses_api/internal/auth"
+	"github.com/manicar2093/expenses_api/pkg/apperrors"
 )
 
 var (
-	ErrNotValidEncryptionKey = errors.New("encription key has no correct data to be used")
-	ErrTokenExpired          = errors.New("token has expired")
+	ErrNotValidEncryptionKey = &apperrors.MessagedError{
+		Message: "encription key has no correct data to be used",
+		Code:    http.StatusBadRequest,
+	}
+	ErrTokenExpired = &apperrors.MessagedError{
+		Message: "token has expired",
+		Code:    http.StatusBadRequest,
+	}
 )
 
 type Paseto struct {
@@ -32,19 +39,6 @@ func NewPaseto(symmetricKey string) *Paseto {
 func (c *Paseto) CreateAccessToken(tokenDetails *auth.AccessToken) (*auth.TokenInfo, error) {
 	token, expiresAt, err := c.createTokenWithClaims(tokenDetails.Expiration, map[string]interface{}{
 		"user_id": tokenDetails.UserID,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &auth.TokenInfo{
-		Token:     token,
-		ExpiresAt: expiresAt,
-	}, nil
-}
-
-func (c *Paseto) CreateRefreshToken(tokenDetails *auth.RefreshToken) (*auth.TokenInfo, error) {
-	token, expiresAt, err := c.createTokenWithClaims(tokenDetails.Expiration, map[string]interface{}{
-		"session_id": tokenDetails.SessionID,
 	})
 	if err != nil {
 		return nil, err

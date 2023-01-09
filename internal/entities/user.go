@@ -11,6 +11,7 @@ const UserTable = "users"
 
 type User struct {
 	ID        uuid.UUID   `json:"id,omitempty" gorm:"primaryKey,->"`
+	Sessions  []Session   `json:"sessions,omitempty"`
 	Name      null.String `json:"name,omitempty"`
 	Lastname  null.String `json:"lastname,omitempty"`
 	Email     string      `json:"email,omitempty"`

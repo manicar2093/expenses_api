@@ -23,13 +23,13 @@ func (_m *LoginableByToken) EXPECT() *LoginableByToken_Expecter {
 	return &LoginableByToken_Expecter{mock: &_m.Mock}
 }
 
-// Login provides a mock function with given fields: ctx, token
-func (_m *LoginableByToken) Login(ctx context.Context, token string) (*auth.LoginOutput, error) {
-	ret := _m.Called(ctx, token)
+// Login provides a mock function with given fields: ctx, loginInput
+func (_m *LoginableByToken) Login(ctx context.Context, loginInput *auth.LoginInput) (*auth.LoginOutput, error) {
+	ret := _m.Called(ctx, loginInput)
 
 	var r0 *auth.LoginOutput
-	if rf, ok := ret.Get(0).(func(context.Context, string) *auth.LoginOutput); ok {
-		r0 = rf(ctx, token)
+	if rf, ok := ret.Get(0).(func(context.Context, *auth.LoginInput) *auth.LoginOutput); ok {
+		r0 = rf(ctx, loginInput)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*auth.LoginOutput)
@@ -37,8 +37,8 @@ func (_m *LoginableByToken) Login(ctx context.Context, token string) (*auth.Logi
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, token)
+	if rf, ok := ret.Get(1).(func(context.Context, *auth.LoginInput) error); ok {
+		r1 = rf(ctx, loginInput)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -53,14 +53,14 @@ type LoginableByToken_Login_Call struct {
 
 // Login is a helper method to define mock.On call
 //   - ctx context.Context
-//   - token string
-func (_e *LoginableByToken_Expecter) Login(ctx interface{}, token interface{}) *LoginableByToken_Login_Call {
-	return &LoginableByToken_Login_Call{Call: _e.mock.On("Login", ctx, token)}
+//   - loginInput *auth.LoginInput
+func (_e *LoginableByToken_Expecter) Login(ctx interface{}, loginInput interface{}) *LoginableByToken_Login_Call {
+	return &LoginableByToken_Login_Call{Call: _e.mock.On("Login", ctx, loginInput)}
 }
 
-func (_c *LoginableByToken_Login_Call) Run(run func(ctx context.Context, token string)) *LoginableByToken_Login_Call {
+func (_c *LoginableByToken_Login_Call) Run(run func(ctx context.Context, loginInput *auth.LoginInput)) *LoginableByToken_Login_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string))
+		run(args[0].(context.Context), args[1].(*auth.LoginInput))
 	})
 	return _c
 }

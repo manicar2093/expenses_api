@@ -10,9 +10,17 @@ type (
 	LoginOutput struct {
 		AccessToken          string    `json:"access_token,omitempty"`
 		AccessTokenExpiresAt time.Time `json:"access_token_expires_at,omitempty"`
-		// RefreshToken          string    `json:"refresh_token,omitempty"`
-		// RefreshTokenExpiresAt time.Time `json:"refresh_token_expires_at,omitempty"`
-		User *UserData `json:"user,omitempty"`
+		RefreshToken         uuid.UUID `json:"refresh_token,omitempty"`
+		User                 *UserData `json:"user,omitempty"`
+	}
+
+	LoginInput struct {
+		Token               string `json:"token"`
+		UserAgent, ClientIP string
+	}
+	RefreshTokenInput struct {
+		SessionID           string `json:"refresh_token"`
+		UserAgent, ClientIP string
 	}
 
 	UserData struct {
@@ -25,11 +33,6 @@ type (
 	AccessToken struct {
 		Expiration time.Duration `json:"expiration,omitempty"`
 		UserID     uuid.UUID     `json:"user_id,omitempty"`
-	}
-
-	RefreshToken struct {
-		Expiration time.Duration `json:"expiration,omitempty"`
-		SessionID  uuid.UUID     `json:"user_id,omitempty"`
 	}
 
 	TokenInfo struct {

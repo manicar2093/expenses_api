@@ -41,7 +41,44 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
+                        "description": "Access information",
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginOutput"
+                        }
+                    },
+                    "500": {
+                        "description": "Something unidentified has occurred"
+                    }
+                }
+            }
+        },
+        "/auth/refresh_token": {
+            "put": {
+                "description": "Creates a new access token by session token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "refresh token"
+                ],
+                "summary": "Creates a new access token by session token",
+                "parameters": [
+                    {
+                        "description": "Session info",
+                        "name": "session_refresh",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RefreshTokenInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
                         "description": "Access information",
                         "schema": {
                             "$ref": "#/definitions/auth.LoginOutput"
@@ -399,9 +436,22 @@ const docTemplate = `{
                 "access_token_expires_at": {
                     "type": "string"
                 },
+                "refresh_token": {
+                    "type": "string"
+                },
                 "user": {
-                    "description": "RefreshToken          string    ` + "`" + `json:\"refresh_token,omitempty\"` + "`" + `\nRefreshTokenExpiresAt time.Time ` + "`" + `json:\"refresh_token_expires_at,omitempty\"` + "`" + `",
                     "$ref": "#/definitions/auth.UserData"
+                }
+            }
+        },
+        "auth.RefreshTokenInput": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                },
+                "userAgent": {
+                    "type": "string"
                 }
             }
         },
@@ -512,6 +562,29 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Session": {
+            "type": "object",
+            "properties": {
+                "client_ip": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/entities.User"
+                },
+                "user_agent": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.User": {
             "type": "object",
             "properties": {
@@ -532,6 +605,12 @@ const docTemplate = `{
                 },
                 "name": {
                     "$ref": "#/definitions/null.String"
+                },
+                "sessions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Session"
+                    }
                 },
                 "updated_at": {
                     "type": "string"
@@ -632,9 +711,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }

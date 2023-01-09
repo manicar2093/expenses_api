@@ -3,7 +3,10 @@
 package mocks
 
 import (
-	uuid "github.com/google/uuid"
+	context "context"
+
+	auth "github.com/manicar2093/expenses_api/internal/auth"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -20,20 +23,22 @@ func (_m *TokenRefreshable) EXPECT() *TokenRefreshable_Expecter {
 	return &TokenRefreshable_Expecter{mock: &_m.Mock}
 }
 
-// RefreshToken provides a mock function with given fields: sessionID
-func (_m *TokenRefreshable) RefreshToken(sessionID uuid.UUID) (string, error) {
-	ret := _m.Called(sessionID)
+// RefreshToken provides a mock function with given fields: ctx, refreshTokenInput
+func (_m *TokenRefreshable) RefreshToken(ctx context.Context, refreshTokenInput *auth.RefreshTokenInput) (*auth.LoginOutput, error) {
+	ret := _m.Called(ctx, refreshTokenInput)
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func(uuid.UUID) string); ok {
-		r0 = rf(sessionID)
+	var r0 *auth.LoginOutput
+	if rf, ok := ret.Get(0).(func(context.Context, *auth.RefreshTokenInput) *auth.LoginOutput); ok {
+		r0 = rf(ctx, refreshTokenInput)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auth.LoginOutput)
+		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(uuid.UUID) error); ok {
-		r1 = rf(sessionID)
+	if rf, ok := ret.Get(1).(func(context.Context, *auth.RefreshTokenInput) error); ok {
+		r1 = rf(ctx, refreshTokenInput)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -47,19 +52,20 @@ type TokenRefreshable_RefreshToken_Call struct {
 }
 
 // RefreshToken is a helper method to define mock.On call
-//   - sessionID uuid.UUID
-func (_e *TokenRefreshable_Expecter) RefreshToken(sessionID interface{}) *TokenRefreshable_RefreshToken_Call {
-	return &TokenRefreshable_RefreshToken_Call{Call: _e.mock.On("RefreshToken", sessionID)}
+//   - ctx context.Context
+//   - refreshTokenInput *auth.RefreshTokenInput
+func (_e *TokenRefreshable_Expecter) RefreshToken(ctx interface{}, refreshTokenInput interface{}) *TokenRefreshable_RefreshToken_Call {
+	return &TokenRefreshable_RefreshToken_Call{Call: _e.mock.On("RefreshToken", ctx, refreshTokenInput)}
 }
 
-func (_c *TokenRefreshable_RefreshToken_Call) Run(run func(sessionID uuid.UUID)) *TokenRefreshable_RefreshToken_Call {
+func (_c *TokenRefreshable_RefreshToken_Call) Run(run func(ctx context.Context, refreshTokenInput *auth.RefreshTokenInput)) *TokenRefreshable_RefreshToken_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(uuid.UUID))
+		run(args[0].(context.Context), args[1].(*auth.RefreshTokenInput))
 	})
 	return _c
 }
 
-func (_c *TokenRefreshable_RefreshToken_Call) Return(_a0 string, _a1 error) *TokenRefreshable_RefreshToken_Call {
+func (_c *TokenRefreshable_RefreshToken_Call) Return(_a0 *auth.LoginOutput, _a1 error) *TokenRefreshable_RefreshToken_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/manicar2093/expenses_api/internal/entities"
 )
 
 type (
@@ -12,20 +13,27 @@ type (
 		CreateUser(ctx context.Context, user *UserData) error
 	}
 
+	UserFindable interface {
+		FindUserByID(ctx context.Context, id uuid.UUID) (*UserData, error)
+	}
+
 	Tokenizable interface {
 		CreateAccessToken(tokenDetails *AccessToken) (*TokenInfo, error)
-		CreateRefreshToken(tokenDetails *RefreshToken) (*TokenInfo, error)
 	}
 	TokenValidable interface {
 		ValidateToken(ctx context.Context, token string, output interface{}) error
 	}
 
 	LoginableByToken interface {
-		Login(ctx context.Context, token string) (*LoginOutput, error)
+		Login(ctx context.Context, loginInput *LoginInput) (*LoginOutput, error)
 	}
 
 	TokenRefreshable interface {
-		RefreshToken(sessionID uuid.UUID) (string, error)
+		RefreshToken(ctx context.Context, refreshTokenInput *RefreshTokenInput) (*LoginOutput, error)
+	}
+
+	SessionCreateable interface {
+		Create(ctx context.Context, session *entities.Session) error
 	}
 
 	OpenIDTokenValidable[T any] interface {

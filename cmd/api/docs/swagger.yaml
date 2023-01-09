@@ -5,11 +5,17 @@ definitions:
         type: string
       access_token_expires_at:
         type: string
+      refresh_token:
+        type: string
       user:
         $ref: '#/definitions/auth.UserData'
-        description: |-
-          RefreshToken          string    `json:"refresh_token,omitempty"`
-          RefreshTokenExpiresAt time.Time `json:"refresh_token_expires_at,omitempty"`
+    type: object
+  auth.RefreshTokenInput:
+    properties:
+      refresh_token:
+        type: string
+      userAgent:
+        type: string
     type: object
   auth.UserData:
     properties:
@@ -81,6 +87,21 @@ definitions:
       user_id:
         type: string
     type: object
+  entities.Session:
+    properties:
+      client_ip:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      user:
+        $ref: '#/definitions/entities.User'
+      user_agent:
+        type: string
+      user_id:
+        type: string
+    type: object
   entities.User:
     properties:
       avatar:
@@ -95,6 +116,10 @@ definitions:
         $ref: '#/definitions/null.String'
       name:
         $ref: '#/definitions/null.String'
+      sessions:
+        items:
+          $ref: '#/definitions/entities.Session'
+        type: array
       updated_at:
         type: string
     type: object
@@ -158,8 +183,6 @@ definitions:
         type: string
       name:
         type: string
-      user_id:
-        type: string
     required:
     - amount
     - name
@@ -196,7 +219,7 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
+        "200":
           description: Access information
           schema:
             $ref: '#/definitions/auth.LoginOutput'
@@ -205,6 +228,30 @@ paths:
       summary: Creates a new session by token
       tags:
       - login google
+  /auth/refresh_token:
+    put:
+      consumes:
+      - application/json
+      description: Creates a new access token by session token
+      parameters:
+      - description: Session info
+        in: body
+        name: session_refresh
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshTokenInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Access information
+          schema:
+            $ref: '#/definitions/auth.LoginOutput'
+        "500":
+          description: Something unidentified has occurred
+      summary: Creates a new access token by session token
+      tags:
+      - refresh token
   /expenses:
     post:
       consumes:
