@@ -19,7 +19,8 @@ type (
 		UserAgent, ClientIP string
 	}
 	RefreshTokenInput struct {
-		SessionID, UserAgent, ClientIP string
+		SessionID           string `json:"refresh_token"`
+		UserAgent, ClientIP string
 	}
 
 	UserData struct {

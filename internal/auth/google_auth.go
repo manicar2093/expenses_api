@@ -17,10 +17,9 @@ type (
 		SessionCreateable
 		sessions.SessionValidable
 		UserFindable
-		userAuthenticable    UserAuthenticable
-		tokenizable          Tokenizable
-		openIDTokenValidable OpenIDTokenValidable[validator.GoogleTokenClaims]
-
+		userAuthenticable                         UserAuthenticable
+		tokenizable                               Tokenizable
+		openIDTokenValidable                      OpenIDTokenValidable[validator.GoogleTokenClaims]
 		accessTokenDuration, refreshTokenDuration time.Duration
 	}
 )

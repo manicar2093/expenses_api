@@ -14,6 +14,7 @@ import (
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/expenses_api/internal/sessions"
 	"github.com/manicar2093/expenses_api/internal/tokens"
 	"github.com/manicar2093/expenses_api/pkg/dates"
 	"github.com/manicar2093/expenses_api/pkg/validator"
@@ -50,7 +51,19 @@ var (
 		expensesRepo,
 		timeGetter,
 	)
-	e = echo.New() //nolint:varnamelen
+	googleAuthService = auth.NewGoogleTokenAuth(
+		usersRepo,
+		tokens.NewPaseto(config.Instance.TokenSymmetricKey),
+		validator.NewGoogleTokenValidator(),
+		sessionsRepo,
+		sessions.NewDefaultValidator(sessionsRepo),
+		usersRepo,
+		config.Instance.AccessTokenDuration,
+		config.Instance.RefreshTokenDuration,
+	)
+	sessionsRepo = repos.NewSessionGormRepo(conn)
+	usersRepo    = repos.NewUserGormRepo(conn)
+	e            = echo.New() //nolint:varnamelen
 )
 
 // @title                      Expenses API
@@ -104,13 +117,8 @@ func registerControllers() {
 		e,
 	)
 	controllers.NewLoginController(
-		auth.NewGoogleTokenAuth(
-			repos.NewUserGormRepo(conn),
-			tokens.NewPaseto(config.Instance.TokenSymmetricKey),
-			validator.NewGoogleTokenValidator(),
-			config.Instance.AccessTokenDuration,
-			repos.NewSessionGormRepo(conn),
-		),
+		googleAuthService,
+		googleAuthService,
 		e,
 	)
 }
