@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/auth"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
@@ -79,4 +80,39 @@ var _ = Describe("User", func() {
 		})
 	})
 
+	Describe("FindUserByID", func() {
+		It("return entities.User when is registried", func() {
+			var (
+				expectedUserID    = uuid.New()
+				expectedUserSaved = entities.User{
+					ID:       expectedUserID,
+					Name:     null.StringFrom(faker.Name()),
+					Lastname: null.StringFrom(faker.LastName()),
+					Email:    faker.Email(),
+					Avatar:   null.StringFrom(faker.URL()),
+				}
+			)
+			conn.Create(&expectedUserSaved)
+			defer conn.Delete(&expectedUserSaved)
+
+			got, err := repo.FindUserByID(ctx, expectedUserID)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got).To(BeAssignableToTypeOf(&auth.UserData{}))
+			Expect(got.ID).To(Equal(expectedUserSaved.ID))
+		})
+
+		When("user is not found", func() {
+			It("return a repos.NotFoundErr", func() {
+				var (
+					expectedUserID = uuid.New()
+				)
+
+				got, err := repo.FindUserByID(ctx, expectedUserID)
+
+				Expect(got).To(BeNil())
+				Expect(err).To(BeAssignableToTypeOf(&apperrors.NotFoundError{}))
+			})
+		})
+	})
 })

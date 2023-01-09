@@ -3,6 +3,7 @@ package repos
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/auth"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
@@ -40,5 +41,15 @@ func (c *UserGormRepo) FindUserByEmail(ctx context.Context, email string) (*auth
 		return nil, res.Error
 	}
 
+	return &found, nil
+}
+
+func (c *UserGormRepo) FindUserByID(ctx context.Context, id uuid.UUID) (*auth.UserData, error) {
+	var found auth.UserData
+	if res := c.orm.WithContext(ctx).Table(entities.UserTable).Where("id = ?", id).First(&found); res.Error != nil {
+		if isNotFoundError(res.Error) {
+			return nil, &apperrors.NotFoundError{Identifier: id, Entity: "User", Message: res.Error.Error()}
+		}
+	}
 	return &found, nil
 }
