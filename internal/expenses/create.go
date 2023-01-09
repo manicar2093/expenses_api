@@ -12,7 +12,7 @@ import (
 )
 
 func (c *ExpenseServiceImpl) CreateExpense(ctx context.Context, expense *CreateExpenseInput) (*entities.Expense, error) {
-	log.Println(json.MustMarshall(expense))
+	log.Infoln(json.MustMarshall(expense))
 	if err := c.validator.ValidateStruct(expense); err != nil {
 		return nil, err
 	}

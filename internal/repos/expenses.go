@@ -41,7 +41,7 @@ func (c *ExpensesGormRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseI
 		return res.Error
 	case res.RowsAffected == 0:
 		err := &apperrors.NotFoundError{Identifier: expenseID, Entity: entities.ExpensesEntityName, Message: "can´t be updated. It does not exist"}
-		log.Println(err)
+		log.Errorln(err)
 		return err
 	}
 	return nil

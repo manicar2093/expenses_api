@@ -7,7 +7,7 @@ import (
 )
 
 func (c *ExpenseServiceImpl) SetToPaid(ctx context.Context, input *SetExpenseToPaidInput) error {
-	log.Println("DEPRECATED!. Use ExpenseToPaidTogglable instead")
+	log.Warnln("DEPRECATED!. Use ExpenseToPaidTogglable instead")
 	if err := c.validator.ValidateStruct(input); err != nil {
 		return err
 	}

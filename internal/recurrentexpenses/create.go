@@ -16,7 +16,7 @@ func (c *RecurrentExpenseServiceImpl) CreateRecurrentExpense(
 	if err := c.validator.ValidateStruct(input); err != nil {
 		return nil, err
 	}
-	log.Println("Request: ", json.MustMarshall(input))
+	log.Infoln(json.MustMarshall(input))
 	var (
 		userIDParsed     = uuid.MustParse(input.UserID)
 		nextMontTime     = c.timeGetter.GetNextMonthAtFirtsDay()

@@ -1,7 +1,9 @@
 package repos
 
-import "github.com/manicar2093/expenses_api/pkg/logger"
+import (
+	"github.com/manicar2093/expenses_api/pkg/logger"
+)
 
 var (
-	log = logger.NewWithPrefix("REPOSITORIES")
+	log = logger.FunctionalLogger()
 )
