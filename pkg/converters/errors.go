@@ -11,3 +11,10 @@ func (c IDNotValidIDError) Error() string {
 func (c IDNotValidIDError) StatusCode() int {
 	return http.StatusBadRequest
 }
+
+func Must[T any](data T, err error) T { //nolint:ireturn
+	if err != nil {
+		panic(err)
+	}
+	return data
+}

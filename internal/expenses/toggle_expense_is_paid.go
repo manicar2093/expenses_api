@@ -11,7 +11,7 @@ func (c *ExpenseServiceImpl) ToggleIsPaid(
 	ctx context.Context,
 	input *ToggleExpenseIsPaidInput,
 ) (*ToggleExpenseIsPaidOutput, error) {
-	log.Println(json.MustMarshall(input))
+	log.Infoln(json.MustMarshall(input))
 	if err := c.validator.ValidateStruct(input); err != nil {
 		return nil, err
 	}

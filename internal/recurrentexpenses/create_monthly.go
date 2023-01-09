@@ -16,7 +16,6 @@ type (
 
 func (c *RecurrentExpenseServiceImpl) CreateMonthlyRecurrentExpenses(ctx context.Context, userID uuid.UUID) (*CreateMonthlyRecurrentExpensesOutput, error) {
 	allRecurrentExpensesRegistered, err := c.recurrentExpensesRepo.FindAll(ctx, userID)
-	log.Printf("%v+", allRecurrentExpensesRegistered)
 	if err != nil {
 		return nil, err
 	}

@@ -11,7 +11,7 @@ func (c *ExpenseServiceImpl) UpdateExpense(ctx context.Context, input *UpdateExp
 	if err := c.validator.ValidateStruct(input); err != nil {
 		return err
 	}
-	log.Println(json.MustMarshall(input))
+	log.Infoln(json.MustMarshall(input))
 	var expenseID = uuid.MustParse(input.ID)
 	stored, err := c.expensesRepo.FindByID(ctx, expenseID)
 	if err != nil {
