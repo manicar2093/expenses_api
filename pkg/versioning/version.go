@@ -1,3 +1,3 @@
 package versioning
 
-const Version = "3.4.0"
+const Version = "3.5.0"
