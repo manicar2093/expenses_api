@@ -66,52 +66,6 @@ func (_c *Tokenizable_CreateAccessToken_Call) Return(_a0 *auth.TokenInfo, _a1 er
 	return _c
 }
 
-// CreateRefreshToken provides a mock function with given fields: tokenDetails
-func (_m *Tokenizable) CreateRefreshToken(tokenDetails *auth.RefreshToken) (*auth.TokenInfo, error) {
-	ret := _m.Called(tokenDetails)
-
-	var r0 *auth.TokenInfo
-	if rf, ok := ret.Get(0).(func(*auth.RefreshToken) *auth.TokenInfo); ok {
-		r0 = rf(tokenDetails)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*auth.TokenInfo)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(*auth.RefreshToken) error); ok {
-		r1 = rf(tokenDetails)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// Tokenizable_CreateRefreshToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateRefreshToken'
-type Tokenizable_CreateRefreshToken_Call struct {
-	*mock.Call
-}
-
-// CreateRefreshToken is a helper method to define mock.On call
-//   - tokenDetails *auth.RefreshToken
-func (_e *Tokenizable_Expecter) CreateRefreshToken(tokenDetails interface{}) *Tokenizable_CreateRefreshToken_Call {
-	return &Tokenizable_CreateRefreshToken_Call{Call: _e.mock.On("CreateRefreshToken", tokenDetails)}
-}
-
-func (_c *Tokenizable_CreateRefreshToken_Call) Run(run func(tokenDetails *auth.RefreshToken)) *Tokenizable_CreateRefreshToken_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(*auth.RefreshToken))
-	})
-	return _c
-}
-
-func (_c *Tokenizable_CreateRefreshToken_Call) Return(_a0 *auth.TokenInfo, _a1 error) *Tokenizable_CreateRefreshToken_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
 type mockConstructorTestingTNewTokenizable interface {
 	mock.TestingT
 	Cleanup(func())

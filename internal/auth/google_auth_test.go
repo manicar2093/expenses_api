@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/auth"
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/internal/sessions"
 	"github.com/manicar2093/expenses_api/mocks"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"github.com/manicar2093/expenses_api/pkg/validator"
@@ -18,13 +19,15 @@ import (
 var _ = Describe("GoogleAuth", func() {
 
 	var (
-		userAuthenticableMock          *mocks.UserAuthenticable
-		tokenizableMock                *mocks.Tokenizable
-		googleTokenOpenIDValidatorMock *mocks.OpenIDTokenValidable[validator.GoogleTokenClaims]
-		sessionCreateableMock          *mocks.SessionCreateable
-		accessTokenDuration            time.Duration
-		ctx                            context.Context
-		googleTokenValidatorMock       *auth.GoogleTokenAuth
+		userAuthenticableMock                     *mocks.UserAuthenticable
+		tokenizableMock                           *mocks.Tokenizable
+		googleTokenOpenIDValidatorMock            *mocks.OpenIDTokenValidable[validator.GoogleTokenClaims]
+		sessionCreateableMock                     *mocks.SessionCreateable
+		sessionValidableMock                      *mocks.SessionValidable
+		userFindableMock                          *mocks.UserFindable
+		accessTokenDuration, refreshTokenDuration time.Duration
+		ctx                                       context.Context
+		googleTokenValidator                      *auth.GoogleTokenAuth
 	)
 
 	BeforeEach(func() {
@@ -33,14 +36,20 @@ var _ = Describe("GoogleAuth", func() {
 		tokenizableMock = mocks.NewTokenizable(T)
 		googleTokenOpenIDValidatorMock = mocks.NewOpenIDTokenValidable[validator.GoogleTokenClaims](T)
 		sessionCreateableMock = mocks.NewSessionCreateable(T)
+		sessionValidableMock = mocks.NewSessionValidable(T)
+		userFindableMock = mocks.NewUserFindable(T)
 		accessTokenDuration = time.Duration(1 * time.Minute)
+		refreshTokenDuration = time.Duration(1 * time.Minute)
 		ctx = context.Background()
-		googleTokenValidatorMock = auth.NewGoogleTokenAuth(
+		googleTokenValidator = auth.NewGoogleTokenAuth(
 			userAuthenticableMock,
 			tokenizableMock,
 			googleTokenOpenIDValidatorMock,
-			accessTokenDuration,
 			sessionCreateableMock,
+			sessionValidableMock,
+			userFindableMock,
+			accessTokenDuration,
+			refreshTokenDuration,
 		)
 	})
 
@@ -113,7 +122,7 @@ var _ = Describe("GoogleAuth", func() {
 				expectedSessionToCreate.ID = uuid.New()
 			})
 
-			got, err := googleTokenValidatorMock.Login(ctx, &expectedLoginInput)
+			got, err := googleTokenValidator.Login(ctx, &expectedLoginInput)
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(got).To(Equal(&expectedLoginOutput))
@@ -141,7 +150,7 @@ var _ = Describe("GoogleAuth", func() {
 					expectedSessionToCreate.ID = uuid.New()
 				})
 
-				got, err := googleTokenValidatorMock.Login(ctx, &expectedLoginInput)
+				got, err := googleTokenValidator.Login(ctx, &expectedLoginInput)
 
 				Expect(err).ToNot(HaveOccurred())
 				Expect(got).To(Equal(&expectedLoginOutput))
@@ -151,6 +160,50 @@ var _ = Describe("GoogleAuth", func() {
 
 	Describe("RefreshToken", func() {
 		It("creates a new access token from given refresh token", func() {
+			var (
+				expectedSessionUUID = uuid.New()
+				expectedUserUUID    = uuid.New()
+				expectedFoundUser   = auth.UserData{
+					ID:     expectedUserUUID,
+					Name:   faker.Name(),
+					Email:  faker.Email(),
+					Avatar: faker.URL(),
+				}
+				expectedValidateSessionCall = sessions.SessionValidationInput{
+					SessionID:     expectedSessionUUID,
+					FromUserAgent: faker.Name(),
+					FromClientIP:  faker.IPv4(),
+				}
+				expectedSessionReturned = entities.Session{
+					ID:        expectedSessionUUID,
+					UserID:    expectedUserUUID,
+					UserAgent: expectedValidateSessionCall.FromUserAgent,
+					ClientIP:  expectedValidateSessionCall.FromClientIP,
+				}
+				expectedCreateAccessTokenCall = auth.AccessToken{
+					UserID:     expectedFoundUser.ID,
+					Expiration: refreshTokenDuration,
+				}
+				expectedCreateAccessTokenReturn = auth.TokenInfo{
+					Token:     faker.Paragraph(),
+					ExpiresAt: time.Now(),
+				}
+				expectedRefreshTokenInput = auth.RefreshTokenInput{
+					SessionID: expectedSessionUUID.String(),
+					UserAgent: expectedValidateSessionCall.FromUserAgent,
+					ClientIP:  expectedValidateSessionCall.FromClientIP,
+				}
+			)
+			sessionValidableMock.EXPECT().ValidateSession(ctx, &expectedValidateSessionCall).Return(&expectedSessionReturned, nil)
+			userFindableMock.EXPECT().FindUserByID(ctx, expectedFoundUser.ID).Return(&expectedFoundUser, nil)
+			tokenizableMock.EXPECT().CreateAccessToken(&expectedCreateAccessTokenCall).Return(&expectedCreateAccessTokenReturn, nil)
+
+			got, err := googleTokenValidator.RefreshToken(ctx, &expectedRefreshTokenInput)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(got.AccessToken).To(Equal(expectedCreateAccessTokenReturn.Token))
+			Expect(got.AccessTokenExpiresAt).To(Equal(expectedCreateAccessTokenReturn.ExpiresAt))
+			Expect(got.RefreshToken).To(Equal(expectedSessionUUID))
 
 		})
 	})

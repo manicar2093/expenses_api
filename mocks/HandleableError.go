@@ -17,6 +17,42 @@ func (_m *HandleableError) EXPECT() *HandleableError_Expecter {
 	return &HandleableError_Expecter{mock: &_m.Mock}
 }
 
+// Error provides a mock function with given fields:
+func (_m *HandleableError) Error() string {
+	ret := _m.Called()
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func() string); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	return r0
+}
+
+// HandleableError_Error_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Error'
+type HandleableError_Error_Call struct {
+	*mock.Call
+}
+
+// Error is a helper method to define mock.On call
+func (_e *HandleableError_Expecter) Error() *HandleableError_Error_Call {
+	return &HandleableError_Error_Call{Call: _e.mock.On("Error")}
+}
+
+func (_c *HandleableError_Error_Call) Run(run func()) *HandleableError_Error_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *HandleableError_Error_Call) Return(_a0 string) *HandleableError_Error_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
 // StatusCode provides a mock function with given fields:
 func (_m *HandleableError) StatusCode() int {
 	ret := _m.Called()

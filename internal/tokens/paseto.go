@@ -49,19 +49,6 @@ func (c *Paseto) CreateAccessToken(tokenDetails *auth.AccessToken) (*auth.TokenI
 	}, nil
 }
 
-func (c *Paseto) CreateRefreshToken(tokenDetails *auth.RefreshToken) (*auth.TokenInfo, error) {
-	token, expiresAt, err := c.createTokenWithClaims(tokenDetails.Expiration, map[string]interface{}{
-		"session_id": tokenDetails.SessionID,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &auth.TokenInfo{
-		Token:     token,
-		ExpiresAt: expiresAt,
-	}, nil
-}
-
 func (c *Paseto) createTokenWithClaims(expiration time.Duration, claims map[string]interface{}) (string, time.Time, error) {
 	var (
 		token     = paseto.NewToken()

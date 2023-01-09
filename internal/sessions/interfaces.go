@@ -8,7 +8,9 @@ import (
 )
 
 type (
-	// SessionValidable checks if stored session is valid with given validation data
+	// SessionValidable checks if stored session is valid with given validation data.
+	//
+	// This is the package functionality
 	SessionValidable interface {
 		ValidateSession(ctx context.Context, validationInput *SessionValidationInput) (*entities.Session, error)
 	}

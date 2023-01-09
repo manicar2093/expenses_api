@@ -18,6 +18,9 @@ type (
 		Token               string `json:"token"`
 		UserAgent, ClientIP string
 	}
+	RefreshTokenInput struct {
+		SessionID, UserAgent, ClientIP string
+	}
 
 	UserData struct {
 		ID     uuid.UUID `json:"-"`
@@ -29,11 +32,6 @@ type (
 	AccessToken struct {
 		Expiration time.Duration `json:"expiration,omitempty"`
 		UserID     uuid.UUID     `json:"user_id,omitempty"`
-	}
-
-	RefreshToken struct {
-		Expiration time.Duration `json:"expiration,omitempty"`
-		SessionID  uuid.UUID     `json:"user_id,omitempty"`
 	}
 
 	TokenInfo struct {

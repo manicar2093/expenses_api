@@ -13,9 +13,12 @@ type (
 		CreateUser(ctx context.Context, user *UserData) error
 	}
 
+	UserFindable interface {
+		FindUserByID(ctx context.Context, id uuid.UUID) (*UserData, error)
+	}
+
 	Tokenizable interface {
 		CreateAccessToken(tokenDetails *AccessToken) (*TokenInfo, error)
-		CreateRefreshToken(tokenDetails *RefreshToken) (*TokenInfo, error)
 	}
 	TokenValidable interface {
 		ValidateToken(ctx context.Context, token string, output interface{}) error
@@ -26,7 +29,7 @@ type (
 	}
 
 	TokenRefreshable interface {
-		RefreshToken(sessionID uuid.UUID) (*LoginOutput, error)
+		RefreshToken(ctx context.Context, refreshTokenInput *RefreshTokenInput) (*LoginOutput, error)
 	}
 
 	SessionCreateable interface {

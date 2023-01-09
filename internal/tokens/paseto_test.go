@@ -43,23 +43,6 @@ var _ = Describe("Paseto", func() {
 		})
 	})
 
-	Describe("CreateRefreshToken", func() {
-		It("creates a refresh token", func() {
-			var (
-				tokenDetails = auth.RefreshToken{
-					Expiration: time.Duration(1 * time.Second),
-					SessionID:  uuid.New(),
-				}
-			)
-
-			token, err := api.CreateRefreshToken(&tokenDetails)
-
-			Expect(err).ToNot(HaveOccurred())
-			Expect(token.Token).ToNot(BeEmpty())
-			Expect(token.ExpiresAt).ToNot(BeZero())
-		})
-	})
-
 	Describe("Validate", func() {
 		It("accepts a no expired token and return user_id", func() {
 			var (
