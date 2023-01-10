@@ -64,6 +64,27 @@ definitions:
       year:
         type: integer
     type: object
+  entities.Income:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        $ref: '#/definitions/goption.Optional-time_Time'
+      user_id:
+        $ref: '#/definitions/goption.Optional-uuid_UUID'
+    required:
+    - amount
+    - name
+    - user_id
+    type: object
   entities.RecurrentExpense:
     properties:
       amount:
@@ -166,6 +187,31 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  goption.Optional-time_Time:
+    type: object
+  goption.Optional-uuid_UUID:
+    type: object
+  incomes.CreateIncomeInput:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        $ref: '#/definitions/goption.Optional-time_Time'
+      user_id:
+        $ref: '#/definitions/goption.Optional-uuid_UUID'
+    required:
+    - amount
+    - name
+    - user_id
     type: object
   null.String:
     properties:
@@ -387,6 +433,36 @@ paths:
       summary: Checks service health
       tags:
       - healt check
+  /incomes:
+    post:
+      consumes:
+      - application/json
+      description: Register a income into the database
+      parameters:
+      - description: Income to be created
+        in: body
+        name: expense_to_create
+        required: true
+        schema:
+          $ref: '#/definitions/incomes.CreateIncomeInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Income has been created
+          schema:
+            $ref: '#/definitions/entities.Income'
+        "400":
+          description: When a request does not fulfill need data
+          schema:
+            $ref: '#/definitions/validator.ValidationError'
+        "500":
+          description: Something unidentified has occurred
+      security:
+      - ApiKeyAuth: []
+      summary: Create an income
+      tags:
+      - incomes
   /recurrent_expenses:
     post:
       consumes:

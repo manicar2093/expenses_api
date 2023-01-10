@@ -13,6 +13,7 @@ import (
 	"github.com/manicar2093/expenses_api/mocks"
 	"github.com/manicar2093/expenses_api/pkg/testfunc"
 	"github.com/manicar2093/expenses_api/pkg/validator"
+	"github.com/manicar2093/goption"
 )
 
 var _ = Describe("CreateImpl", func() {
@@ -21,40 +22,32 @@ var _ = Describe("CreateImpl", func() {
 		ctx             context.Context
 		incomesRepoMock *mocks.IncomesRepository
 		validatorMock   *mocks.StructValidable
-		userID          uuid.UUID
+		userID          goption.Optional[uuid.UUID]
 		api             *incomes.IncomeServiceImpl
 	)
 
 	BeforeEach(func() {
-		ctx = context.TODO()
-		incomesRepoMock = &mocks.IncomesRepository{}
-		validatorMock = &mocks.StructValidable{}
-		userID = uuid.New()
-		api = incomes.NewIncomeServiceImpl(incomesRepoMock, validatorMock)
-	})
-
-	AfterEach(func() {
 		T := GinkgoT()
-		incomesRepoMock.AssertExpectations(T)
-		validatorMock.AssertExpectations(T)
+		ctx = context.TODO()
+		incomesRepoMock = mocks.NewIncomesRepository(T)
+		validatorMock = mocks.NewStructValidable(T)
+		userID = goption.Of(uuid.New())
+		api = incomes.NewIncomeServiceImpl(incomesRepoMock, validatorMock)
 	})
 
 	It("create an entities.Incomes from schema", func() {
 		var (
-			expectedName        = faker.Name()
-			expectedDescription = faker.Paragraph()
-			expectedAmount      = faker.Latitude()
-			incomeInput         = incomes.CreateIncomeInput{
-				Name:        expectedName,
-				Amount:      expectedAmount,
-				Description: expectedDescription,
-				UserID:      userID,
-			}
+			expectedName         = faker.Name()
+			expectedDescription  = faker.Paragraph()
+			expectedAmount       = faker.Latitude()
 			expextedIncomeEntity = entities.Income{
 				Name:        expectedName,
 				Amount:      expectedAmount,
 				Description: expectedDescription,
 				UserID:      userID,
+			}
+			incomeInput = incomes.CreateIncomeInput{
+				expextedIncomeEntity,
 			}
 		)
 		validatorMock.EXPECT().ValidateStruct(&incomeInput).Return(nil)

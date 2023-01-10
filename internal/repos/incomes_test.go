@@ -10,22 +10,23 @@ import (
 
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
+	"github.com/manicar2093/goption"
 )
 
 var _ = Describe("IncomesRepo", func() {
 	var (
 		ctx            context.Context
 		repo           *repos.IncomesGormRepo
-		expectedUserID uuid.UUID
+		expectedUserID goption.Optional[uuid.UUID]
 		expectedUser   entities.User
 	)
 
 	BeforeEach(func() {
 		ctx = context.TODO()
 		repo = repos.NewIncomesGormRepo(conn)
-		expectedUserID = uuid.New()
+		expectedUserID = goption.Of(uuid.New())
 		expectedUser = entities.User{
-			ID:    expectedUserID,
+			ID:    expectedUserID.MustGet(),
 			Email: faker.Email(),
 		}
 		conn.Create(&expectedUser)
@@ -46,9 +47,6 @@ var _ = Describe("IncomesRepo", func() {
 					UserID:      expectedUserID,
 					Name:        expectedName,
 					Amount:      expectedAmount,
-					Day:         1,
-					Month:       2,
-					Year:        2022,
 					Description: expectedDescription,
 				}
 			)
@@ -58,9 +56,6 @@ var _ = Describe("IncomesRepo", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(expectedIncome.ID).ToNot(BeEmpty())
-			Expect(expectedIncome.Day).ToNot(BeZero())
-			Expect(expectedIncome.Month).ToNot(BeZero())
-			Expect(expectedIncome.Year).ToNot(BeZero())
 			Expect(expectedIncome.CreatedAt).ToNot(BeZero())
 			Expect(expectedIncome.UpdatedAt).ToNot(BeZero())
 		})
