@@ -57,7 +57,7 @@ var _ = Describe("IncomesRepo", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(expectedIncome.ID).ToNot(BeEmpty())
 			Expect(expectedIncome.CreatedAt).ToNot(BeZero())
-			Expect(expectedIncome.UpdatedAt).ToNot(BeZero())
+			Expect(expectedIncome.UpdatedAt).To(BeZero())
 		})
 	})
 

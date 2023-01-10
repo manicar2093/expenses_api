@@ -82,7 +82,9 @@ func main() {
 }
 
 func configEcho() {
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	if config.Instance.ShowSwaggerDocs {
+		e.GET("/swagger/*", echoSwagger.WrapHandler)
+	}
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))

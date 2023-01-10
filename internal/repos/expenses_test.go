@@ -87,7 +87,7 @@ var _ = Describe("Expenses", func() {
 			Expect(expectedExpense.Year).ToNot(BeZero())
 			Expect(expectedExpense.IsPaid).To(BeFalse())
 			Expect(expectedExpense.CreatedAt).ToNot(BeZero())
-			Expect(expectedExpense.UpdatedAt).ToNot(BeZero())
+			Expect(expectedExpense.UpdatedAt).To(BeZero())
 
 		})
 	})

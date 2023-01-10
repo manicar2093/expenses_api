@@ -9,6 +9,7 @@ import (
 var Instance = &config{}
 
 type config struct {
+	ShowSwaggerDocs      bool
 	Environment          string
 	DatabaseURL          string
 	TokenSymmetricKey    string
@@ -23,4 +24,5 @@ func init() {
 	Instance.DatabaseURL = viper.GetString("DATABASE_URL")
 	Instance.TokenSymmetricKey = viper.GetString("TOKEN_SYMMETRIC_KEY")
 	Instance.AccessTokenDuration = viper.GetDuration("ACCESS_TOKEN_DURATION")
+	Instance.ShowSwaggerDocs = viper.GetBool("SHOW_SWAGGER_DOCS")
 }

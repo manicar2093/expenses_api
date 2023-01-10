@@ -61,7 +61,7 @@ var _ = Describe("RecurrentExpense", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(toSave.ID).ToNot(BeEmpty())
 			Expect(toSave.CreatedAt).ToNot(BeZero())
-			Expect(toSave.UpdatedAt).ToNot(BeZero())
+			Expect(toSave.UpdatedAt).To(BeZero())
 
 		})
 
