@@ -7,6 +7,7 @@ import (
 	"github.com/gookit/validate"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"github.com/manicar2093/expenses_api/pkg/validator"
+	"github.com/manicar2093/goption"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -25,11 +26,14 @@ var _ = Describe("Gookitvalidator", func() {
 
 		It("returns a list of errors if any exists", func() {
 			expectedDataToValidate := struct {
-				Name string `validate:"required|min_len:7" json:"name,omitempty"`
+				Name        string                    `validate:"required|min_len:7" json:"name,omitempty"`
+				LastName    goption.Optional[*string] `validate:"required" json:"last_name,omitempty"`
+				LastNamePtr goption.Optional[*string] `validate:"required" json:"last_name_ptr,omitempty"`
 			}{}
 			got := api.ValidateStruct(&expectedDataToValidate)
 
 			Expect(got).ToNot(BeNil())
+			Expect(got.(*validator.ValidationError).Errors.(validate.Errors)).To(HaveLen(3))
 			Expect(got.(apperrors.HandleableError).StatusCode()).To(Equal(http.StatusBadRequest))
 		})
 
@@ -85,6 +89,10 @@ var _ = Describe("Gookitvalidator", func() {
 				errMap := err.Errors.(validate.Errors)
 				Expect(errMap["name"]["required"]).To(ContainSubstring(expectedSubstring))
 			})
+		})
+
+		It("validates a goption.Optional", func() {
+
 		})
 	})
 

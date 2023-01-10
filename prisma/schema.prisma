@@ -36,9 +36,6 @@ model Incomes {
   name  String
   amount Decimal @db.Decimal(15,2)
   description String?
-  day Int
-  month Int
-  year Int
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
 

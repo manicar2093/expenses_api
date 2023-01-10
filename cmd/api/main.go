@@ -11,6 +11,7 @@ import (
 	"github.com/manicar2093/expenses_api/internal/config"
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
+	"github.com/manicar2093/expenses_api/internal/incomes"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
@@ -25,6 +26,9 @@ var (
 	conn                  = connections.GetGormConnection()
 	expensesRepo          = repos.NewExpensesGormRepo(conn)
 	recurrentExpensesRepo = repos.NewRecurrentExpenseGormRepo(conn)
+	incomesRepo           = repos.NewIncomesGormRepo(conn)
+	sessionsRepo          = repos.NewSessionGormRepo(conn)
+	usersRepo             = repos.NewUserGormRepo(conn)
 	timeGetter            = &dates.TimeGetter{}
 	structValidator       = validator.NewGooKitValidator()
 	customMiddlewares     = middlewares.NewEchoMiddlewares(tokens.NewPaseto(config.Instance.TokenSymmetricKey))
@@ -59,11 +63,9 @@ var (
 		sessions.NewDefaultValidator(sessionsRepo),
 		usersRepo,
 		config.Instance.AccessTokenDuration,
-		config.Instance.RefreshTokenDuration,
 	)
-	sessionsRepo = repos.NewSessionGormRepo(conn)
-	usersRepo    = repos.NewUserGormRepo(conn)
-	e            = echo.New() //nolint:varnamelen
+	incomesService = incomes.NewIncomeServiceImpl(incomesRepo, structValidator)
+	e              = echo.New() //nolint:varnamelen
 )
 
 // @title                      Expenses API
@@ -80,7 +82,9 @@ func main() {
 }
 
 func configEcho() {
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	if config.Instance.ShowSwaggerDocs {
+		e.GET("/swagger/*", echoSwagger.WrapHandler)
+	}
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
@@ -119,6 +123,11 @@ func registerControllers() {
 	controllers.NewLoginController(
 		googleAuthService,
 		googleAuthService,
+		e,
+	)
+	controllers.NewIncomesController(
+		customMiddlewares,
+		incomesService,
 		e,
 	)
 }

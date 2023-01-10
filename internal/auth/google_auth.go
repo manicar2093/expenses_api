@@ -17,10 +17,10 @@ type (
 		SessionCreateable
 		sessions.SessionValidable
 		UserFindable
-		userAuthenticable                         UserAuthenticable
-		tokenizable                               Tokenizable
-		openIDTokenValidable                      OpenIDTokenValidable[validator.GoogleTokenClaims]
-		accessTokenDuration, refreshTokenDuration time.Duration
+		userAuthenticable    UserAuthenticable
+		tokenizable          Tokenizable
+		openIDTokenValidable OpenIDTokenValidable[validator.GoogleTokenClaims]
+		accessTokenDuration  time.Duration
 	}
 )
 
@@ -31,7 +31,7 @@ func NewGoogleTokenAuth(
 	sessionCreateable SessionCreateable,
 	sessionValidable sessions.SessionValidable,
 	userFindable UserFindable,
-	accessTokenDuration, refreshTokenDuration time.Duration,
+	accessTokenDuration time.Duration,
 ) *GoogleTokenAuth {
 	return &GoogleTokenAuth{
 		SessionCreateable:    sessionCreateable,
@@ -41,7 +41,6 @@ func NewGoogleTokenAuth(
 		SessionValidable:     sessionValidable,
 		UserFindable:         userFindable,
 		accessTokenDuration:  accessTokenDuration,
-		refreshTokenDuration: refreshTokenDuration,
 	}
 }
 
@@ -91,7 +90,7 @@ func (c *GoogleTokenAuth) RefreshToken(ctx context.Context, refreshTokenInput *R
 	if err != nil {
 		return nil, err
 	}
-	tokenInfo, err := c.tokenizable.CreateAccessToken(&AccessToken{UserID: userFound.ID, Expiration: c.refreshTokenDuration})
+	tokenInfo, err := c.tokenizable.CreateAccessToken(&AccessToken{UserID: userFound.ID, Expiration: c.accessTokenDuration})
 	if err != nil {
 		return nil, err
 	}

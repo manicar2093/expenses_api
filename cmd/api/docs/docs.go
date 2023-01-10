@@ -305,6 +305,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/incomes": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Register a income into the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "incomes"
+                ],
+                "summary": "Create an income",
+                "parameters": [
+                    {
+                        "description": "Income to be created",
+                        "name": "expense_to_create",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/incomes.CreateIncomeInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Income has been created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Income"
+                        }
+                    },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Something unidentified has occurred"
+                    }
+                }
+            }
+        },
         "/recurrent_expenses": {
             "post": {
                 "security": [
@@ -527,6 +575,37 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Income": {
+            "type": "object",
+            "required": [
+                "amount",
+                "name",
+                "user_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/goption.Optional-time_Time"
+                },
+                "user_id": {
+                    "$ref": "#/definitions/goption.Optional-uuid_UUID"
+                }
+            }
+        },
         "entities.RecurrentExpense": {
             "type": "object",
             "properties": {
@@ -682,6 +761,43 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "goption.Optional-time_Time": {
+            "type": "object"
+        },
+        "goption.Optional-uuid_UUID": {
+            "type": "object"
+        },
+        "incomes.CreateIncomeInput": {
+            "type": "object",
+            "required": [
+                "amount",
+                "name",
+                "user_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/goption.Optional-time_Time"
+                },
+                "user_id": {
+                    "$ref": "#/definitions/goption.Optional-uuid_UUID"
                 }
             }
         },

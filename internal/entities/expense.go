@@ -26,7 +26,7 @@ type Expense struct {
 	Year               uint              `json:"year,omitempty"`
 	IsPaid             bool              `json:"is_paid"`
 	CreatedAt          *time.Time        `json:"created_at,omitempty"`
-	UpdatedAt          *time.Time        `json:"updated_at,omitempty"`
+	UpdatedAt          *time.Time        `json:"updated_at,omitempty"  gorm:"autoUpdateTime:false"`
 }
 
 type ExpenseIDWithIsPaidStatus struct {
