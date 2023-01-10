@@ -18,7 +18,7 @@ var (
 	}
 	ErrTokenExpired = &apperrors.MessagedError{
 		Message: "token has expired",
-		Code:    http.StatusBadRequest,
+		Code:    http.StatusForbidden,
 	}
 )
 

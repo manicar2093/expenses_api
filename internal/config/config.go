@@ -23,5 +23,4 @@ func init() {
 	Instance.DatabaseURL = viper.GetString("DATABASE_URL")
 	Instance.TokenSymmetricKey = viper.GetString("TOKEN_SYMMETRIC_KEY")
 	Instance.AccessTokenDuration = viper.GetDuration("ACCESS_TOKEN_DURATION")
-	Instance.RefreshTokenDuration = viper.GetDuration("REFRESH_TOKEN_DURATION")
 }

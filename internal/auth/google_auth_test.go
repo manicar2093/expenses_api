@@ -19,15 +19,15 @@ import (
 var _ = Describe("GoogleAuth", func() {
 
 	var (
-		userAuthenticableMock                     *mocks.UserAuthenticable
-		tokenizableMock                           *mocks.Tokenizable
-		googleTokenOpenIDValidatorMock            *mocks.OpenIDTokenValidable[validator.GoogleTokenClaims]
-		sessionCreateableMock                     *mocks.SessionCreateable
-		sessionValidableMock                      *mocks.SessionValidable
-		userFindableMock                          *mocks.UserFindable
-		accessTokenDuration, refreshTokenDuration time.Duration
-		ctx                                       context.Context
-		googleTokenValidator                      *auth.GoogleTokenAuth
+		userAuthenticableMock          *mocks.UserAuthenticable
+		tokenizableMock                *mocks.Tokenizable
+		googleTokenOpenIDValidatorMock *mocks.OpenIDTokenValidable[validator.GoogleTokenClaims]
+		sessionCreateableMock          *mocks.SessionCreateable
+		sessionValidableMock           *mocks.SessionValidable
+		userFindableMock               *mocks.UserFindable
+		accessTokenDuration            time.Duration
+		ctx                            context.Context
+		googleTokenValidator           *auth.GoogleTokenAuth
 	)
 
 	BeforeEach(func() {
@@ -39,7 +39,6 @@ var _ = Describe("GoogleAuth", func() {
 		sessionValidableMock = mocks.NewSessionValidable(T)
 		userFindableMock = mocks.NewUserFindable(T)
 		accessTokenDuration = time.Duration(1 * time.Minute)
-		refreshTokenDuration = time.Duration(1 * time.Minute)
 		ctx = context.Background()
 		googleTokenValidator = auth.NewGoogleTokenAuth(
 			userAuthenticableMock,
@@ -49,7 +48,6 @@ var _ = Describe("GoogleAuth", func() {
 			sessionValidableMock,
 			userFindableMock,
 			accessTokenDuration,
-			refreshTokenDuration,
 		)
 	})
 
@@ -182,7 +180,7 @@ var _ = Describe("GoogleAuth", func() {
 				}
 				expectedCreateAccessTokenCall = auth.AccessToken{
 					UserID:     expectedFoundUser.ID,
-					Expiration: refreshTokenDuration,
+					Expiration: accessTokenDuration,
 				}
 				expectedCreateAccessTokenReturn = auth.TokenInfo{
 					Token:     faker.Paragraph(),
