@@ -18,7 +18,7 @@ type RecurrentExpense struct {
 	Amount      float64     `json:"amount,omitempty"`
 	Description null.String `json:"description,omitempty"`
 	CreatedAt   *time.Time  `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time  `json:"updated_at,omitempty"`
+	UpdatedAt   *time.Time  `json:"updated_at,omitempty"  gorm:"autoUpdateTime:false"`
 }
 
 func NewRecurrentExpense(name, description string, amount float64) *RecurrentExpense {

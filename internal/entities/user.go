@@ -17,5 +17,5 @@ type User struct {
 	Email     string      `json:"email,omitempty"`
 	Avatar    null.String `json:"avatar,omitempty"`
 	CreatedAt *time.Time  `json:"created_at,omitempty"`
-	UpdatedAt *time.Time  `json:"updated_at,omitempty"`
+	UpdatedAt *time.Time  `json:"updated_at,omitempty"  gorm:"autoUpdateTime:false"`
 }

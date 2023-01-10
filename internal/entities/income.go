@@ -16,5 +16,5 @@ type Income struct {
 	Amount      float64                     `json:"amount,omitempty" validate:"required"`
 	Description string                      `json:"description,omitempty"`
 	CreatedAt   time.Time                   `json:"created_at,omitempty"`
-	UpdatedAt   goption.Optional[time.Time] `json:"updated_at,omitempty"`
+	UpdatedAt   goption.Optional[time.Time] `json:"updated_at,omitempty" gorm:"autoUpdateTime:false"`
 }
