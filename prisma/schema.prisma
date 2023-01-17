@@ -19,9 +19,6 @@ model Expense {
   name  String?
   amount Decimal @db.Decimal(15,2)
   description String?
-  day Int
-  month Int
-  year Int
   is_paid Boolean
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt

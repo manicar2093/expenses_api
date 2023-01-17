@@ -22,9 +22,6 @@ func GeneratePaidExpense() *entities.Expense {
 		UserID:      uuid.New(),
 		Description: null.StringFrom(faker.Paragraph()),
 		IsPaid:      true,
-		Day:         uint(faker.Latitude()),
-		Month:       uint(faker.Latitude()),
-		Year:        uint(faker.Latitude()),
 		CreatedAt:   ToPointer(time.Now()),
 		UpdatedAt:   ToPointer(time.Now()),
 	}

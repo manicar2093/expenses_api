@@ -41,9 +41,6 @@ func (c *ExpenseServiceImpl) expenseFromCreateExpenseInput(holder *CreateExpense
 		)
 		newExpense.CreatedAt = &nextMonthTime
 	}
-	newExpense.Day = uint(newExpense.CreatedAt.Day())
-	newExpense.Month = uint(newExpense.CreatedAt.Month())
-	newExpense.Year = uint(newExpense.CreatedAt.Year())
 
 	return newExpense
 }

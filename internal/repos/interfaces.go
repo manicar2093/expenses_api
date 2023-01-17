@@ -2,7 +2,6 @@ package repos
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
@@ -11,9 +10,7 @@ import (
 type (
 	ExpensesRepository interface {
 		Save(ctx context.Context, expense *entities.Expense) error
-		GetExpensesByMonth(ctx context.Context, month time.Month, userID uuid.UUID) ([]*entities.Expense, error)
 		UpdateIsPaidByExpenseID(ctx context.Context, expenseID uuid.UUID, status bool) error
-		FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string, userID uuid.UUID) (*entities.Expense, error)
 		GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*entities.ExpenseIDWithIsPaidStatus, error)
 		Update(ctx context.Context, expenseUpdateInput *UpdateExpenseInput) error
 		FindByID(ctx context.Context, expenseID uuid.UUID) (*entities.Expense, error)

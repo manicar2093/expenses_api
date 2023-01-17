@@ -52,9 +52,6 @@ var _ = Describe("CreateImpl", func() {
 			expectedExpenseToSave = entities.Expense{
 				Name:        null.StringFrom(expectedName),
 				Amount:      expectedAmount,
-				Day:         uint(expectedCurrentDateReturn.Day()),
-				Month:       uint(expectedCurrentDateReturn.Month()),
-				Year:        uint(expectedCurrentDateReturn.Year()),
 				Description: null.StringFrom(expectedDescription),
 				IsPaid:      true,
 				CreatedAt:   &expectedCurrentDateReturn,
@@ -90,9 +87,6 @@ var _ = Describe("CreateImpl", func() {
 				expectedExpenseToSave = entities.Expense{
 					Name:        null.StringFrom(expectedName),
 					Amount:      expectedAmount,
-					Day:         uint(expectedNextMonthDateReturn.Day()),
-					Month:       uint(expectedNextMonthDateReturn.Month()),
-					Year:        uint(expectedNextMonthDateReturn.Year()),
 					Description: null.StringFrom(expectedExpenseDescription),
 					IsPaid:      true,
 					CreatedAt:   &expectedNextMonthDateReturn,

@@ -51,9 +51,6 @@ var _ = Describe("Update", func() {
 				Amount:             faker.Latitude(),
 				Description:        null.StringFrom(faker.Paragraph()),
 				RecurrentExpenseID: uuid.NullUUID{},
-				Day:                1,
-				Month:              2,
-				Year:               2022,
 				IsPaid:             true,
 			}
 			expectedRepoCall = repos.UpdateExpenseInput{
@@ -94,9 +91,6 @@ var _ = Describe("Update", func() {
 						UUID:  uuid.New(),
 						Valid: true,
 					},
-					Day:    1,
-					Month:  2,
-					Year:   2022,
 					IsPaid: true,
 				}
 				expectedRepoCall = repos.UpdateExpenseInput{
