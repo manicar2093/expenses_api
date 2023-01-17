@@ -17,6 +17,43 @@ func (_m *StructValidable) EXPECT() *StructValidable_Expecter {
 	return &StructValidable_Expecter{mock: &_m.Mock}
 }
 
+// Validate provides a mock function with given fields: i
+func (_m *StructValidable) Validate(i interface{}) error {
+	ret := _m.Called(i)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(interface{}) error); ok {
+		r0 = rf(i)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// StructValidable_Validate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Validate'
+type StructValidable_Validate_Call struct {
+	*mock.Call
+}
+
+// Validate is a helper method to define mock.On call
+//   - i interface{}
+func (_e *StructValidable_Expecter) Validate(i interface{}) *StructValidable_Validate_Call {
+	return &StructValidable_Validate_Call{Call: _e.mock.On("Validate", i)}
+}
+
+func (_c *StructValidable_Validate_Call) Run(run func(i interface{})) *StructValidable_Validate_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(interface{}))
+	})
+	return _c
+}
+
+func (_c *StructValidable_Validate_Call) Return(_a0 error) *StructValidable_Validate_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
 // ValidateStruct provides a mock function with given fields: toValidate
 func (_m *StructValidable) ValidateStruct(toValidate interface{}) error {
 	ret := _m.Called(toValidate)

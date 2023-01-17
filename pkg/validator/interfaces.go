@@ -10,6 +10,7 @@ type (
 	}
 	StructValidable interface {
 		ValidateStruct(toValidate interface{}) error
+		Validate(i interface{}) error
 	}
 )
 

@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/manicar2093/expenses_api/internal/entities"
+	"github.com/manicar2093/expenses_api/pkg/validator"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -33,4 +34,10 @@ func CreateJsonRequestForTest(method, target string, body io.Reader) (req *http.
 	req = httptest.NewRequest(method, target, body)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	return
+}
+
+func EchoWithValidator() *echo.Echo {
+	var e = echo.New()
+	e.Validator = validator.NewGooKitValidator()
+	return e
 }

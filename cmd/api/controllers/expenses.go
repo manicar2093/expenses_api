@@ -7,6 +7,7 @@ import (
 	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
+	"github.com/manicar2093/expenses_api/pkg/json"
 )
 
 type ExpensesController struct {
@@ -62,6 +63,9 @@ func (c *ExpensesController) Create(ctx echo.Context) error {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
 	expenseRequest.UserID = ctx.Get("user_id").(string)
+	if err := ctx.Validate(expenseRequest); err != nil {
+		return apperrors.CreateResponseFromError(ctx, err)
+	}
 	newExpense, err := c.createExpense.CreateExpense(ctx.Request().Context(), &expenseRequest)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
@@ -81,11 +85,15 @@ func (c *ExpensesController) Create(ctx echo.Context) error {
 // @Security    ApiKeyAuth
 // @Router      /expenses/to_paid [put]
 func (c *ExpensesController) ToPaid(ctx echo.Context) error {
+	log.Warnln("DEPRECATED!. Use ExpenseToPaidTogglable instead")
 	var request expenses.SetExpenseToPaidInput
 	if err := ctx.Bind(&request); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
-
+	if err := ctx.Validate(request); err != nil {
+		return apperrors.CreateResponseFromError(ctx, err)
+	}
+	log.Infoln(json.MustMarshall(request))
 	if err := c.setToPaid.SetToPaid(ctx.Request().Context(), &request); err != nil { //nolint: staticcheck
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
@@ -108,6 +116,10 @@ func (c *ExpensesController) ToggleIsPaid(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
+	if err := ctx.Validate(request); err != nil {
+		return apperrors.CreateResponseFromError(ctx, err)
+	}
+	log.Infoln(json.MustMarshall(request))
 	got, err := c.togglableIsPaid.ToggleIsPaid(ctx.Request().Context(), &request)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
@@ -131,6 +143,10 @@ func (c *ExpensesController) Update(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
+	if err := ctx.Validate(request); err != nil {
+		return apperrors.CreateResponseFromError(ctx, err)
+	}
+	log.Infoln(json.MustMarshall(request))
 	err := c.updateExpense.UpdateExpense(ctx.Request().Context(), &request)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)

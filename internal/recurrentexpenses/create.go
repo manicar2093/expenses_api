@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
-	"github.com/manicar2093/expenses_api/pkg/json"
 	"github.com/manicar2093/expenses_api/pkg/nullsql"
 )
 
@@ -13,10 +12,6 @@ func (c *RecurrentExpenseServiceImpl) CreateRecurrentExpense(
 	ctx context.Context,
 	input *CreateRecurrentExpenseInput,
 ) (*CreateRecurrentExpenseOutput, error) {
-	if err := c.validator.ValidateStruct(input); err != nil {
-		return nil, err
-	}
-	log.Infoln(json.MustMarshall(input))
 	var (
 		userIDParsed     = uuid.MustParse(input.UserID)
 		nextMontTime     = c.timeGetter.GetNextMonthAtFirtsDay()

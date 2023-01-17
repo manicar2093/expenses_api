@@ -43,12 +43,15 @@ func (c *IncomesController) register() {
 // @Security    ApiKeyAuth
 // @Router      /incomes [post]
 func (c *IncomesController) Create(ctx echo.Context) error {
-	var incomeData incomes.CreateIncomeInput
-	if err := ctx.Bind(&incomeData); err != nil {
+	var request incomes.CreateIncomeInput
+	if err := ctx.Bind(&request); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
-	incomeData.UserID = getUserIDAsOptionlaUUID(ctx)
-	got, err := c.CreateIncome.Create(ctx.Request().Context(), &incomeData)
+	request.UserID = getUserIDAsOptionlaUUID(ctx)
+	if err := ctx.Validate(request); err != nil {
+		return apperrors.CreateResponseFromError(ctx, err)
+	}
+	got, err := c.CreateIncome.Create(ctx.Request().Context(), &request)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}

@@ -6,16 +6,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
-	"github.com/manicar2093/expenses_api/pkg/json"
 	"github.com/manicar2093/expenses_api/pkg/nullsql"
 	"gopkg.in/guregu/null.v4"
 )
 
 func (c *ExpenseServiceImpl) CreateExpense(ctx context.Context, expense *CreateExpenseInput) (*entities.Expense, error) {
-	log.Infoln(json.MustMarshall(expense))
-	if err := c.validator.ValidateStruct(expense); err != nil {
-		return nil, err
-	}
 	newExpense := c.expenseFromCreateExpenseInput(expense)
 	if err := c.expensesRepo.Save(ctx, newExpense); err != nil {
 		return nil, err
@@ -25,7 +20,7 @@ func (c *ExpenseServiceImpl) CreateExpense(ctx context.Context, expense *CreateE
 
 func (c *ExpenseServiceImpl) expenseFromCreateExpenseInput(holder *CreateExpenseInput) *entities.Expense {
 	var (
-		today      = c.timeGetter.GetCurrentTime()
+		today      = c.timaGettable.GetCurrentTime()
 		newExpense = &entities.Expense{
 			Name:        nullsql.ValidateStringSQLValid(holder.Name),
 			Amount:      holder.Amount,
@@ -36,7 +31,7 @@ func (c *ExpenseServiceImpl) expenseFromCreateExpenseInput(holder *CreateExpense
 		}
 	)
 	if holder.ForNextMonth {
-		nextMonthTime := c.timeGetter.GetNextMonthAtFirtsDay()
+		nextMonthTime := c.timaGettable.GetNextMonthAtFirtsDay()
 		newExpense.Description = null.StringFrom(
 			fmt.Sprintf(
 				"%s\n\nFecha de registro: %s",
