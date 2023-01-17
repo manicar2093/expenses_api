@@ -8,6 +8,7 @@ import (
 	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
 	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
+	"github.com/manicar2093/expenses_api/pkg/json"
 )
 
 type RecurrentExpensesController struct {
@@ -54,12 +55,16 @@ func (c *RecurrentExpensesController) register() {
 // @Security    ApiKeyAuth
 // @Router      /recurrent_expenses [post]
 func (c *RecurrentExpensesController) Create(ctx echo.Context) error {
-	var recurrentExpenseReq recurrentexpenses.CreateRecurrentExpenseInput
-	if err := ctx.Bind(&recurrentExpenseReq); err != nil {
+	var request recurrentexpenses.CreateRecurrentExpenseInput
+	if err := ctx.Bind(&request); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
-	recurrentExpenseReq.UserID = ctx.Get("user_id").(string)
-	res, err := c.createRecurrentExpense.CreateRecurrentExpense(ctx.Request().Context(), &recurrentExpenseReq)
+	request.UserID = ctx.Get("user_id").(string)
+	if err := ctx.Validate(request); err != nil {
+		return apperrors.CreateResponseFromError(ctx, err)
+	}
+	log.Infoln(json.MustMarshall(request))
+	res, err := c.createRecurrentExpense.CreateRecurrentExpense(ctx.Request().Context(), &request)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}

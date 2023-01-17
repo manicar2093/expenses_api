@@ -31,7 +31,7 @@ var _ = Describe("/incomes", func() {
 
 	BeforeEach(func() {
 		T := GinkgoT()
-		e = echo.New()
+		e = testfunc.EchoWithValidator()
 		incomesCreatorMock = mocks.NewCreateIncome(T)
 		middlewaresMock = mocks.NewMiddlewares(T)
 		api = controllers.NewIncomesController(middlewaresMock, incomesCreatorMock, e)
@@ -46,7 +46,7 @@ var _ = Describe("/incomes", func() {
 						Income: entities.Income{
 							UserID:      goption.Of(expectedUserID),
 							Name:        faker.Name(),
-							Amount:      faker.Latitude(),
+							Amount:      12.8,
 							Description: faker.Paragraph(),
 						},
 					}

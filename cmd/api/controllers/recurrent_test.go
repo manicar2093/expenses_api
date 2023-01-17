@@ -34,7 +34,7 @@ var _ = Describe("/recurrent_expenses", func() {
 	)
 
 	BeforeEach(func() {
-		e = echo.New()
+		e = testfunc.EchoWithValidator()
 		createRecurrentExpense = &mocks.RecurrentExpenseCreatable{}
 		getAllRecurrentExpenses = &mocks.RecurrentExpensesAllGettable{}
 		createMonthlyRecurrentExpenses = &mocks.MonthlyRecurrentExpensesCreateable{}
@@ -64,7 +64,7 @@ var _ = Describe("/recurrent_expenses", func() {
 					expectedUserID                      = expectedUserIDUUID.String()
 					expectedCreateRecurrentExpenseInput = recurrentexpenses.CreateRecurrentExpenseInput{
 						Name:        faker.Name(),
-						Amount:      faker.Latitude(),
+						Amount:      12.8,
 						Description: faker.Paragraph(),
 						UserID:      expectedUserID,
 					}

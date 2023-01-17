@@ -7,9 +7,5 @@ import (
 )
 
 func (c *ExpenseServiceImpl) SetToPaid(ctx context.Context, input *SetExpenseToPaidInput) error {
-	log.Warnln("DEPRECATED!. Use ExpenseToPaidTogglable instead")
-	if err := c.validator.ValidateStruct(input); err != nil {
-		return err
-	}
 	return c.expensesRepo.UpdateIsPaidByExpenseID(ctx, uuid.MustParse(input.ID), true)
 }

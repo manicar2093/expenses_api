@@ -11,8 +11,6 @@ import (
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/incomes"
 	"github.com/manicar2093/expenses_api/mocks"
-	"github.com/manicar2093/expenses_api/pkg/testfunc"
-	"github.com/manicar2093/expenses_api/pkg/validator"
 	"github.com/manicar2093/goption"
 )
 
@@ -21,7 +19,6 @@ var _ = Describe("CreateImpl", func() {
 	var (
 		ctx             context.Context
 		incomesRepoMock *mocks.IncomesRepository
-		validatorMock   *mocks.StructValidable
 		userID          goption.Optional[uuid.UUID]
 		api             *incomes.IncomeServiceImpl
 	)
@@ -30,9 +27,8 @@ var _ = Describe("CreateImpl", func() {
 		T := GinkgoT()
 		ctx = context.TODO()
 		incomesRepoMock = mocks.NewIncomesRepository(T)
-		validatorMock = mocks.NewStructValidable(T)
 		userID = goption.Of(uuid.New())
-		api = incomes.NewIncomeServiceImpl(incomesRepoMock, validatorMock)
+		api = incomes.NewIncomeServiceImpl(incomesRepoMock)
 	})
 
 	It("create an entities.Incomes from schema", func() {
@@ -50,25 +46,11 @@ var _ = Describe("CreateImpl", func() {
 				expextedIncomeEntity,
 			}
 		)
-		validatorMock.EXPECT().ValidateStruct(&incomeInput).Return(nil)
 		incomesRepoMock.EXPECT().Save(ctx, &expextedIncomeEntity).Return(nil)
 
 		got, err := api.Create(ctx, &incomeInput)
 
 		Expect(err).ToNot(HaveOccurred())
 		Expect(got).To(Equal(&expextedIncomeEntity))
-	})
-
-	When("request is not valid", Label(testfunc.IntegrationTest), func() {
-		It("return an error", func() {
-			var invalidRequest = incomes.CreateIncomeInput{}
-
-			integrationTestApi := incomes.NewIncomeServiceImpl(incomesRepoMock, validator.NewGooKitValidator())
-
-			got, err := integrationTestApi.Create(ctx, &invalidRequest)
-
-			Expect(got).To(BeNil())
-			Expect(err).To(HaveOccurred())
-		})
 	})
 })

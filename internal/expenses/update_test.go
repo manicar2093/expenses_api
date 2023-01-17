@@ -13,33 +13,23 @@ import (
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/mocks"
-	"github.com/manicar2093/expenses_api/pkg/testfunc"
-	"github.com/manicar2093/expenses_api/pkg/validator"
 )
 
 var _ = Describe("Update", func() {
 
 	var (
 		expensesRepoMock *mocks.ExpensesRepository
-		validatorMock    *mocks.StructValidable
 		timeGettable     *mocks.TimeGetable
 		ctx              context.Context
 		api              *expenses.ExpenseServiceImpl
 	)
 
 	BeforeEach(func() {
-		expensesRepoMock = &mocks.ExpensesRepository{}
-		validatorMock = &mocks.StructValidable{}
-		timeGettable = &mocks.TimeGetable{}
-		ctx = context.Background()
-		api = expenses.NewExpenseServiceImpl(expensesRepoMock, timeGettable, validatorMock)
-	})
-
-	AfterEach(func() {
 		T := GinkgoT()
-		expensesRepoMock.AssertExpectations(T)
-		validatorMock.AssertExpectations(T)
-		timeGettable.AssertExpectations(T)
+		expensesRepoMock = mocks.NewExpensesRepository(T)
+		timeGettable = mocks.NewTimeGetable(T)
+		ctx = context.Background()
+		api = expenses.NewExpenseServiceImpl(expensesRepoMock, timeGettable)
 	})
 
 	It("calls repo to change expense stored data", func() {
@@ -74,7 +64,6 @@ var _ = Describe("Update", func() {
 			}
 		)
 		expensesRepoMock.EXPECT().FindByID(ctx, expectedExpenseIDAsUUID).Return(&expectedExpenseFindByIDReturn, nil)
-		validatorMock.EXPECT().ValidateStruct(&expectedUpdateInput).Return(nil)
 		expensesRepoMock.EXPECT().Update(ctx, &expectedRepoCall).Return(nil)
 
 		err := api.UpdateExpense(ctx, &expectedUpdateInput)
@@ -116,26 +105,11 @@ var _ = Describe("Update", func() {
 				}
 			)
 			expensesRepoMock.EXPECT().FindByID(ctx, expectedExpenseIDAsUUID).Return(&expectedExpenseFindByIDReturn, nil)
-			validatorMock.EXPECT().ValidateStruct(&expectedUpdateInput).Return(nil)
 			expensesRepoMock.EXPECT().Update(ctx, &expectedRepoCall).Return(nil)
 
 			err := api.UpdateExpense(ctx, &expectedUpdateInput)
 
 			Expect(err).ToNot(HaveOccurred())
-		})
-	})
-
-	When("request is not valid", Label(testfunc.IntegrationTest), func() {
-		It("return an error", func() {
-			var invalidRequest = expenses.UpdateExpenseInput{
-				ID: faker.Name(),
-			}
-
-			integrationTestApi := expenses.NewExpenseServiceImpl(expensesRepoMock, timeGettable, validator.NewGooKitValidator())
-
-			err := integrationTestApi.UpdateExpense(ctx, &invalidRequest)
-
-			Expect(err).To(HaveOccurred())
 		})
 	})
 

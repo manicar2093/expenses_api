@@ -33,12 +33,13 @@ var _ = Describe("/expenses", func() {
 	)
 
 	BeforeEach(func() {
-		e = echo.New()
-		createableExpensesMock = &mocks.ExpenseCreatable{}
-		toPaidSetteable = &mocks.ExpenseToPaidSetteable{}
-		isPaidToggleable = &mocks.ExpenseToPaidTogglable{}
-		expenseUpdateable = &mocks.ExpenseUpdateable{}
-		middlewaresMock = &mocks.Middlewares{}
+		T := GinkgoT()
+		e = testfunc.EchoWithValidator()
+		createableExpensesMock = mocks.NewExpenseCreatable(T)
+		toPaidSetteable = mocks.NewExpenseToPaidSetteable(T)
+		isPaidToggleable = mocks.NewExpenseToPaidTogglable(T)
+		expenseUpdateable = mocks.NewExpenseUpdateable(T)
+		middlewaresMock = mocks.NewMiddlewares(T)
 		api = *controllers.NewExpensesController(
 			createableExpensesMock,
 			toPaidSetteable,
@@ -47,15 +48,6 @@ var _ = Describe("/expenses", func() {
 			middlewaresMock,
 			e,
 		)
-	})
-
-	AfterEach(func() {
-		T := GinkgoT()
-		createableExpensesMock.AssertExpectations(T)
-		toPaidSetteable.AssertExpectations(T)
-		isPaidToggleable.AssertExpectations(T)
-		expenseUpdateable.AssertExpectations(T)
-		middlewaresMock.AssertExpectations(T)
 	})
 
 	Describe("/", func() {
@@ -105,6 +97,7 @@ var _ = Describe("/expenses", func() {
 					"updated_at":           Not(BeEmpty()),
 				}))
 			})
+
 		})
 	})
 
@@ -169,7 +162,7 @@ var _ = Describe("/expenses", func() {
 					expenseUpdateInput = expenses.UpdateExpenseInput{
 						ID:          uuid.New().String(),
 						Name:        faker.Name(),
-						Amount:      faker.Latitude(),
+						Amount:      12.3,
 						Description: faker.Paragraph(),
 					}
 					expenseUpdateJson = fmt.Sprintf(`

@@ -35,7 +35,6 @@ var (
 	expenseService        = expenses.NewExpenseServiceImpl(
 		expensesRepo,
 		timeGetter,
-		structValidator,
 	)
 	getCurrentMonth = reports.NewCurrentMonthDetailsImpl(
 		expensesRepo,
@@ -45,7 +44,6 @@ var (
 		recurrentExpensesRepo,
 		expensesRepo,
 		timeGetter,
-		structValidator,
 	)
 	getAllRecurrentExpenses = recurrentexpenses.NewGetAllRecurrentExpenseServiceImpl(
 		recurrentExpensesRepo,
@@ -64,7 +62,7 @@ var (
 		usersRepo,
 		config.Instance.AccessTokenDuration,
 	)
-	incomesService = incomes.NewIncomeServiceImpl(incomesRepo, structValidator)
+	incomesService = incomes.NewIncomeServiceImpl(incomesRepo)
 	e              = echo.New() //nolint:varnamelen
 )
 

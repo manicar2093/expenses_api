@@ -4,17 +4,12 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/manicar2093/expenses_api/pkg/json"
 )
 
 func (c *ExpenseServiceImpl) ToggleIsPaid(
 	ctx context.Context,
 	input *ToggleExpenseIsPaidInput,
 ) (*ToggleExpenseIsPaidOutput, error) {
-	log.Infoln(json.MustMarshall(input))
-	if err := c.validator.ValidateStruct(input); err != nil {
-		return nil, err
-	}
 	return c.toggle(ctx, uuid.MustParse(input.ID))
 }
 

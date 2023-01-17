@@ -41,13 +41,14 @@ func (c *LoginController) register() {
 // @Failure     500          "Something unidentified has occurred"
 // @Router      /auth/login/google [post]
 func (c *LoginController) LoginWGoogle(ctx echo.Context) error {
-	var token auth.LoginInput
-	if err := ctx.Bind(&token); err != nil {
+	log.Infoln("Login requested!")
+	var request auth.LoginInput
+	if err := ctx.Bind(&request); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
-	token.ClientIP = getIP(ctx.Request())
-	token.UserAgent = ctx.Request().UserAgent()
-	loginRes, err := c.Login(ctx.Request().Context(), &token)
+	request.ClientIP = getIP(ctx.Request())
+	request.UserAgent = ctx.Request().UserAgent()
+	loginRes, err := c.Login(ctx.Request().Context(), &request)
 	if err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
 	}
@@ -65,6 +66,7 @@ func (c *LoginController) LoginWGoogle(ctx echo.Context) error {
 // @Failure     500             "Something unidentified has occurred"
 // @Router      /auth/refresh_token [put]
 func (c *LoginController) RefreshToken(ctx echo.Context) error {
+	log.Infoln("Refresh token requested!")
 	var refreshToken auth.RefreshTokenInput
 	if err := ctx.Bind(&refreshToken); err != nil {
 		return apperrors.CreateResponseFromError(ctx, err)
