@@ -21,9 +21,6 @@ type Expense struct {
 	Name               null.String       `json:"name,omitempty"`
 	Amount             float64           `json:"amount,omitempty"`
 	Description        null.String       `json:"description,omitempty"`
-	Day                uint              `json:"day,omitempty"`
-	Month              uint              `json:"month,omitempty"`
-	Year               uint              `json:"year,omitempty"`
 	IsPaid             bool              `json:"is_paid"`
 	CreatedAt          *time.Time        `json:"created_at,omitempty"`
 	UpdatedAt          *time.Time        `json:"updated_at,omitempty"  gorm:"autoUpdateTime:false"`

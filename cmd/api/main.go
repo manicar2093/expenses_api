@@ -12,8 +12,6 @@ import (
 	"github.com/manicar2093/expenses_api/internal/connections"
 	"github.com/manicar2093/expenses_api/internal/expenses"
 	"github.com/manicar2093/expenses_api/internal/incomes"
-	"github.com/manicar2093/expenses_api/internal/recurrentexpenses"
-	"github.com/manicar2093/expenses_api/internal/reports"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/internal/sessions"
 	"github.com/manicar2093/expenses_api/internal/tokens"
@@ -33,23 +31,6 @@ var (
 	structValidator       = validator.NewGooKitValidator()
 	customMiddlewares     = middlewares.NewEchoMiddlewares(tokens.NewPaseto(config.Instance.TokenSymmetricKey))
 	expenseService        = expenses.NewExpenseServiceImpl(
-		expensesRepo,
-		timeGetter,
-	)
-	getCurrentMonth = reports.NewCurrentMonthDetailsImpl(
-		expensesRepo,
-		timeGetter,
-	)
-	createRecurrentExpense = recurrentexpenses.NewCreateRecurrentExpense(
-		recurrentExpensesRepo,
-		expensesRepo,
-		timeGetter,
-	)
-	getAllRecurrentExpenses = recurrentexpenses.NewGetAllRecurrentExpenseServiceImpl(
-		recurrentExpensesRepo,
-	)
-	createMonthlyRecurrentExpenses = recurrentexpenses.NewCreateMonthlyRecurrentExpensesImpl(
-		recurrentExpensesRepo,
 		expensesRepo,
 		timeGetter,
 	)
@@ -99,18 +80,6 @@ func registerControllers() {
 		expenseService,
 		expenseService,
 		expenseService,
-		customMiddlewares,
-		e,
-	)
-	controllers.NewRecurrentExpensesController(
-		createRecurrentExpense,
-		getAllRecurrentExpenses,
-		createMonthlyRecurrentExpenses,
-		customMiddlewares,
-		e,
-	)
-	controllers.NewReportsController(
-		getCurrentMonth,
 		customMiddlewares,
 		e,
 	)

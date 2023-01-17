@@ -3,7 +3,6 @@ package repos
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
@@ -24,14 +23,6 @@ func (c *ExpensesGormRepo) Save(ctx context.Context, expense *entities.Expense) 
 		return res.Error
 	}
 	return nil
-}
-
-func (c *ExpensesGormRepo) GetExpensesByMonth(ctx context.Context, month time.Month, userID uuid.UUID) ([]*entities.Expense, error) {
-	var expensesFound []*entities.Expense
-	if res := c.orm.WithContext(ctx).Where(&entities.Expense{Month: uint(month), UserID: userID}, month).Preload("RecurrentExpense").Find(&expensesFound); res.Error != nil {
-		return []*entities.Expense{}, res.Error
-	}
-	return expensesFound, nil
 }
 
 func (c *ExpensesGormRepo) UpdateIsPaidByExpenseID(ctx context.Context, expenseID uuid.UUID, status bool) error {

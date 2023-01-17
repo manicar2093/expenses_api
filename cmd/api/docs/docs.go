@@ -352,126 +352,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/recurrent_expenses": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Register into db a recurrent expense",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "recurrent expenses"
-                ],
-                "summary": "Create a recurrent expense",
-                "parameters": [
-                    {
-                        "description": "Recurrent Expense",
-                        "name": "recurrent_expense",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/recurrentexpenses.CreateRecurrentExpenseInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "400": {
-                        "description": "When a request does not fulfill need data",
-                        "schema": {
-                            "$ref": "#/definitions/validator.ValidationError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/recurrent_expenses/all": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Finds all recurrent expenses registered in db",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "recurrent expenses"
-                ],
-                "summary": "Get all recurrent expense",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/recurrent_expenses/monthly_expenses": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Register expenses from all recurrent expenses for current month",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "recurrent expenses"
-                ],
-                "summary": "Create expenses from all recurrent expenses into db",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/reports/current_month": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Generates current month general details",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reports"
-                ],
-                "summary": "Get current month details",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -537,9 +417,6 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "day": {
-                    "type": "integer"
-                },
                 "description": {
                     "$ref": "#/definitions/null.String"
                 },
@@ -548,9 +425,6 @@ const docTemplate = `{
                 },
                 "is_paid": {
                     "type": "boolean"
-                },
-                "month": {
-                    "type": "integer"
                 },
                 "name": {
                     "$ref": "#/definitions/null.String"
@@ -569,16 +443,12 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
-                },
-                "year": {
-                    "type": "integer"
                 }
             }
         },
         "entities.Income": {
             "type": "object",
             "required": [
-                "amount",
                 "name",
                 "user_id"
             ],
@@ -773,7 +643,6 @@ const docTemplate = `{
         "incomes.CreateIncomeInput": {
             "type": "object",
             "required": [
-                "amount",
                 "name",
                 "user_id"
             ],
@@ -810,24 +679,6 @@ const docTemplate = `{
                 "valid": {
                     "description": "Valid is true if String is not NULL",
                     "type": "boolean"
-                }
-            }
-        },
-        "recurrentexpenses.CreateRecurrentExpenseInput": {
-            "type": "object",
-            "required": [
-                "amount",
-                "name"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },
