@@ -3,12 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/manicar2093/expenses_api/cmd/api/middlewares"
 	"github.com/manicar2093/expenses_api/internal/incomes"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
-	"github.com/manicar2093/goption"
 )
 
 type IncomesController struct {
@@ -57,8 +55,4 @@ func (c *IncomesController) Create(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusCreated, &got)
-}
-
-func getUserIDAsOptionlaUUID(ctx echo.Context) goption.Optional[uuid.UUID] {
-	return goption.Of(uuid.MustParse(ctx.Get("user_id").(string)))
 }

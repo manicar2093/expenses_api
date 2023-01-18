@@ -352,6 +352,54 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/recurrent_expenses": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Register a recurrent expense into the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recurrent expenses"
+                ],
+                "summary": "Create a recurrent expense",
+                "parameters": [
+                    {
+                        "description": "Expense to be created",
+                        "name": "expense_to_create",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.RecurrentExpense"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Expense has been created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.RecurrentExpense"
+                        }
+                    },
+                    "400": {
+                        "description": "When a request does not fulfill need data",
+                        "schema": {
+                            "$ref": "#/definitions/validator.ValidationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Something unidentified has occurred"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -478,6 +526,11 @@ const docTemplate = `{
         },
         "entities.RecurrentExpense": {
             "type": "object",
+            "required": [
+                "amount",
+                "name",
+                "user_id"
+            ],
             "properties": {
                 "amount": {
                     "type": "number"
@@ -498,6 +551,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "periodicity": {
                     "type": "string"
                 },
                 "updated_at": {

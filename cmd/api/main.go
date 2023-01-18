@@ -97,4 +97,9 @@ func registerControllers() {
 		incomesService,
 		e,
 	)
+	controllers.NewRecurrentExpensesController(
+		recurrentExpensesRepo,
+		customMiddlewares,
+		e,
+	)
 }

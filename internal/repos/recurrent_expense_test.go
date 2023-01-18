@@ -9,6 +9,7 @@ import (
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
+	"github.com/manicar2093/expenses_api/pkg/period"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -40,7 +41,7 @@ var _ = Describe("RecurrentExpense", func() {
 		conn.Delete(&expectedUser)
 	})
 
-	Describe("Save", func() {
+	Describe("Create", func() {
 		It("saves an instance", func() {
 			var (
 				toSave = entities.RecurrentExpense{
@@ -50,11 +51,12 @@ var _ = Describe("RecurrentExpense", func() {
 					Description: null.StringFrom(
 						faker.Paragraph(),
 					),
+					Periodicity: period.Daily,
 				}
 			)
 			defer conn.Delete(&toSave)
 
-			err := repo.Save(ctx, &toSave)
+			err := repo.Create(ctx, &toSave)
 
 			log.Println(toSave.ID)
 
@@ -89,7 +91,7 @@ var _ = Describe("RecurrentExpense", func() {
 				conn.Create(&saved)
 				defer conn.Delete(&saved)
 
-				err := repo.Save(ctx, &toSave)
+				err := repo.Create(ctx, &toSave)
 				defer conn.Delete(&toSave)
 
 				Expect(err).To(BeAssignableToTypeOf(&apperrors.AlreadyExistsError{}))

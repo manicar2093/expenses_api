@@ -23,7 +23,7 @@ func NewRecurrentExpenseGormRepo(conn *gorm.DB) *RecurrentExpenseGormRepo {
 	}
 }
 
-func (c *RecurrentExpenseGormRepo) Save(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error {
+func (c *RecurrentExpenseGormRepo) Create(ctx context.Context, recurrentExpense *entities.RecurrentExpense) error {
 	if res := c.orm.WithContext(ctx).Create(recurrentExpense); res.Error != nil {
 		switch err := res.Error.(type) { //nolint:gocritic
 		case *pgconn.PgError:
@@ -33,6 +33,8 @@ func (c *RecurrentExpenseGormRepo) Save(ctx context.Context, recurrentExpense *e
 					Entity:     "Recurrent Expense",
 				}
 			}
+		default:
+			return res.Error
 		}
 	}
 	return nil

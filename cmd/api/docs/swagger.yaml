@@ -94,12 +94,18 @@ definitions:
         type: string
       name:
         type: string
+      periodicity:
+        type: string
       updated_at:
         type: string
       user:
         $ref: '#/definitions/entities.User'
       user_id:
         type: string
+    required:
+    - amount
+    - name
+    - user_id
     type: object
   entities.Session:
     properties:
@@ -443,6 +449,36 @@ paths:
       summary: Create an income
       tags:
       - incomes
+  /recurrent_expenses:
+    post:
+      consumes:
+      - application/json
+      description: Register a recurrent expense into the database
+      parameters:
+      - description: Expense to be created
+        in: body
+        name: expense_to_create
+        required: true
+        schema:
+          $ref: '#/definitions/entities.RecurrentExpense'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Expense has been created
+          schema:
+            $ref: '#/definitions/entities.RecurrentExpense'
+        "400":
+          description: When a request does not fulfill need data
+          schema:
+            $ref: '#/definitions/validator.ValidationError'
+        "500":
+          description: Something unidentified has occurred
+      security:
+      - ApiKeyAuth: []
+      summary: Create a recurrent expense
+      tags:
+      - recurrent expenses
 securityDefinitions:
   ApiKeyAuth:
     description: Type "Bearer" and then your API Token

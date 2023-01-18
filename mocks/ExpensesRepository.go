@@ -10,8 +10,6 @@ import (
 
 	repos "github.com/manicar2093/expenses_api/internal/repos"
 
-	time "time"
-
 	uuid "github.com/google/uuid"
 )
 
@@ -75,55 +73,6 @@ func (_c *ExpensesRepository_FindByID_Call) Return(_a0 *entities.Expense, _a1 er
 	return _c
 }
 
-// FindByNameAndMonthAndIsRecurrent provides a mock function with given fields: ctx, month, expenseName, userID
-func (_m *ExpensesRepository) FindByNameAndMonthAndIsRecurrent(ctx context.Context, month uint, expenseName string, userID uuid.UUID) (*entities.Expense, error) {
-	ret := _m.Called(ctx, month, expenseName, userID)
-
-	var r0 *entities.Expense
-	if rf, ok := ret.Get(0).(func(context.Context, uint, string, uuid.UUID) *entities.Expense); ok {
-		r0 = rf(ctx, month, expenseName, userID)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entities.Expense)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, uint, string, uuid.UUID) error); ok {
-		r1 = rf(ctx, month, expenseName, userID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByNameAndMonthAndIsRecurrent'
-type ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call struct {
-	*mock.Call
-}
-
-// FindByNameAndMonthAndIsRecurrent is a helper method to define mock.On call
-//   - ctx context.Context
-//   - month uint
-//   - expenseName string
-//   - userID uuid.UUID
-func (_e *ExpensesRepository_Expecter) FindByNameAndMonthAndIsRecurrent(ctx interface{}, month interface{}, expenseName interface{}, userID interface{}) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
-	return &ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call{Call: _e.mock.On("FindByNameAndMonthAndIsRecurrent", ctx, month, expenseName, userID)}
-}
-
-func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Run(run func(ctx context.Context, month uint, expenseName string, userID uuid.UUID)) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(uint), args[2].(string), args[3].(uuid.UUID))
-	})
-	return _c
-}
-
-func (_c *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call) Return(_a0 *entities.Expense, _a1 error) *ExpensesRepository_FindByNameAndMonthAndIsRecurrent_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
 // GetExpenseStatusByID provides a mock function with given fields: ctx, expenseID
 func (_m *ExpensesRepository) GetExpenseStatusByID(ctx context.Context, expenseID uuid.UUID) (*entities.ExpenseIDWithIsPaidStatus, error) {
 	ret := _m.Called(ctx, expenseID)
@@ -167,54 +116,6 @@ func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Run(run func(ctx context
 }
 
 func (_c *ExpensesRepository_GetExpenseStatusByID_Call) Return(_a0 *entities.ExpenseIDWithIsPaidStatus, _a1 error) *ExpensesRepository_GetExpenseStatusByID_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-// GetExpensesByMonth provides a mock function with given fields: ctx, month, userID
-func (_m *ExpensesRepository) GetExpensesByMonth(ctx context.Context, month time.Month, userID uuid.UUID) ([]*entities.Expense, error) {
-	ret := _m.Called(ctx, month, userID)
-
-	var r0 []*entities.Expense
-	if rf, ok := ret.Get(0).(func(context.Context, time.Month, uuid.UUID) []*entities.Expense); ok {
-		r0 = rf(ctx, month, userID)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*entities.Expense)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, time.Month, uuid.UUID) error); ok {
-		r1 = rf(ctx, month, userID)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// ExpensesRepository_GetExpensesByMonth_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetExpensesByMonth'
-type ExpensesRepository_GetExpensesByMonth_Call struct {
-	*mock.Call
-}
-
-// GetExpensesByMonth is a helper method to define mock.On call
-//   - ctx context.Context
-//   - month time.Month
-//   - userID uuid.UUID
-func (_e *ExpensesRepository_Expecter) GetExpensesByMonth(ctx interface{}, month interface{}, userID interface{}) *ExpensesRepository_GetExpensesByMonth_Call {
-	return &ExpensesRepository_GetExpensesByMonth_Call{Call: _e.mock.On("GetExpensesByMonth", ctx, month, userID)}
-}
-
-func (_c *ExpensesRepository_GetExpensesByMonth_Call) Run(run func(ctx context.Context, month time.Month, userID uuid.UUID)) *ExpensesRepository_GetExpensesByMonth_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(time.Month), args[2].(uuid.UUID))
-	})
-	return _c
-}
-
-func (_c *ExpensesRepository_GetExpensesByMonth_Call) Return(_a0 []*entities.Expense, _a1 error) *ExpensesRepository_GetExpensesByMonth_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
