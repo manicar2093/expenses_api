@@ -47,6 +47,7 @@ model RecurrentExpense {
   name  String @unique
   amount Decimal @db.Decimal(15,2)
   description String?
+  periodicity Periodicity @default(Monthly)
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
 
@@ -79,4 +80,16 @@ model Session {
   created_at DateTime @default(now())
 
   @@map("sessions")
+}
+
+enum Periodicity {
+  Daily
+	Weekly
+	FourteenDaily
+	Paydaily
+	Monthly
+	BiMonthly
+	FourMonthly
+	SixMonthly
+	Yearly
 }
