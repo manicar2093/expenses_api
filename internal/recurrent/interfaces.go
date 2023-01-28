@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/manicar2093/expenses_api/internal/entities"
+	paginator "github.com/yafeng-Soong/gorm-paginator"
 )
 
 type (
@@ -17,6 +18,7 @@ type (
 		CountRecurrentExpensesByDateAndID(date time.Time, recurrentExpenseID uuid.UUID) (int64, error)
 	}
 	RecurrentExpensesGetter interface {
-		GetRecurrentExpensesByDate(date time.Time) ([]entities.RecurrentExpense, error)
+		GetRecurrentExpensesByDate(ctx context.Context, date time.Time) (paginator.Page[[]entities.RecurrentExpense], error)
+		GetRecurrentExpensesByUserID(ctx context.Context, userID uuid.UUID) (paginator.Page[[]entities.RecurrentExpense], error)
 	}
 )

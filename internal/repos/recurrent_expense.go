@@ -4,7 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"github.com/manicar2093/expenses_api/internal/entities"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
@@ -38,20 +37,4 @@ func (c *RecurrentExpenseGormRepo) Create(ctx context.Context, recurrentExpense 
 		}
 	}
 	return nil
-}
-
-func (c *RecurrentExpenseGormRepo) FindByName(ctx context.Context, name string, userID uuid.UUID) (*entities.RecurrentExpense, error) {
-	var found entities.RecurrentExpense
-	if res := c.orm.WithContext(ctx).Where("user_id = ? AND name = ?", userID, name).First(&found); res.Error != nil {
-		return nil, res.Error
-	}
-	return &found, nil
-}
-
-func (c *RecurrentExpenseGormRepo) FindAll(ctx context.Context, userID uuid.UUID) ([]*entities.RecurrentExpense, error) {
-	var found []*entities.RecurrentExpense
-	if res := c.orm.WithContext(ctx).Where("user_id = ?", userID).Find(&found); res.Error != nil {
-		return []*entities.RecurrentExpense{}, res.Error
-	}
-	return found, nil
 }

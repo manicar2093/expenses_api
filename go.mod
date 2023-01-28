@@ -23,7 +23,7 @@ require (
 	go.uber.org/zap v1.24.0
 	gopkg.in/guregu/null.v4 v4.0.0
 	gorm.io/driver/postgres v1.4.5
-	gorm.io/gorm v1.24.1
+	gorm.io/gorm v1.24.3
 )
 
 require (
@@ -75,6 +75,7 @@ require (
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.0.2 // indirect
 	github.com/xdg-go/stringprep v1.0.2 // indirect
+	github.com/yafeng-Soong/gorm-paginator v1.0.1 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect

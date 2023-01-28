@@ -23,7 +23,6 @@ type (
 	RecurrentExpenseRepo interface {
 		Save(ctx context.Context, recExpense *entities.RecurrentExpense) error
 		FindByName(ctx context.Context, name string, userID uuid.UUID) (*entities.RecurrentExpense, error)
-		FindAll(ctx context.Context, userID uuid.UUID) ([]*entities.RecurrentExpense, error)
 	}
 
 	UserRepo interface {

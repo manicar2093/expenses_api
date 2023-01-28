@@ -15,6 +15,7 @@ type config struct {
 	TokenSymmetricKey    string
 	AccessTokenDuration  time.Duration
 	RefreshTokenDuration time.Duration
+	PageSize             int64
 }
 
 func init() {
@@ -25,4 +26,5 @@ func init() {
 	Instance.TokenSymmetricKey = viper.GetString("TOKEN_SYMMETRIC_KEY")
 	Instance.AccessTokenDuration = viper.GetDuration("ACCESS_TOKEN_DURATION")
 	Instance.ShowSwaggerDocs = viper.GetBool("SHOW_SWAGGER_DOCS")
+	Instance.PageSize = 15
 }

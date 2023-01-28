@@ -38,3 +38,11 @@ func EchoWithValidator() *echo.Echo {
 	e.Validator = validator.NewGooKitValidator()
 	return e
 }
+
+func SliceGenerator[T any](count int, generator func() T) []T {
+	res := []T{}
+	for i := 0; i < count; i++ {
+		res = append(res, generator())
+	}
+	return res
+}

@@ -10,6 +10,7 @@ import (
 	"github.com/manicar2093/expenses_api/internal/repos"
 	"github.com/manicar2093/expenses_api/pkg/apperrors"
 	"github.com/manicar2093/expenses_api/pkg/period"
+	"github.com/manicar2093/expenses_api/pkg/testfunc"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"gopkg.in/guregu/null.v4"
@@ -101,66 +102,32 @@ var _ = Describe("RecurrentExpense", func() {
 		})
 	})
 
-	Describe("FindByName", func() {
-		It("returns a pointer of found data", func() {
+	Describe("GetRecurrentExpensesByUserID", func() {
+		It("returns user recurrent expenses paginated", func() {
 			var (
-				expectedName = "testing"
-				saved        = entities.RecurrentExpense{
-					UserID: expectedUserID,
-					Name:   expectedName,
-					Amount: faker.Latitude(),
-					Description: null.StringFrom(
-						faker.Paragraph(),
-					),
-				}
+				expectedUserID         = uuid.New()
+				recurrentExpensesSaved = 60
+				expectedPageSize       = 15
+				recurrentExpenses      = testfunc.SliceGenerator(recurrentExpensesSaved, func() *entities.RecurrentExpense {
+					return &entities.RecurrentExpense{
+						UserID:      expectedUserID,
+						Name:        faker.Name(),
+						Amount:      float64(faker.UnixTime()),
+						Periodicity: period.BiMonthly,
+						Description: null.StringFrom(faker.Paragraph()),
+					}
+				})
 			)
-			conn.Create(&saved)
-			defer conn.Delete(&saved)
+			conn.Create(&recurrentExpenses)
+			defer conn.Delete(&recurrentExpenses)
 
-			got, err := repo.FindByName(ctx, expectedName, expectedUserID)
+			got, err := repo.GetRecurrentExpensesByUserID(ctx, expectedUserID)
 
 			Expect(err).ToNot(HaveOccurred())
-			Expect(got.Name).To(Equal(expectedName))
-		})
-	})
+			Expect(got.Data).To(HaveLen(expectedPageSize))
+			Expect(got.PageSize).To(HaveLen(expectedPageSize))
+			Expect(got.Total).To(HaveLen(recurrentExpensesSaved))
 
-	Describe("FindAll", func() {
-		It("gets all registered recurrent expenses", func() {
-			var (
-				dataSaved = []*entities.RecurrentExpense{
-					{
-						UserID: expectedUserID,
-						Name:   faker.Name(),
-						Amount: faker.Latitude(),
-						Description: null.StringFrom(
-							faker.Paragraph(),
-						),
-					},
-					{
-						UserID: expectedUserID,
-						Name:   faker.Name(),
-						Amount: faker.Latitude(),
-						Description: null.StringFrom(
-							faker.Paragraph(),
-						),
-					},
-					{
-						UserID: expectedUserID,
-						Name:   faker.Name(),
-						Amount: faker.Latitude(),
-						Description: null.StringFrom(
-							faker.Paragraph(),
-						),
-					},
-				}
-			)
-			conn.Create(&dataSaved)
-			defer conn.Delete(&dataSaved)
-
-			got, err := repo.FindAll(ctx, expectedUserID)
-
-			Expect(err).ToNot(HaveOccurred())
-			Expect(got).To(HaveLen(len(dataSaved)))
 		})
 	})
 })
